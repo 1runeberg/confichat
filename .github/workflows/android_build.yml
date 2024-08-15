@@ -1,0 +1,44 @@
+name: Android 
+
+on:
+  workflow_call:
+    inputs:
+      release_tag:
+        required: true
+        type: string
+      release_name:
+        required: true
+        type: string
+
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  android-build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4.1.7
+    
+    - name: Set up Java
+      uses: actions/setup-java@v4.2.2
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+    
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2.16.0
+      with:
+        channel: 'stable'
+    
+    - name: Install dependencies
+      run: cd confichat && flutter pub get
+
+    - name: Update third party licenses Android
+      run: cd confichat && flutter pub run flutter_oss_licenses:generate.dart
+
+    - name: Build Android App
+      run: cd confichat && flutter build apk --release
