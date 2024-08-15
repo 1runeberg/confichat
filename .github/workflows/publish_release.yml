@@ -86,7 +86,7 @@ jobs:
         body: ${{ env.RELEASE_NOTES }}
         files: confichat/build/windows/x64/runner/Release/windows-release.zip
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.CONFICHAT_SECRET }}
 
     - name: Create Release (Linux)
       if: matrix.os == 'ubuntu-latest'
@@ -97,7 +97,7 @@ jobs:
         body: ${{ env.RELEASE_NOTES }}
         files: confichat/build/linux/x64/release/bundle/linux-release.tgz
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.CONFICHAT_SECRET }}
     
     - name: Create Release (Android)
       if: matrix.os == 'ubuntu-latest'
@@ -108,4 +108,4 @@ jobs:
         body: ${{ env.RELEASE_NOTES }}
         files: confichat/build/app/outputs/flutter-apk/android-release.zip
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.CONFICHAT_SECRET }}
