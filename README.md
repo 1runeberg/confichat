@@ -55,11 +55,11 @@ In a nutshell, ConfiChat caters to users who value transparent control over thei
 
 ### 🛠️ 5. Compiling your own build
 
-For those who prefer to compile ConfiChat themselves, or for macOS and iOS users, we provide detailed instructions in the [Compiling on Your Own](#) section. 
+For those who prefer to compile ConfiChat themselves, or for macOS and iOS users, we provide detailed instructions in the [Compiling on your Own](docs/compiling.md) section. 
 
 ### 🤝 6. Contributing
 
-We welcome contributions from the community! Whether you're interested in adding new features, fixing bugs, or improving documentation, your help is appreciated. Please see our [Contributing Guide](#) for more details.
+We welcome contributions from the community! Whether you're interested in adding new features, fixing bugs, or improving documentation, your help is appreciated. Please see our [Contributing Guide](docs/contributing.md) for more details.
 
 ### 💖 7. Sponsorship
 
