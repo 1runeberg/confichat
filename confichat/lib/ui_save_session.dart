@@ -202,7 +202,9 @@ class SaveChatSessionState extends State<SaveChatSession>  {
 
     return AlertDialog(
       title: const DialogTitle(title: 'Save Chat Session'), 
-      content: ConstrainedBox( constraints:  
+      content: SingleChildScrollView(
+      scrollDirection: Axis.vertical,      
+      child: ConstrainedBox( constraints:  
         const BoxConstraints(
           minWidth: 300, 
           maxWidth: 300,
@@ -292,8 +294,8 @@ class SaveChatSessionState extends State<SaveChatSession>  {
           ),
 
         ],
-      ),
-    ),
+      ),),),
+      
       actions: <Widget>[
 
         // Save button

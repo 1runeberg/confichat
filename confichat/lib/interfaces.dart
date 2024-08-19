@@ -48,7 +48,7 @@ abstract class LlmApi {
   List<String> stopSequences = [];
 
   String systemPrompt = '';
-  String summaryPrompt = 'Create a title or subject heading of our conversation so far in one sentence, with a maximum of 100 characters. Only use alphanumeric characters, spaces, and dashes when appropraite. Do not add a period and do not add any comments, just the title/subject heading as requested.';
+  String summaryPrompt = 'Create a title or subject heading of our conversation so far in one sentence, with a maximum of 100 characters. Only use alphanumeric characters, spaces, and dashes when appropraite. Do not add a period, slash, colon, and do not add any comments, just the title/subject heading as requested.';
   
   bool isProcessing = false;
   String responseData = 'No data';

@@ -6,7 +6,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:confichat/themes.dart';
-import 'package:confichat/ui_widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:desktop_window/desktop_window.dart';
@@ -16,9 +15,8 @@ import 'dart:convert';
 import 'package:confichat/app_data.dart';
 import 'package:confichat/chat_notifiers.dart';
 import 'package:confichat/ui_sidebar.dart';
-import 'package:confichat/ui_add_model.dart';
-import 'package:confichat/ui_config_model.dart';
 import 'package:confichat/ui_canvass.dart';
+import 'package:confichat/ui_app_bar.dart';
 
 
 void main() {
@@ -131,8 +129,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
       super.initState();
-      _switchProvider(AiProvider.ollama);
-      _populateModelList(true); 
 
       if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
         DesktopWindow.setWindowSize(Size(widget.appData.windowWidth, widget.appData.windowHeight));
@@ -140,243 +136,29 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void dispose() {
+    providerModel.dispose();
+    providerController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
-
-      // (1) Application bar
-      appBar: AppBar(
-        title: Row(mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Image.asset(
-                'assets/confichat_logo.png',
-                fit: BoxFit.contain,
-              ),
-            ],
-          ),
-
-        toolbarHeight: 80.0,
-        toolbarOpacity: 0.8,
-        elevation: 5.0,
-        shadowColor: const Color.fromARGB(255, 145, 145, 145),
-        leading: Builder(
-          builder: (context) {
-            return IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-            );
-          },
-        ),
-
-        actions: <Widget> [
-
-          // (1.1) Model providers
-          Container(
-            margin: const EdgeInsets.all(10),
-            child: ( 
-              DropdownMenu<AiProvider>(
-                    initialSelection: AiProvider.ollama,             
-                    controller: providerController,
-                    requestFocusOnTap: true,
-                    textStyle: TextStyle( color: Theme.of(context).colorScheme.surface, fontWeight: FontWeight.normal, fontSize: 18 ),
-                    label: OutlinedText(
-                      textData: 'Provider', 
-                      outlineColor: Theme.of(context).colorScheme.onSurface,
-                      textStyle: TextStyle( color: Theme.of(context).colorScheme.surface, fontWeight: FontWeight.bold, fontSize: 18)
-                    ),
-
-                  inputDecorationTheme: InputDecorationTheme(
-                    enabledBorder: OutlineInputBorder( borderSide: BorderSide(color: Theme.of(context).colorScheme.surface) ),
-                    focusedBorder: OutlineInputBorder( borderSide: BorderSide(color: Theme.of(context).colorScheme.surface) ),
-                    fillColor: Theme.of(context).colorScheme.tertiaryContainer,
-                    suffixIconColor: Theme.of(context).colorScheme.surface,
-                    filled: true,
-                  ),
-
-                  onSelected: (AiProvider? provider) { _switchProvider(provider); },
-                  dropdownMenuEntries: AiProvider.values
-                      .map<DropdownMenuEntry<AiProvider>>(
-                          (AiProvider modelProvider) {
-                    return DropdownMenuEntry<AiProvider>(
-                      value: modelProvider,
-                      label: modelProvider.name,
-                    );
-                  }).toList(),
-                )
-              ),
-          ),
-
-          // (1.2) Models
-          Consumer<ModelProvider>( builder: (context, modelProvider, child) {
-          return Container(
-            margin: const EdgeInsets.all(10),
-            child: DropdownMenu<ModelItem>(
-                        controller: providerModel,
-                        enabled: modelProvider.models.isNotEmpty,
-                        width: 200,
-                        requestFocusOnTap: true,
-                        textStyle: TextStyle( color: Theme.of(context).colorScheme.surface, fontWeight: FontWeight.normal, fontSize: 18 ),
-                        label: OutlinedText(
-                          textData: 'Current Model', 
-                          outlineColor: Colors.black,
-                          textStyle: TextStyle( color: Theme.of(context).colorScheme.surface, fontWeight: FontWeight.bold, fontSize: 18)
-                        ),
-
-                        inputDecorationTheme: InputDecorationTheme(
-                          enabledBorder: OutlineInputBorder( borderSide: BorderSide(color: Theme.of(context).colorScheme.surface) ),
-                          focusedBorder: OutlineInputBorder( borderSide: BorderSide(color: Theme.of(context).colorScheme.surface) ),
-                          fillColor: Theme.of(context).colorScheme.tertiaryContainer,
-                          suffixIconColor: Theme.of(context).colorScheme.surface,
-                          filled: true,
-                        ),
-
-                        onSelected: (ModelItem? model) {
-
-                          if(model != null){
-                            if(widget.appData.clearMessagesOnModelSwitch) {
-                              _showModelChangeWarning(context, model);
-                            } else {
-                              _setModelItem(model);
-                            }
-                          }
-                          
-                        },
-                        dropdownMenuEntries: modelProvider.models
-                            .map((modelItem) => DropdownMenuEntry<ModelItem>(
-                                  value: modelItem,
-                                  label: modelItem.name,
-                                )).toList(),
-            )
-          ); 
-          }),
-
-          // (1.3) Config button
-          Consumer<ModelProvider>( builder: (context, modelProvider, child) {
-            return IconButton(
-              icon: const Icon(Icons.build_circle_rounded), 
-              hoverColor: Theme.of(context).colorScheme.secondaryContainer,
-              onPressed: modelProvider.models.isEmpty ? null : () async {
-                await showDialog(
-                  context: context, 
-                  builder: 
-                    (BuildContext context) { return ModelConfigDialog(modelName: providerModel.text); }
-                );
-              });
-          },),
-
-          // (1.4) Add button
-          Consumer<ModelProvider>( builder: (context, modelProvider, child) {
-            return IconButton(
-              icon: const Icon(Icons.add_circle), 
-              hoverColor: Theme.of(context).colorScheme.secondaryContainer,
-              disabledColor: Theme.of(context).colorScheme.surfaceDim,
-              onPressed: modelProvider.models.isEmpty || widget.appData.api.aiProvider.id > 0  ? null : () async {
-    
-                // Collect the names of all models into a list
-                List<String> modelList = modelProvider.models.map((model) => model.name).toList();
-
-                await showDialog(
-                  context: context, 
-                  builder: 
-                    (BuildContext context) { return AddModelDialog(modelNames: modelList); }
-                );
-                
-                _populateModelList(false);
-
-              });
-          },),
-
-        ]),
-
+    return Scaffold( 
+      
+      // (1) App bar
+      appBar: CCAppBar(appData: widget.appData, chatSessionSelectedNotifier: chatSessionSelectedNotifier, providerController: providerController, providerModel: providerModel),
+      
       // (2) Drawer
       drawer: Sidebar( appData: widget.appData, chatSessionSelectedNotifier: chatSessionSelectedNotifier),
 
       // (3) Chat canvass
       body: Column( children: [ Expanded(
               child: Canvass(appData: widget.appData, chatSessionSelectedNotifier: chatSessionSelectedNotifier)
-            )])
-
-    );
-  }
-
-  Future<void> _populateModelList(bool selectFirst) async {
+            )])   
     
-    // Check for api app settings
-    await widget.appData.api.loadSettings();
-
-    // Retrieve active models for provider
-    List<ModelItem> newModels = [];
-    await widget.appData.api.getModels(newModels);
-
-    if (mounted){
-      // Update the provider with the new models
-      Provider.of<ModelProvider>(context, listen: false).updateModels(newModels);
-    
-      // Update the selected model
-      if (newModels.isNotEmpty) {
-        final selectedModelProvider = Provider.of<SelectedModelProvider>(context, listen: false);  
-        final initialModel = selectFirst ? newModels.first : newModels.last; 
-        selectedModelProvider.updateSelectedModel(initialModel);
-        providerModel.text = initialModel.name; 
-      } else {
-        providerModel.clear();
-      }
-    } 
-  }
-
-  void _showModelChangeWarning(BuildContext context, ModelItem newModel) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Warning'),
-          content: const Text(
-            'Any messages in the current chat window will be lost. Proceed?',
-          ),
-          actions: <Widget>[
-            ElevatedButton(
-              child: const Text('Yes'),
-              onPressed: () {
-                _setModelItem(newModel);
-                Navigator.of(context).pop();
-              },
-            ),
-            ElevatedButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
     );
-  }
-
-  void _setModelItem(ModelItem newModel){
-    if(mounted) {
-      setState(() {
-        selectedModel = newModel;
-        providerModel.text = newModel.name;
-        Provider.of<SelectedModelProvider>(context, listen: false).updateSelectedModel(newModel);
-      });
-    }
-  }
-
-  void _switchProvider(AiProvider? provider){
-
-    if(provider == null) {return; }
-    widget.appData.setProvider(provider);
-
-    if(mounted) {
-      setState(() {
-        selectedProvider = provider;
-      });
-
-      _populateModelList(true);
-    }
   }
 
 } //HomePageState

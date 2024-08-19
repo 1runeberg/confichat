@@ -127,6 +127,11 @@ class OllamaOptionsState extends State<OllamaOptions> {
     await file.create(recursive: true);
     await file.writeAsString(json.encode(settings));
 
+    // Reset model values
+     if(widget.appData.api.aiProvider.name == AiProvider.ollama.name) {
+      AppData.instance.callbackSwitchProvider(AiProvider.ollama);
+     }
+
     // Close window
     if (mounted) {
       Navigator.of(context).pop();
@@ -150,49 +155,60 @@ class OllamaOptionsState extends State<OllamaOptions> {
               DialogTitle(title:  '${AiProvider.ollama.name} Options'),
               const SizedBox(height: 24),
 
-              // Scheme
-              const SizedBox(height: 16),
-              TextField(
-                controller: _schemeController,
-                decoration: InputDecoration(
-                  labelText: 'Scheme',
-                  labelStyle: Theme.of(context).textTheme.labelSmall,
-                  border: const UnderlineInputBorder(),
-                ),
-              ),
 
-              // Host
-              const SizedBox(height: 16),
-              TextField(
-                controller: _hostController,
-                decoration:  InputDecoration(
-                  labelText: 'Host',
-                  labelStyle: Theme.of(context).textTheme.labelSmall,
-                  border: const UnderlineInputBorder(),
-                ),
-              ),
+                ConstrainedBox( constraints:  
+                BoxConstraints(
+                  minWidth: 300, 
+                  maxHeight: widget.appData.getUserDeviceType(context) != UserDeviceType.phone ? 400 : 250, 
+                ), 
+                child: SingleChildScrollView(
+                scrollDirection: Axis.vertical, child: Column ( children: [
 
-              // Port
-              const SizedBox(height: 16),
-              TextField(
-                controller: _portController,
-                decoration: InputDecoration(
-                  labelText: 'Port', 
-                  labelStyle: Theme.of(context).textTheme.labelSmall,
-                  border: const UnderlineInputBorder(),
-                ),
-              ),
+                  // Scheme
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _schemeController,
+                    decoration: InputDecoration(
+                      labelText: 'Scheme',
+                      labelStyle: Theme.of(context).textTheme.labelSmall,
+                      border: const UnderlineInputBorder(),
+                    ),
+                  ),
 
-              // Path
-              const SizedBox(height: 16),
-              TextField(
-                controller: _pathController,
-                decoration: InputDecoration(
-                  labelText: 'Path',
-                  labelStyle: Theme.of(context).textTheme.labelSmall,
-                  border: const UnderlineInputBorder(),
-                ),
-              ),
+                  // Host
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _hostController,
+                    decoration:  InputDecoration(
+                      labelText: 'Host',
+                      labelStyle: Theme.of(context).textTheme.labelSmall,
+                      border: const UnderlineInputBorder(),
+                    ),
+                  ),
+
+                  // Port
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _portController,
+                    decoration: InputDecoration(
+                      labelText: 'Port', 
+                      labelStyle: Theme.of(context).textTheme.labelSmall,
+                      border: const UnderlineInputBorder(),
+                    ),
+                  ),
+
+                  // Path
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _pathController,
+                    decoration: InputDecoration(
+                      labelText: 'Path',
+                      labelStyle: Theme.of(context).textTheme.labelSmall,
+                      border: const UnderlineInputBorder(),
+                    ),
+                  ),
+
+              ]))),
 
               // Buttons
               const SizedBox(height: 16),

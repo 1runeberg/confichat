@@ -70,21 +70,24 @@ class ModelConfigDialogState extends State<ModelConfigDialog> {
       title:   const DialogTitle(title: 'Model Configuration'),  
       content: SizedBox(
         width: 400,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildTextField('Name', _nameController),
-            _buildTextField('Parent Model', _parentModelController),
-            _buildTextField('Root Model', _rootModelController),
-            _buildTextField('Created On', _createdOnController),
-            _buildTextField('Languages', _languagesController),
-            _buildTextField('Parameter Size', _parameterSizeController),
-            _buildTextField('Quantization Level', _quantizationLevelController),
-            const SizedBox(height: 8),
-            _buildMultilineField('System Prompt (in-model)', _systemPromptController),
-          ],
-        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildTextField('Name', _nameController),
+              _buildTextField('Parent Model', _parentModelController),
+              _buildTextField('Root Model', _rootModelController),
+              _buildTextField('Created On', _createdOnController),
+              _buildTextField('Languages', _languagesController),
+              _buildTextField('Parameter Size', _parameterSizeController),
+              _buildTextField('Quantization Level', _quantizationLevelController),
+              const SizedBox(height: 8),
+              _buildMultilineField('System Prompt (in-model)', _systemPromptController),
+            ],
+          ),
+        )
       ),
+      
       actions: [
         ElevatedButton(
           onPressed: () => _confirmDelete(context),

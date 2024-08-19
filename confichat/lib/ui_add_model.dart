@@ -57,6 +57,10 @@ class AddModelDialogState extends State<AddModelDialog> {
                 child: Center(child: CircularProgressIndicator())) 
           : Form(
               key: _formKey,
+              
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+
               child: SizedBox(width: 400, height: 300,
                child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -109,7 +113,8 @@ class AddModelDialogState extends State<AddModelDialog> {
                   ],
                 ),
               ),
-            ),
+            ),),
+
       actions: <Widget>[
         // (1) Add
         ElevatedButton(
