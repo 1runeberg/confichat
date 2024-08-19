@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import 'package:confichat/app_data.dart';
 import 'package:flutter/material.dart';
 import 'package:confichat/interfaces.dart';
 import 'package:confichat/ui_widgets.dart';
@@ -75,6 +76,9 @@ class AdvancedOptionsState extends State<AdvancedOptions> {
 
   @override
   Widget build(BuildContext context) {
+
+    UserDeviceType deviceType = AppData.instance.getUserDeviceType(context);
+
     return Dialog(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -88,51 +92,65 @@ class AdvancedOptionsState extends State<AdvancedOptions> {
             const DialogTitle(title: 'Advanced Prompt Options'),
             const SizedBox(height: 24),
 
-            _buildSliderWithTooltip(
-              label: 'Temperature',
-              value: temperature,
-              min: 0.0,
-              max: 2.0,
-              divisions: 20,
-              onChanged: (value) => setState(() => temperature = value),
-              description: 'Controls the randomness of the output. Lower values make responses more focused and deterministic, while higher values increase variability and creativity.',
-              whatItMeans: 'Use lower temperatures for precise and predictable outputs and higher values for more creative and varied responses.',
+          ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxHeight: 500.0, 
             ),
-            const SizedBox(height: 8),
-            _buildSliderWithTooltip(
-              label: 'Probability',
-              value: probability,
-              min: 0.0,
-              max: 1.0,
-              divisions: 10,
-              onChanged: (value) => setState(() => probability = value),
-              description: 'Determines the diversity of the response by sampling from the top tokens. Lower values focus on the most likely tokens, while higher values consider a wider range of possibilities.',
-              whatItMeans: 'Set lower values for predictable outputs and higher values for more diverse and creative responses.',
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Column( 
+                children: [
+
+                  _buildSliderWithTooltip(
+                    label: 'Temperature',
+                    value: temperature,
+                    min: 0.0,
+                    max: 2.0,
+                    divisions: 20,
+                    onChanged: (value) => setState(() => temperature = value),
+                    description: 'Controls the randomness of the output. Lower values make responses more focused and deterministic, while higher values increase variability and creativity.',
+                    whatItMeans: 'Use lower temperatures for precise and predictable outputs and higher values for more creative and varied responses.',
+                  ),
+                  const SizedBox(height: 8),
+
+                  _buildSliderWithTooltip(
+                      label: 'Probability',
+                      value: probability,
+                      min: 0.0,
+                      max: 1.0,
+                      divisions: 10,
+                      onChanged: (value) => setState(() => probability = value),
+                      description: 'Determines the diversity of the response by sampling from the top tokens. Lower values focus on the most likely tokens, while higher values consider a wider range of possibilities.',
+                      whatItMeans: 'Set lower values for predictable outputs and higher values for more diverse and creative responses.',
+                    ),
+                    _buildTextInputWithTooltip(
+                      label: 'Max Tokens',
+                      controller: maxTokensController,
+                      onChanged: (value) => setState(() => maxTokens = int.tryParse(value) ?? maxTokens),
+                      description: 'Sets the maximum number of tokens that the model will generate in the response. Limits response length for concise or detailed answers.',
+                      whatItMeans: 'Limits response length. Use lower values for concise answers and higher values for detailed responses.',
+                    ),
+                    _buildTextInputWithTooltip(
+                      label: 'Stop Sequences',
+                      controller: stopSequenceController,
+                      onChanged: (value) { setState(() { 
+                        widget.api.stopSequences = value.split(',').map((s) => s.trim()).toList();}); }, 
+                      description: 'Specifies one or more sequences where the model should stop generating text.  Enter multiple sequences separated by commas.',
+                      whatItMeans: 'Define where the response should end to prevent overly lengthy or unnecessary outputs. (example: .,\\n, user:)',
+                    ),
+                    _buildTextInputWithTooltip(
+                      label: 'System Prompt',
+                      controller: systemPromptController,
+                      isEnabled: widget.enableSystemPrompt,
+                      maxLines: 5,
+                      onChanged: (value) { setState(() {widget.api.systemPrompt = value;}); }, 
+                      description: 'Initial instruction that sets the context or role for the entire conversation. It influences how the model understands and responds to user inputs by defining its persona, tone, or task.',
+                      whatItMeans: 'By setting the model\'s role or focus, such as acting as a helpful assistant, technical expert, or creative writer, it aligns the model\'s responses to user expectations and the intended application',
+                    ),
+                ] )           
+              ),
             ),
-            _buildTextInputWithTooltip(
-              label: 'Max Tokens',
-              controller: maxTokensController,
-              onChanged: (value) => setState(() => maxTokens = int.tryParse(value) ?? maxTokens),
-              description: 'Sets the maximum number of tokens that the model will generate in the response. Limits response length for concise or detailed answers.',
-              whatItMeans: 'Limits response length. Use lower values for concise answers and higher values for detailed responses.',
-            ),
-            _buildTextInputWithTooltip(
-              label: 'Stop Sequences',
-              controller: stopSequenceController,
-              onChanged: (value) { setState(() { 
-                widget.api.stopSequences = value.split(',').map((s) => s.trim()).toList();}); }, 
-              description: 'Specifies one or more sequences where the model should stop generating text.  Enter multiple sequences separated by commas.',
-              whatItMeans: 'Define where the response should end to prevent overly lengthy or unnecessary outputs. (example: .,\\n, user:)',
-            ),
-            _buildTextInputWithTooltip(
-              label: 'System Prompt',
-              controller: systemPromptController,
-              isEnabled: widget.enableSystemPrompt,
-              maxLines: 5,
-              onChanged: (value) { setState(() {widget.api.systemPrompt = value;}); }, 
-              description: 'Initial instruction that sets the context or role for the entire conversation. It influences how the model understands and responds to user inputs by defining its persona, tone, or task.',
-              whatItMeans: 'By setting the model\'s role or focus, such as acting as a helpful assistant, technical expert, or creative writer, it aligns the model\'s responses to user expectations and the intended application',
-            ),
+
             const SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -144,16 +162,19 @@ class AdvancedOptionsState extends State<AdvancedOptions> {
                   },
                   child: const Text('Save'),
                 ),
+         
                 const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: () => _resetValues(false),
                   child: const Text('Reset'),
                 ),
-                const SizedBox(width: 8),
-                ElevatedButton(
+
+                if( deviceType != UserDeviceType.phone ) const SizedBox(width: 8),
+                if( deviceType != UserDeviceType.phone ) ElevatedButton(
                   onPressed: () => _resetValues(true),
                   child: const Text('Defaults'),
                 ),
+
                 const SizedBox(width: 8),
                 ElevatedButton(
                   focusNode: _focusNodeButton,

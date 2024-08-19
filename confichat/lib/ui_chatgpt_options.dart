@@ -111,6 +111,11 @@ class ChatGPTOptionsState extends State<ChatGPTOptions> {
     await file.create(recursive: true);
     await file.writeAsString(json.encode(settings));
 
+    // Reset model values
+    if(widget.appData.api.aiProvider.name == AiProvider.openai.name) {
+      AppData.instance.callbackSwitchProvider(AiProvider.openai);
+    }
+
     // Close window
     if (mounted) {
       Navigator.of(context).pop();

@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -11,12 +13,17 @@ import 'package:confichat/interfaces.dart';
 import 'package:confichat/factories.dart';
 
 
+typedef CallbackSwitchProvider = Function(AiProvider?);
 class AppData {
 
   // Singleton setup
   static final AppData _instance = AppData._internal();
   static AppData get instance => _instance;
-  AppData._internal();
+
+  late CallbackSwitchProvider callbackSwitchProvider;
+  AppData._internal() : super() {
+     callbackSwitchProvider = defaultCallback;
+  }
 
   // Class vars
   static const String appTitle = 'ConfiChat';
@@ -31,12 +38,15 @@ class AppData {
 
   // Public vars
   LlmApi api = LlmApiFactory.create(AiProvider.ollama.name);
-  bool clearMessagesOnModelSwitch = false;
+  bool clearMessagesOnModelSwitch = true;
   bool filterHistoryByModel = false;
   int appScrollDurationInms = 100;
   double windowWidth = 1024;
   double windowHeight = 1024;
   String rootPath = '';
+
+  void defaultCallback(AiProvider? provider) {
+  }
 
   void setProvider(AiProvider provider){
 
@@ -52,6 +62,22 @@ class AppData {
     }
   }
 
+  UserDeviceType getUserDeviceType(BuildContext context) {
+  final double deviceWidth = MediaQuery.of(context).size.shortestSide;
+
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      return UserDeviceType.desktop;
+    } else if (Platform.isAndroid || Platform.isIOS) {
+      if (deviceWidth > 600) {
+        return UserDeviceType.tablet;
+      } else {
+        return UserDeviceType.phone;
+      }
+    } else {
+      return UserDeviceType.desktop;
+    }
+  }
+
 }
 
 enum AiProvider {
@@ -61,6 +87,12 @@ enum AiProvider {
   final String name;
   final int id;
   const AiProvider(this.name, this.id);
+}
+
+enum UserDeviceType {
+  desktop,
+  phone,
+  tablet
 }
 
 class ModelItem {

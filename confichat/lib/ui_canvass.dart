@@ -39,6 +39,7 @@ class CanvassState extends State<Canvass> {
   final TextEditingController _sessionNameController = TextEditingController();
 
   final ScrollController _scrollController = ScrollController();
+  final ScrollController _actionsScrollController = ScrollController();
   final FocusNode _focusNodePrompt = FocusNode();
 
   late Directory _chatSessionsDir;
@@ -73,6 +74,7 @@ class CanvassState extends State<Canvass> {
     // Request focus on the prompt input field
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
+        if(_actionsScrollController.hasClients) {_actionsScrollController.jumpTo(_actionsScrollController.position.maxScrollExtent);}
         FocusScope.of(context).requestFocus(_focusNodePrompt);
       }
     });
@@ -81,6 +83,8 @@ class CanvassState extends State<Canvass> {
   @override
   void dispose() {
     _selectedModelProvider.removeListener(_onSelectedModelChange);
+    _scrollController.dispose();
+    _actionsScrollController.dispose();
     _focusNodePrompt.dispose();
     super.dispose();
   }
@@ -106,6 +110,8 @@ class CanvassState extends State<Canvass> {
 
   @override
   Widget build(BuildContext context) {
+
+    UserDeviceType deviceType = widget.appData.getUserDeviceType(context);
 
     // Get selected model
     final selectedModelProvider = Provider.of<SelectedModelProvider>(context, listen: false);
@@ -134,7 +140,7 @@ class CanvassState extends State<Canvass> {
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           body: Center( 
             child: FractionallySizedBox(
-              widthFactor: 0.7,
+              widthFactor: deviceType == UserDeviceType.desktop ? 0.7 : 0.9,
               alignment: Alignment.centerRight,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -232,7 +238,7 @@ class CanvassState extends State<Canvass> {
                       const SizedBox(height: 8),
 
                       // (2.3) User input w/ drag and drop
-                      DropTarget(
+                      if( deviceType == UserDeviceType.desktop ) DropTarget(
                         onDragDone: (details) {
                           _handleFileDrop(details);
                         },
@@ -245,8 +251,8 @@ class CanvassState extends State<Canvass> {
                         child: TextFormField(
                           controller: _promptController,
                           focusNode: _focusNodePrompt,
-                          decoration: const InputDecoration(
-                            labelText: 'Prompt (you can drag-and-drop files below)',
+                          decoration: InputDecoration(
+                            labelText: deviceType == UserDeviceType.desktop ? 'Prompt (you can drag-and-drop files below)' : 'Prompt',
                             alignLabelWithHint: true,
                           ),
                           maxLines: 5,
@@ -255,6 +261,19 @@ class CanvassState extends State<Canvass> {
                         ),
                       ),
 
+                      if( deviceType != UserDeviceType.desktop ) 
+                      TextFormField(
+                          controller: _promptController,
+                          focusNode: _focusNodePrompt,
+                          decoration: const InputDecoration(
+                            labelText: 'Prompt (you can drag-and-drop files below)',
+                            alignLabelWithHint: true,
+                          ),
+                          maxLines: 5,
+                          onFieldSubmitted: _sendPrompt,
+                          textInputAction: TextInputAction.send, // for soft keyboard
+                        ),              
+
                       // (2.4) User actions bar
                       const SizedBox(height:5),
                       Row(
@@ -262,6 +281,9 @@ class CanvassState extends State<Canvass> {
                         children: [
                           
                         // Prompt options
+                        Align(
+                        alignment: Alignment.centerLeft, 
+                        child:
                         ElevatedButton(
                             onPressed: () {
                               showDialog(
@@ -273,102 +295,24 @@ class CanvassState extends State<Canvass> {
                               );
                             },
                             child: const Text('Tuning'),
-                          ),
-                          const Spacer(),
+                          ),),
+                        
+                        // Add spacer if there's enough space (not on phones)
+                        if (deviceType != UserDeviceType.phone) const Spacer(),
 
-                          // (2.4.1) Jump up
-                          const SizedBox(width: 8),
-                          FloatingActionButton.small(
-                            shape: const CircleBorder(),
-                            backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-                            hoverColor: Theme.of(context).colorScheme.primary,
-                            elevation: 3.0,
-                            hoverElevation: 3.0,
-                            tooltip: 'Scroll to top',
-                            onPressed: () => _scrollToTop(scrollDurationInms: widget.appData.appScrollDurationInms),
-                            child: const Icon(Icons.vertical_align_top)
-                            ),
+                        if (deviceType != UserDeviceType.phone) 
+                        Row( children: _buildActionButtons(context, deviceType, selectedModelProvider, selectedModel)), 
 
-                          // (2.4.2) Jump down
-                          const SizedBox(width: 8),
-                          FloatingActionButton.small(
-                            shape: const CircleBorder(),
-                            backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-                            hoverColor: Theme.of(context).colorScheme.primary,
-                            elevation: 3.0,
-                            hoverElevation: 3.0,
-                            tooltip: 'Scroll to bottom',
-                            onPressed: () => _scrollToBottom(scrollDurationInms: widget.appData.appScrollDurationInms),
-                            child: const Icon(Icons.vertical_align_bottom)
-                            ),
+                        if (deviceType == UserDeviceType.phone) Expanded( child:
+                        SingleChildScrollView(
+                            controller: _actionsScrollController,
+                            scrollDirection: Axis.horizontal,
+                            child: Row( children: _buildActionButtons(context, deviceType, selectedModelProvider, selectedModel)), 
+                            ), 
+                        ),
 
-                          // (2.4.3) Reset
-                          const SizedBox(width: 16),
-                          FloatingActionButton.small(
-                            shape: const CircleBorder(),
-                            backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-                            hoverColor: Theme.of(context).colorScheme.primary,
-                            elevation: 3.0,
-                            hoverElevation: 3.0,
-                            tooltip: 'Reset/Clear messages',
-                            onPressed: _clearMessages,
-                            child: const Icon(Icons.restart_alt)
-                            ),
 
-                          // (2.4.4) Save
-                          const SizedBox(width: 8),
-                          FloatingActionButton.small(
-                            shape: const CircleBorder(),
-                            backgroundColor: chatData.isEmpty ? Theme.of(context).colorScheme.surfaceDim : 
-                                             Theme.of(context).colorScheme.secondaryContainer,
-                            hoverColor: Theme.of(context).colorScheme.primary,
-                            elevation: 3.0,
-                            hoverElevation: 3.0,
-                            tooltip: 'Save session',
-                            onPressed: chatData.isEmpty ? null : () {
-                              showDialog(
-                                context: context,
-                                barrierDismissible: false, 
-                                builder: (BuildContext context) {
-                                  return SaveChatSession(
-                                    chatData: chatData,
-                                    chatSessionsDir: _chatSessionsDir,
-                                    selectedModelProvider: selectedModelProvider,
-                                  );
-                                },
-                              );
-                            },
-                            child: const Icon(Icons.save_alt)
-                            ),
-
-                          // (2.4.5) Attach files
-                          const SizedBox(width: 32),
-                          FloatingActionButton.small(
-                            shape: const CircleBorder(),
-                            backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-                            hoverColor: Theme.of(context).colorScheme.primary,
-                            elevation: 3.0,
-                            hoverElevation: 3.0,
-                            tooltip: 'Attach files',
-                            onPressed: () => (selectedModel != null && selectedModel.supportsImages) ? _attachFiles() : null,
-                            child: const Icon(Icons.attach_file)
-                            ),
-
-                          // (2.4.6) Send
-                          const SizedBox(width: 8),
-                          FloatingActionButton.small(
-                            shape: const CircleBorder(),
-                            backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-                            hoverColor: Theme.of(context).colorScheme.primary,
-                            elevation: 3.0,
-                            hoverElevation: 3.0,
-                            tooltip: 'Send prompt',
-                            onPressed: () => _sendPrompt(_promptController.text),
-                            child: const Icon(Icons.send_sharp)
-                            ),
-
-                        ]
-                      )
+                      ]) 
 
                     ],
                   ),
@@ -554,7 +498,7 @@ class CanvassState extends State<Canvass> {
                 ),
                 
                 child: OutlinedText(
-                      textData: 'Load Previous Chat Sessions', 
+                      textData: 'Load Chat Session', 
                       textStyle: Theme.of(context).textTheme.titleMedium,
                       ) 
               ),
@@ -809,6 +753,95 @@ class CanvassState extends State<Canvass> {
     return true;
   }
 
+  List<Widget> _buildActionButtons(
+    BuildContext context, 
+    UserDeviceType deviceType, 
+    SelectedModelProvider selectedModelProvider,
+    ModelItem? selectedModel ) {
+    return [
+      const SizedBox(width: 8),
+      FloatingActionButton.small(
+        shape: const CircleBorder(),
+        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+        hoverColor: Theme.of(context).colorScheme.primary,
+        elevation: 3.0,
+        hoverElevation: 3.0,
+        tooltip: 'Scroll to top',
+        onPressed: () => _scrollToTop(scrollDurationInms: widget.appData.appScrollDurationInms),
+        child: const Icon(Icons.vertical_align_top),
+      ),
+      const SizedBox(width: 8),
+      FloatingActionButton.small(
+        shape: const CircleBorder(),
+        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+        hoverColor: Theme.of(context).colorScheme.primary,
+        elevation: 3.0,
+        hoverElevation: 3.0,
+        tooltip: 'Scroll to bottom',
+        onPressed: () => _scrollToBottom(scrollDurationInms: widget.appData.appScrollDurationInms),
+        child: const Icon(Icons.vertical_align_bottom),
+      ),
+      const SizedBox(width: 16),
+      FloatingActionButton.small(
+        shape: const CircleBorder(),
+        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+        hoverColor: Theme.of(context).colorScheme.primary,
+        elevation: 3.0,
+        hoverElevation: 3.0,
+        tooltip: 'Reset/Clear messages',
+        onPressed: _clearMessages,
+        child: const Icon(Icons.restart_alt),
+      ),
+      const SizedBox(width: 8),
+      FloatingActionButton.small(
+        shape: const CircleBorder(),
+        backgroundColor: chatData.isEmpty
+            ? Theme.of(context).colorScheme.surfaceDim
+            : Theme.of(context).colorScheme.secondaryContainer,
+        hoverColor: Theme.of(context).colorScheme.primary,
+        elevation: 3.0,
+        hoverElevation: 3.0,
+        tooltip: 'Save session',
+        onPressed: chatData.isEmpty ? null : () {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return SaveChatSession(
+                chatData: chatData,
+                chatSessionsDir: _chatSessionsDir,
+                selectedModelProvider: selectedModelProvider,
+              );
+            },
+          );
+        },
+        child: const Icon(Icons.save_alt),
+      ),
+      SizedBox(width: deviceType != UserDeviceType.phone ? 32 : 18),
+      FloatingActionButton.small(
+        shape: const CircleBorder(),
+        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+        hoverColor: Theme.of(context).colorScheme.primary,
+        elevation: 3.0,
+        hoverElevation: 3.0,
+        tooltip: 'Attach files',
+        onPressed: (selectedModel !=null  && selectedModel.supportsImages) ? _attachFiles : null,
+        child: const Icon(Icons.attach_file),
+      ),
+      const SizedBox(width: 8),
+      FloatingActionButton.small(
+        shape: const CircleBorder(),
+        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+        hoverColor: Theme.of(context).colorScheme.primary,
+        elevation: 3.0,
+        hoverElevation: 3.0,
+        tooltip: 'Send prompt',
+        onPressed: () => _sendPrompt(_promptController.text),
+        child: const Icon(Icons.send_sharp),
+      ),
+    ];
+  }
+
 } // CanvassState
 
 class DecryptDialog {
@@ -897,4 +930,4 @@ class DecryptDialog {
       },
     );
   }
-} 
+}
