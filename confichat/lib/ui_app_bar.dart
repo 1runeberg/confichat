@@ -41,7 +41,7 @@ class CCAppBarState extends State<CCAppBar> {
     super.initState();
     _switchProvider(AiProvider.ollama);
     _populateModelList(true); 
-    
+
     widget.appData.callbackSwitchProvider = _switchProvider;
   }
 

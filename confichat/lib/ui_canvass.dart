@@ -13,6 +13,7 @@ import 'package:confichat/interfaces.dart';
 import 'package:confichat/ui_advanced_options.dart';
 import 'package:confichat/ui_save_session.dart';
 import 'package:confichat/ui_widgets.dart';
+import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart';
@@ -248,17 +249,7 @@ class CanvassState extends State<Canvass> {
                         onDragExited: (details) {
                           // todo: Provide feedback for drag and drop
                         },
-                        child: TextFormField(
-                          controller: _promptController,
-                          focusNode: _focusNodePrompt,
-                          decoration: InputDecoration(
-                            labelText: deviceType == UserDeviceType.desktop ? 'Prompt (you can drag-and-drop files below)' : 'Prompt',
-                            alignLabelWithHint: true,
-                          ),
-                          maxLines: 5,
-                          onFieldSubmitted: _sendPrompt,
-                          textInputAction: TextInputAction.send, // for soft keyboard
-                        ),
+                        child: ShiftEnterTextFormField(parentContext: context,  focusNode: _focusNodePrompt, promptController: _promptController, sendFunction: _sendPrompt),
                       ),
 
                       if( deviceType != UserDeviceType.desktop ) 
@@ -269,10 +260,11 @@ class CanvassState extends State<Canvass> {
                             labelText: 'Prompt (you can drag-and-drop files below)',
                             alignLabelWithHint: true,
                           ),
+                          minLines: 1,
                           maxLines: 5,
-                          onFieldSubmitted: _sendPrompt,
-                          textInputAction: TextInputAction.send, // for soft keyboard
-                        ),              
+                          onFieldSubmitted: _sendPromptMobile,
+                          textInputAction: TextInputAction.newline, // for soft keyboard
+                        ),
 
                       // (2.4) User actions bar
                       const SizedBox(height:5),
@@ -571,10 +563,18 @@ class CanvassState extends State<Canvass> {
     );
   }
 
-  Future<void> _sendPrompt(String? s) async {
+  Future<void> _sendPromptMobile(String? s) async {
+    await _sendPrompt(s, null);
+  }
+
+  Future<void> _sendPrompt(String? s, FocusNode? f) async {
+
+    // Set prompt text
+    String promptText = _promptController.text.trim();
+    if(s!= null && s.isNotEmpty) { promptText = s.trim(); }
 
     // Early exit if there's no prompt value
-    if( _promptController.text.trim().isEmpty ) { 
+    if( promptText.isEmpty) { 
       _promptController.clear();
       return; 
     }
@@ -594,7 +594,7 @@ class CanvassState extends State<Canvass> {
     setState(() {
       chatData.add({
         "role": "user", 
-        "content": _promptController.text,
+        "content": promptText,
         "images": base64Images.isNotEmpty ? List<String>.from(base64Images) : null
         });
 
@@ -608,12 +608,17 @@ class CanvassState extends State<Canvass> {
 
     // ignore: use_build_context_synchronously
     FocusScope.of(context).requestFocus(_focusNodePrompt);
+    if( f!= null ) {
+      FocusScope.of(context).requestFocus(f);
+    }
 
     // Send prompt with history to provider
     await _sendPromptWithHistory();
 
-      // Clear prompt
-    _promptController.clear();
+    // Clear prompt
+    setState(() {
+      _promptController.clear();
+    });
 
   }
 
@@ -836,7 +841,7 @@ class CanvassState extends State<Canvass> {
         elevation: 3.0,
         hoverElevation: 3.0,
         tooltip: 'Send prompt',
-        onPressed: () => _sendPrompt(_promptController.text),
+        onPressed: () => _sendPrompt(_promptController.text, null),
         child: const Icon(Icons.send_sharp),
       ),
     ];
@@ -930,4 +935,81 @@ class DecryptDialog {
       },
     );
   }
+}
+
+class ShiftEnterTextFormField extends StatefulWidget {
+  final BuildContext parentContext;
+  final FocusNode focusNode;
+  final TextEditingController promptController;
+  final Future<void> Function(String?, FocusNode?) sendFunction;
+  const ShiftEnterTextFormField({super.key, required this.parentContext, required this.focusNode, required this.promptController, required this.sendFunction} );
+
+  @override
+  ShiftEnterTextFormFieldState createState() => ShiftEnterTextFormFieldState();
+}
+
+class ShiftEnterTextFormFieldState extends State<ShiftEnterTextFormField> {
+  final FocusNode focusKeyEvents = FocusNode();
+
+  @override
+  void dispose() {
+    focusKeyEvents.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+  return KeyboardListener(
+    focusNode: focusKeyEvents,
+    onKeyEvent: (KeyEvent event) {
+      if (event is KeyDownEvent) {
+        if (HardwareKeyboard.instance.isShiftPressed  && event.logicalKey == LogicalKeyboardKey.enter) {
+
+          // Insert a newline at the current cursor position
+          final currentText = widget.promptController.text;
+          final cursorPosition = widget.promptController.selection.baseOffset;
+          final newText = '${currentText.substring(0, cursorPosition)}\n${currentText.substring(cursorPosition)}';
+
+          setState(() {
+            widget.promptController.text = newText;
+            widget.promptController.selection = TextSelection.fromPosition(
+              TextPosition(offset: cursorPosition + 1),
+            );
+
+          });
+
+        } else if (event.logicalKey == LogicalKeyboardKey.enter) {
+            sendPromptKeyEvent();
+        }
+      }
+    },
+    child: TextFormField(
+          controller: widget.promptController,
+          focusNode: widget.focusNode,
+          decoration: const InputDecoration(
+            labelText: 'Prompt (you can drag-and-drop files below)',
+            alignLabelWithHint: true,
+          ),
+          maxLines: 5,
+          autofocus: true,
+          //textInputAction: TextInputAction.send,
+    ));
+  }
+
+  void sendPromptKeyEvent() async {
+    
+    final String promptText = widget.promptController.text.toString(); // copy
+
+    // Clear prompt
+    setState(() {
+      widget.promptController.clear();
+    });
+
+    await widget.sendFunction(promptText, focusKeyEvents);
+
+    // ignore: use_build_context_synchronously
+    FocusScope.of(context).requestFocus(widget.focusNode);
+
+  }
+
 }
