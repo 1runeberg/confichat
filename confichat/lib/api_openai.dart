@@ -114,7 +114,7 @@ class ApiChatGPT extends LlmApi{
       );
 
       // Decode response
-      Map<String, dynamic> jsonData = jsonDecode(AppData.instance.api.responseData);
+      Map<String, dynamic> jsonData = jsonDecode(responseData);
       outModelInfo.parameterSize = '';
       outModelInfo.parentModel = jsonData['id'];
       outModelInfo.quantizationLevel = '';        
@@ -155,10 +155,11 @@ class ApiChatGPT extends LlmApi{
     Map<String, String>? documents,
     Map<String, String>? codeFiles,
     CallbackPassVoidReturnInt? onStreamRequestSuccess,
+    CallbackPassIntReturnBool? onStreamCancel,
     CallbackPassIntChunkReturnVoid? onStreamChunkReceived,
     CallbackPassIntReturnVoid? onStreamComplete,
     CallbackPassDynReturnVoid? onStreamRequestError,
-    CallbackPassDynReturnVoid? onStreamingError 
+    CallbackPassIntDynReturnVoid? onStreamingError 
   }) async {
       try {
 
@@ -238,11 +239,21 @@ class ApiChatGPT extends LlmApi{
           if(onStreamRequestSuccess != null) { indexPayload = onStreamRequestSuccess();  }
 
           // Listen for json object stream from api
-          response.stream
+          StreamSubscription<String>? streamSub;
+          streamSub = response.stream
             .transform(utf8.decoder)
             .transform(const LineSplitter()) // Split by lines
             .transform(SseTransformer()) // Transform into SSE events
             .listen((chunk) {
+
+              // Check if user requested a cancel
+              bool cancelRequested = onStreamCancel != null;
+              if(cancelRequested){ cancelRequested = onStreamCancel(indexPayload); }
+              if(cancelRequested){
+                if(onStreamComplete != null) { onStreamComplete(indexPayload); }
+                          streamSub?.cancel();
+                          return;
+              }
 
               // Handle callback (if any)
               if(chunk.isNotEmpty) 
@@ -276,7 +287,7 @@ class ApiChatGPT extends LlmApi{
           }, onError: (error) {
 
               if (kDebugMode) {print('Streamed data request failed with error: $error');}
-              if(onStreamingError != null) { onStreamingError(error);  }
+              if(onStreamingError != null) { onStreamingError(indexPayload, error);  }
           });
 
         } else {

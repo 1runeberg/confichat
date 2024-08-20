@@ -55,6 +55,7 @@ class CanvassState extends State<Canvass> {
   List<String> base64Images = [];
   Map<String, String> documents = {}; 
   Map<String, String> codeFiles = {}; 
+  Map<int, bool> processingData = {};
 
 
   @override
@@ -158,8 +159,12 @@ class CanvassState extends State<Canvass> {
                       itemBuilder: (context, index) {
 
                         int currentIndex = (chatData.length - 1) - index;
+                        bool isProcessing = processingData.containsKey(currentIndex) && processingData[currentIndex] == true;
                           return ChatBubble(
                             isUser: chatData[currentIndex]['role'] == 'user', 
+                            animateIcon: isProcessing,
+                            fnCancelProcessing: isProcessing ? _cancelProcessing : null,
+                            indexProcessing: isProcessing ? currentIndex : null,
                             textData: chatData[currentIndex]['role'] == 'system' ? "!system_prompt_ignore" : chatData[currentIndex]['content'],
                             images: chatData[currentIndex]['images'],
                             documents: chatDocuments.containsKey(currentIndex) ? chatDocuments[currentIndex] : null,
@@ -634,8 +639,11 @@ class CanvassState extends State<Canvass> {
         documents: documents,
         codeFiles: codeFiles,
         onStreamRequestSuccess: _onChatRequestSuccess,
+        onStreamCancel: _onChatStreamCancel,
         onStreamChunkReceived: _onChatChunkReceived,
-        onStreamComplete: _onChatStreamComplete
+        onStreamComplete: _onChatStreamComplete,
+        onStreamRequestError: _onChatRequestError,
+        onStreamingError: _onChatStreamError
       );
 
   } 
@@ -660,7 +668,45 @@ class CanvassState extends State<Canvass> {
       _scrollToBottom();
     });
 
-    return chatData.length - 1;
+    int index = chatData.length - 1;
+    processingData[index] = true;
+
+    return index;
+  }
+
+  void _onChatRequestError( dynamic error ){
+    final String errorMessage = error.toString();
+    ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(backgroundColor: Theme.of(context).colorScheme.primaryContainer, content: Text('Error requesting chat completion: $errorMessage')),
+                  );
+  }
+
+  dynamic _onChatStreamError( int index, dynamic error ){
+    _onChatStreamComplete(index);
+    ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(backgroundColor: Theme.of(context).colorScheme.primaryContainer, content: Text('Error encountered in response stream: $error')),
+                  );
+  }
+
+  void _cancelProcessing(int index){
+    if(processingData.containsKey(index)) {
+      processingData[index] = false;
+    }
+  }
+
+  bool _onChatStreamCancel(int index){
+    // No cancel request received for this response
+    if(!processingData.containsKey(index) || processingData[index] == true){
+      return false;
+    }
+
+    // Cancel requested - api should call chatStreamComplete callback
+    if(processingData.containsKey(index) && processingData[index] == false){
+        print('cancel requested');
+        return true;
+    }
+
+    return false;
   }
 
   void _onChatChunkReceived(int index, StreamChunk chunk){
@@ -674,7 +720,18 @@ class CanvassState extends State<Canvass> {
   }
 
   void _onChatStreamComplete(int index){
-    //FocusScope.of(context).requestFocus(_focusNode_Prompt);
+    setState(() {
+      // Remove processing indicator
+      processingData.remove(index);
+      
+      // Handle empty response
+      if( chatData[index]['content'].isEmpty ) {
+        chatData[index]['content'] = '*...*';
+      }
+
+      // Force refresh list
+      _scrollToBottom();    
+    });
   }
 
   Widget _buildFileChip(String fileName, String fileType) {
