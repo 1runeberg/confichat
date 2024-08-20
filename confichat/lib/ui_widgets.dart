@@ -220,12 +220,14 @@ class DialogTitle extends StatelessWidget {
   final String title;
   final double width;
   final double height;
+  final bool isError;
 
   const DialogTitle({
     super.key,
     required this.title,
     this.width = double.infinity,
-    this.height = 50.0
+    this.height = 50.0,
+    this.isError = false 
   });
 
   @override
@@ -235,7 +237,7 @@ class DialogTitle extends StatelessWidget {
       height: height,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer,
+        color: isError ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.primaryContainer,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(16.0),
           topRight: Radius.circular(16.0),

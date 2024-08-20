@@ -37,6 +37,7 @@ class AppSettingsState extends State<AppSettings> {
   late double windowHeight;
   late bool hasChanges;
   late String selectedTheme;
+  late String selectedDefaultProvider;
   late String rootPath;
 
   @override
@@ -66,7 +67,8 @@ class AppSettingsState extends State<AppSettings> {
       scrollDuration = 100;
       windowWidth = 1024;
       windowHeight = 1024;
-      selectedTheme = 'Sapphire';
+      selectedTheme = 'Onyx';
+      selectedDefaultProvider = 'Ollama';
       rootPath = '';
 
       _scrollDuration.text = scrollDuration.toString();
@@ -90,10 +92,13 @@ class AppSettingsState extends State<AppSettings> {
           scrollDuration = jsonContent['app']['appScrollDurationInms'] ?? widget.appData.appScrollDurationInms;
           windowWidth = jsonContent['app']['windowWidth'] ?? widget.appData.windowWidth;
           windowHeight = jsonContent['app']['windowHeight'] ?? widget.appData.windowHeight;
-          selectedTheme = jsonContent['app']['selectedTheme'] ?? 'Light'; // Load the saved theme
+          selectedTheme = jsonContent['app']['selectedTheme'] ?? 'Onyx'; 
+          selectedDefaultProvider = jsonContent['app']['selectedDefaultProvider'] ?? 'Ollama';
         });
-        // ignore: use_build_context_synchronously
-        Provider.of<ThemeProvider>(context, listen: false).setTheme(selectedTheme); // Apply the loaded theme
+
+        if(widget.appData.navigatorKey.currentContext != null){
+          Provider.of<ThemeProvider>(widget.appData.navigatorKey.currentContext!, listen: false).setTheme(selectedTheme); 
+        }
       }
     }
 
@@ -134,7 +139,8 @@ class AppSettingsState extends State<AppSettings> {
       'appScrollDurationInms': scrollDuration,
       'windowWidth': windowWidth,
       'windowHeight': windowHeight,
-      'selectedTheme': selectedTheme, // Save the selected theme
+      'selectedTheme': selectedTheme,
+      'selectedDefaultProvider': selectedDefaultProvider,
     };
 
     await file.writeAsString(const JsonEncoder.withIndent(' ').convert(content));
@@ -174,16 +180,9 @@ class AppSettingsState extends State<AppSettings> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Unsaved Changes'),
-        content: const Text('You have unsaved changes. Do you want to save them?'),
+        title: const DialogTitle(title:'Unsaved Changes', isError: true),
+        content:  Text('You have unsaved changes. Do you want to save them?', style: Theme.of(context).textTheme.bodyLarge,),
         actions: <Widget>[
-          ElevatedButton(
-            onPressed: () {
-              _saveSettings();
-              Navigator.of(context).pop();
-            },
-            child: const Text('Save'),
-          ),
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
@@ -221,105 +220,149 @@ class AppSettingsState extends State<AppSettings> {
               const DialogTitle(title: 'Application Settings'),
               const SizedBox(height: 18),
 
-              // Clear messages
-              SwitchListTile(
-                title: const Text('Clear messages when switching Models'),
-                activeColor: Theme.of(context).colorScheme.secondary,
-                contentPadding: EdgeInsets.zero,
-                value: clearMessages,
-                onChanged: (value) {
-                  setState(() {
-                    clearMessages = value;
-                  });
-                },
-              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.vertical, child: Column ( children: [
 
-              // Theme switcher
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text('Theme', style: TextStyle(fontSize: 16)),
-                  const SizedBox(width: 8),
-                  MenuAnchor(
-                    builder: (BuildContext context, MenuController controller, Widget? child) {
-                      return TextButton(
-                        onPressed: controller.open,
-                        child: Row(
-                          children: [
-                            Text(themeProvider.currentThemeName),
-                            const Icon(Icons.arrow_drop_down),
-                          ],
-                        ),
-                      );
+                  // Clear messages
+                  SwitchListTile(
+                    title: const Text('Clear messages when switching Models'),
+                    activeColor: Theme.of(context).colorScheme.secondary,
+                    contentPadding: EdgeInsets.zero,
+                    value: clearMessages,
+                    onChanged: (value) {
+                      setState(() {
+                        clearMessages = value;
+                      });
                     },
-                    menuChildren: themeProvider.themes.keys.map((String themeName) {
-                      return MenuItemButton(
-                        onPressed: () {
-                          themeProvider.setTheme(themeName);
-                          setState(() {
-                            selectedTheme = themeName; // Update selected theme
-                          });
+                  ),
+
+                  // Theme switcher
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text('Theme', style: TextStyle(fontSize: 16)),
+                      const SizedBox(width: 8),
+                      MenuAnchor(
+                        builder: (BuildContext context, MenuController controller, Widget? child) {
+                          return TextButton(
+                            onPressed: controller.open,
+                            child: Row(
+                              children: [
+                                Text(themeProvider.currentThemeName),
+                                const Icon(Icons.arrow_drop_down),
+                              ],
+                            ),
+                          );
                         },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                          child: Text(themeName),
+                        menuChildren: themeProvider.themes.keys.map((String themeName) {
+                          return MenuItemButton(
+                            onPressed: () {
+                              themeProvider.setTheme(themeName);
+                              setState(() {
+                                selectedTheme = themeName; // Update selected theme
+                              });
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                              child: Text(themeName),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+
+                  // Default AI Provider switcher
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text('Default provider', style: TextStyle(fontSize: 16)),
+                      const SizedBox(width: 8),
+                      MenuAnchor(
+                        builder: (BuildContext context, MenuController controller, Widget? child) {
+                          return TextButton(
+                            onPressed: controller.open,
+                            child: Row(
+                              children: [
+                                Text(selectedDefaultProvider),
+                                const Icon(Icons.arrow_drop_down),
+                              ],
+                            ),
+                          );
+                        },
+                        menuChildren: AiProvider.values.map((AiProvider provider) {
+                          return MenuItemButton(
+                            onPressed: () {
+                               setState(() { selectedDefaultProvider = provider.name; });
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                              child: Text(provider.name),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+
+                  // Scroll duration
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _scrollDuration,
+                    decoration: InputDecoration(labelText: 'Auto-scroll duration (ms)', labelStyle: Theme.of(context).textTheme.labelSmall),
+                    keyboardType: TextInputType.number,
+                    onChanged: (value) {
+                      setState(() {
+                        scrollDuration = int.tryParse(value) ?? widget.appData.appScrollDurationInms;
+                      });
+                    },
+                  ),
+
+                  // Window width
+                  TextField(
+                    controller: _windowWidth,
+                    decoration: InputDecoration(labelText: 'Default window width', labelStyle: Theme.of(context).textTheme.labelSmall),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    onChanged: (value) {
+                      setState(() {
+                        windowWidth = double.tryParse(value) ?? widget.appData.windowWidth;
+                      });
+                    },
+                  ),
+
+                  // Window height
+                  TextField(
+                    controller: _windowHeight,
+                    decoration: InputDecoration(labelText: 'Default window height', labelStyle: Theme.of(context).textTheme.labelSmall),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    onChanged: (value) {
+                      setState(() {
+                        windowHeight = double.tryParse(value) ?? widget.appData.windowHeight;
+                      });
+                    },
+                  ),
+
+                  // Default app root path
+                  TextField(
+                      decoration: InputDecoration(
+                        labelText: 'Override app data path (leave blank for system default)',
+                        labelStyle: Theme.of(context).textTheme.labelSmall,
+                      ),
+                      readOnly: true,
+                      controller: _rootpath,
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextButton(
+                          onPressed: _pickDirectory,
+                          child: const Text('Pick Directory'),
                         ),
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ),
-
-              // Scroll duration
-              const SizedBox(height: 8),
-              TextField(
-                controller: _scrollDuration,
-                decoration: InputDecoration(labelText: 'Auto-scroll duration (ms)', labelStyle: Theme.of(context).textTheme.labelSmall),
-                keyboardType: TextInputType.number,
-                onChanged: (value) {
-                  setState(() {
-                    scrollDuration = int.tryParse(value) ?? widget.appData.appScrollDurationInms;
-                  });
-                },
-              ),
-
-              // Window width
-              TextField(
-                controller: _windowWidth,
-                decoration: InputDecoration(labelText: 'Default window width', labelStyle: Theme.of(context).textTheme.labelSmall),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                onChanged: (value) {
-                  setState(() {
-                    windowWidth = double.tryParse(value) ?? widget.appData.windowWidth;
-                  });
-                },
-              ),
-
-              // Window height
-              TextField(
-                controller: _windowHeight,
-                decoration: InputDecoration(labelText: 'Default window height', labelStyle: Theme.of(context).textTheme.labelSmall),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                onChanged: (value) {
-                  setState(() {
-                    windowHeight = double.tryParse(value) ?? widget.appData.windowHeight;
-                  });
-                },
-              ),
-
-              // Default app root path
-              TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Override app data path (leave blank for system default)',
-                    labelStyle: Theme.of(context).textTheme.labelSmall,
-                  ),
-                  readOnly: true,
-                  controller: _rootpath,
-                ),
-                const SizedBox(height: 16),
-                TextButton(
-                  onPressed: _pickDirectory,
-                  child: const Text('Pick Directory'),
+                      ]
+                    ),
+                  ]
+                )
               ),
 
               // Buttons

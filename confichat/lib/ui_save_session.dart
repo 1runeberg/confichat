@@ -65,7 +65,7 @@ class SaveChatSessionState extends State<SaveChatSession>  {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(success ? 'Success' : 'Fail'),
+          title: DialogTitle(title: success ? 'Success' : 'Fail', isError: !success,),
           content: SelectableText(message),
           actions: <Widget>[
             ElevatedButton(
@@ -168,11 +168,12 @@ class SaveChatSessionState extends State<SaveChatSession>  {
 
       // Success
       String folder = PersistentStorage.cleanupModelName(selectedModelName);
+      AppData.instance.haveUnsavedMessages = false;
       _showResultDialog(
         // ignore: use_build_context_synchronously
         context,
         success: true,
-        message: 'Saved to ${widget.chatSessionsDir.path}/$folder/${AppData.appFilenameBookend}$fileName${AppData.appFilenameBookend}.json',
+        message: 'Saved to: \n${widget.chatSessionsDir.path}/$folder/${AppData.appFilenameBookend}$fileName${AppData.appFilenameBookend}.json',
       );
 
 

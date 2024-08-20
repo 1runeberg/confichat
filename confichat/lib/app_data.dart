@@ -6,6 +6,7 @@
 
 import 'dart:io';
 
+import 'package:confichat/ui_widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -42,9 +43,11 @@ class AppData {
   LlmApi api = LlmApiFactory.create(AiProvider.ollama.name);
   bool clearMessagesOnModelSwitch = true;
   bool filterHistoryByModel = false;
+  bool haveUnsavedMessages = false;
   int appScrollDurationInms = 100;
   double windowWidth = 1024;
   double windowHeight = 1024;
+  AiProvider defaultProvider = AiProvider.ollama;
   String rootPath = '';
 
   void defaultCallback(AiProvider? provider) {
@@ -161,7 +164,7 @@ class ShowErrorDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(title),
+      title: DialogTitle(title: title),
       content: Text(content),
       actions: <Widget>[
         TextButton(

@@ -4,8 +4,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import 'dart:ui';
+
+import 'package:confichat/ui_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:confichat/themes.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:desktop_window/desktop_window.dart';
@@ -60,9 +64,33 @@ class ConfiChat extends StatelessWidget {
         // Set theme
         if (context.mounted) {
           final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
-          final selectedTheme = jsonContent['app']['selectedTheme'] ?? 'Light';
+          final selectedTheme = jsonContent['app']['selectedTheme'] ?? 'Onyx';
           themeProvider.setTheme(selectedTheme); 
         }
+
+        // Set default provider
+        if(context.mounted){
+          final defaultProvider = jsonContent['app']['selectedDefaultProvider'] ?? 'Ollama';
+
+          AiProvider selectedProvider;
+          switch (defaultProvider.toLowerCase()) {
+            case 'ollama':
+              selectedProvider = AiProvider.ollama;
+              break;
+            case 'openai':
+              selectedProvider = AiProvider.openai;
+              break;
+            case 'llamacpp':
+              selectedProvider = AiProvider.llamacpp;
+              break;
+            default:
+              selectedProvider = AiProvider.ollama; // Fallback to Ollama if the string doesn't match
+              break;
+          }
+
+          AppData.instance.defaultProvider = selectedProvider;
+        }
+
       }
     }
   }
@@ -117,7 +145,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>  {
   final ChatSessionSelectedNotifier chatSessionSelectedNotifier = ChatSessionSelectedNotifier();
   TextEditingController providerController = TextEditingController();
   AiProvider? selectedProvider;
@@ -125,13 +153,60 @@ class _HomePageState extends State<HomePage> {
   TextEditingController providerModel = TextEditingController();
   ModelItem? selectedModel;
 
+  late final AppLifecycleListener _lifecycleListener;
+  late AppLifecycleState? _lifecycleState;
+
   @override
   void initState() {
-      super.initState();
+    super.initState();
 
-      if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-        DesktopWindow.setWindowSize(Size(widget.appData.windowWidth, widget.appData.windowHeight));
-      }
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      DesktopWindow.setWindowSize(Size(widget.appData.windowWidth, widget.appData.windowHeight));
+    }
+
+    _lifecycleState = SchedulerBinding.instance.lifecycleState;
+    _lifecycleListener = AppLifecycleListener(
+      onExitRequested:  _checkForUnsavedChat
+    );
+  }
+
+   Future<AppExitResponse> _checkForUnsavedChat() async {
+
+    // If there are no unsaved changes, proceed to exit
+    if(!widget.appData.haveUnsavedMessages) { return AppExitResponse.exit;}
+
+    bool shouldExit = false;
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const DialogTitle(title: 'Warning', isError: true),
+          content: Text(
+            'There are unsaved messages in the current chat window - they will be lost. Proceed?',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          actions: [
+            ElevatedButton(
+              child: const Text('Yes'),
+              onPressed: () {
+                shouldExit = true;
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                shouldExit = false;
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    return shouldExit ? AppExitResponse.exit : AppExitResponse.cancel;
+ 
   }
 
   @override
