@@ -159,17 +159,22 @@ class CanvassState extends State<Canvass> {
                       itemBuilder: (context, index) {
 
                         int currentIndex = (chatData.length - 1) - index;
-                        bool isProcessing = processingData.containsKey(currentIndex) && processingData[currentIndex] == true;
-                          return ChatBubble(
-                            isUser: chatData[currentIndex]['role'] == 'user', 
-                            animateIcon: isProcessing,
-                            fnCancelProcessing: isProcessing ? _cancelProcessing : null,
-                            indexProcessing: isProcessing ? currentIndex : null,
-                            textData: chatData[currentIndex]['role'] == 'system' ? "!system_prompt_ignore" : chatData[currentIndex]['content'],
-                            images: chatData[currentIndex]['images'],
-                            documents: chatDocuments.containsKey(currentIndex) ? chatDocuments[currentIndex] : null,
-                            codeFiles: chatCodeFiles.containsKey(currentIndex) ? chatCodeFiles[currentIndex] : null,
-                          );
+                        bool isProcessing = processingData.containsKey(currentIndex) && processingData.containsKey(currentIndex);
+
+                        return ChatBubble(
+                          isUser: chatData[currentIndex]['role'] == 'user', 
+                          animateIcon: isProcessing,
+                          fnCancelProcessing: isProcessing ? _cancelProcessing : null,
+                          indexProcessing: (isProcessing && (processingData[currentIndex] != null && processingData[currentIndex]!)) ? currentIndex : null,
+                          textData: chatData[currentIndex]['role'] == 'system' ? "!system_prompt_ignore" : chatData[currentIndex]['content'],
+                          images:chatData[currentIndex]['images'] != null
+                                ? (chatData[currentIndex]['images'] as List<dynamic>)
+                                    .map((item) => item as String)
+                                    .toList()
+                                : null,
+                          documents: chatDocuments.containsKey(currentIndex) ? chatDocuments[currentIndex] : null,
+                          codeFiles: chatCodeFiles.containsKey(currentIndex) ? chatCodeFiles[currentIndex] : null,
+                        );
 
                       }
                     )
@@ -262,7 +267,7 @@ class CanvassState extends State<Canvass> {
                           controller: _promptController,
                           focusNode: _focusNodePrompt,
                           decoration: const InputDecoration(
-                            labelText: 'Prompt (you can drag-and-drop files below)',
+                            labelText: 'Prompt',
                             alignLabelWithHint: true,
                           ),
                           minLines: 1,
@@ -532,14 +537,16 @@ class CanvassState extends State<Canvass> {
 
                   // Set chat history (encrypted)
                   final messageHistory = jsonData['messages'];
-                  await DecryptDialog.showDecryptDialog(
-                    // ignore: use_build_context_synchronously
-                    context: context, 
-                    systemPrompt: options['systemPrompt'] ?? '', 
-                    base64IV: iv,  
-                    chatData: chatData, 
-                    jsonData: messageHistory,
-                    decryptContent: _decryptData );
+
+                  if(mounted){
+                    await DecryptDialog.showDecryptDialog(
+                      // ignore: use_build_context_synchronously
+                      systemPrompt: options['systemPrompt'] ?? '', 
+                      base64IV: iv,  
+                      chatData: chatData, 
+                      jsonData: messageHistory,
+                      decryptContent: _decryptData );
+                  }
 
                 } else {
 
@@ -633,19 +640,31 @@ class CanvassState extends State<Canvass> {
     final selectedModelProvider = Provider.of<SelectedModelProvider>(context, listen: false);
     final selectedModelName = selectedModelProvider.selectedModel?.name ?? 'Unknown Model';
 
-      await widget.appData.api.sendPrompt(
-        modelId: selectedModelName,
-        messages: chatData,
-        documents: documents,
-        codeFiles: codeFiles,
-        onStreamRequestSuccess: _onChatRequestSuccess,
-        onStreamCancel: _onChatStreamCancel,
-        onStreamChunkReceived: _onChatChunkReceived,
-        onStreamComplete: _onChatStreamComplete,
-        onStreamRequestError: _onChatRequestError,
-        onStreamingError: _onChatStreamError
-      );
+    widget.appData.api.sendPrompt(
+      modelId: selectedModelName,
+      messages: chatData,
+      documents: documents,
+      codeFiles: codeFiles,
+      onStreamRequestSuccess: _onChatRequestSuccess,
+      onStreamCancel: _onChatStreamCancel,
+      onStreamChunkReceived: _onChatChunkReceived,
+      onStreamComplete: _onChatStreamComplete,
+      onStreamRequestError: _onChatRequestError,
+      onStreamingError: _onChatStreamError
+    );
 
+    setState(() {
+      // Clear files
+      base64Images.clear();
+      documents.clear();
+      codeFiles.clear();
+
+      // Add placeholder
+      chatData.add({'role': 'assistant', 'content': ''});
+      int index = chatData.length - 1;
+      processingData[index] = false; // disable cancel button until our request goes through
+      _scrollToBottom();
+    });
   } 
 
   Future<void> _loadModelToMemory() async {
@@ -658,23 +677,27 @@ class CanvassState extends State<Canvass> {
   }
 
   int _onChatRequestSuccess(){
-    setState(() {
-      // Clear files
-      base64Images.clear();
-      documents.clear();
-      codeFiles.clear();
+    int chatDataIndex = chatData.length - 1;
 
-      chatData.add({'role': 'assistant', 'content': ''});
-      _scrollToBottom();
-    });
-
-    int index = chatData.length - 1;
-    processingData[index] = true;
-
-    return index;
+    if(processingData.containsKey(chatDataIndex)) {
+      processingData[chatDataIndex] = true;
+    }
+    return chatDataIndex;
   }
 
   void _onChatRequestError( dynamic error ){
+
+    // Check and remove placeholder
+    int index = chatData.length - 1;
+    setState(() {
+      if(chatData[index]['role'] == 'assistant' && chatData[index]['content'].isEmpty ){
+        chatData.removeAt(index);
+
+        if(processingData.containsKey(index)){ processingData.remove(index); }
+        _scrollToBottom();
+      }
+    });
+
     final String errorMessage = error.toString();
     ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(backgroundColor: Theme.of(context).colorScheme.primaryContainer, content: Text('Error requesting chat completion: $errorMessage')),
@@ -702,7 +725,6 @@ class CanvassState extends State<Canvass> {
 
     // Cancel requested - api should call chatStreamComplete callback
     if(processingData.containsKey(index) && processingData[index] == false){
-        print('cancel requested');
         return true;
     }
 
@@ -775,7 +797,9 @@ class CanvassState extends State<Canvass> {
 
       if (result != null) {
           // ignore: use_build_context_synchronously
-          await FileParser.processPlatformFiles(files: result.files, context: context, outImages: base64Images, outDocuments: documents, outCodeFiles: codeFiles );       
+          setState(() {
+            FileParser.processPlatformFiles(files: result.files, context: context, outImages: base64Images, outDocuments: documents, outCodeFiles: codeFiles );       
+          });
       }
     } catch (e) {
       if (kDebugMode) {print("Error picking files: $e");}
@@ -909,7 +933,6 @@ class CanvassState extends State<Canvass> {
 class DecryptDialog {
 
   static Future<void> showDecryptDialog({
-    required BuildContext context,
     required String systemPrompt,
     required String base64IV,
     required dynamic jsonData,
@@ -926,7 +949,7 @@ class DecryptDialog {
     final TextEditingController keyController = TextEditingController();
 
     return showDialog(
-      context: context,
+      context: AppData.instance.navigatorKey.currentContext!,
       barrierDismissible: false,
       builder: (BuildContext context) {
 

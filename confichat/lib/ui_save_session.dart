@@ -8,7 +8,6 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:convert';
 
 import 'package:confichat/app_data.dart';
@@ -102,6 +101,15 @@ class SaveChatSessionState extends State<SaveChatSession>  {
       );
     }
 
+    // Cleanup filename
+    final RegExp pattern = RegExp(r'[<>:"/\\|?*\x00-\x1F]');
+    
+    // Replace all matches of the pattern with an underscore
+    String cleaned = _sessionNameController.text.replaceAll(pattern, '');
+
+    // Trim leading and trailing spaces and dots
+    cleaned = cleaned.trim().replaceAll(RegExp(r'^\.+|\.+$'), '');
+
     // Check encryption params
     if (_encrypt 
         && _encryptionKeyController.text.isNotEmpty
@@ -129,7 +137,7 @@ class SaveChatSessionState extends State<SaveChatSession>  {
     }
 
     // Save the messages as a json object/array
-    String fileName = _sessionNameController.text.trim();
+    String fileName = cleaned;
     String content = jsonEncode(widget.chatData);
 
     try {
@@ -238,15 +246,6 @@ class SaveChatSessionState extends State<SaveChatSession>  {
             ),
             maxLines: 3,
             maxLength: 150,
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(
-                RegExp(r'^[a-zA-Z0-9]([a-zA-Z0-9 _\-]*(?!\.\.))*[a-zA-Z0-9 _\-.]?$'),
-              ),
-              // Legend:
-              // ^[a-zA-Z0-9]                 - Starts with an alphanumeric character
-              // ([a-zA-Z0-9 _\-]*(?!\.\.))*  - Allows alphanumeric, space, _, -, . but no consecutive periods
-              // [a-zA-Z0-9 _\-.]             - Ends with an alphanumeric character and allowed special chars
-            ],
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter a name (this will also be used as the filename)';

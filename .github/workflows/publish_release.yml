@@ -9,6 +9,9 @@ on:
       release_name:
         description: 'Release name'
         required: true
+      release_notes:
+        description: 'Release Notes'
+        required: true
 
 jobs:
   build-and-release:
@@ -21,7 +24,10 @@ jobs:
     env:
       RELEASE_NOTES: |
         **Notice:** By downloading and using the pre-built binaries, you agree to the app's [Terms and Conditions](https://github.com/1runeberg/confichat/blob/main/confichat/assets/TERMS_AND_CONDITIONS.md). Acceptance of these terms is implied upon download. The full Terms and Conditions are also available within the app under (Hamburger menu) > "Legal" > "Terms and Conditions".
-    
+
+
+        ${{ github.event.inputs.release_notes }}
+        
     steps:
     - uses: actions/checkout@v4.1.7
     

@@ -446,14 +446,14 @@ class ChatBubble extends StatelessWidget {
                 ),
 
                 // Cancel
-                if (!isUser && animateIcon)
+                if (!isUser && animateIcon && indexProcessing != null)
                   Container(
                     constraints: const BoxConstraints(
                       maxWidth: 50, 
                     ),
                     child: IconButton( 
                       icon: const Icon(Icons.cancel), 
-                      onPressed: () {
+                      onPressed: indexProcessing == null ? null : () {
                             if (fnCancelProcessing != null && indexProcessing != null) {
                               fnCancelProcessing!(indexProcessing!);
                           }
@@ -465,8 +465,8 @@ class ChatBubble extends StatelessWidget {
                 // Images
                 if (images != null && images!.isNotEmpty)
                   Container(
-                    constraints: const BoxConstraints(
-                      maxWidth: 250, 
+                    constraints: BoxConstraints(
+                      maxWidth: AppData.instance.getUserDeviceType(context) == UserDeviceType.phone ? 80 : 250, 
                     ),
                     child: Wrap(
                       spacing: 3.0,
