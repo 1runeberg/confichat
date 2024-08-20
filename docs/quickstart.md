@@ -21,6 +21,11 @@ Get up and running with **ConfiChat** by following this guide. Whether you're us
    - [4. Get Your OpenAI API Key](#4-get-your-openai-api-key)
    - [5. Configure ConfiChat with Your API Key](#5-configure-confichat-with-your-api-key)
    - [Additional Resources](#additional-resources-2)
+4. [Using ConfiChat with LlamaCpp](#using-confichat-with-llamacpp)
+   - [1. Install LlamaCpp](#1-install-llamacpp)
+   - [2. Run LlamaCpp Server](#2-run-llamacpp-server)
+   - [3. Set Up ConfiChat](#3-set-up-confichat)
+   - [Additional Resources](#additional-resources-3)
 
 ---
 
@@ -162,3 +167,41 @@ Follow the instructions in the [Configure ConfiChat with Your API Key](#3-config
 ### Additional Resources
 
 For more detailed instructions and troubleshooting, please visit the [Ollama documentation](https://ollama.com/docs), the [OpenAI documentation](https://platform.openai.com/docs), and the [ConfiChat repository](https://github.com/your-repository/ConfiChat).
+
+
+## Using ConfiChat with LlamaCp
+
+Set up **LlamaCpp** with **ConfiChat** by following these steps. This section will guide you through installing LlamaCpp, running the server, and configuring ConfiChat.
+
+### 1. Install LlamaCpp
+
+To use LlamaCpp, you first need to install it:
+
+- **macOS**:
+  ```bash
+  brew install llamacpp
+  ```
+
+- **Windows**:
+  Download the binaries from the [LlamaCpp GitHub releases page](https://github.com/ggerganov/llama.cpp/releases) and follow the installation instructions.
+
+- **Linux**:
+  ```bash
+  sudo apt-get install llamacpp
+  ```
+
+### 2. Run LlamaCpp Server
+After installing LlamaCpp, you'll need to run the LlamaCpp server with your desired model:
+```
+llama-server -m /path/to/your/model --port 8080
+```
+
+This command will start the LlamaCpp server, which ConfiChat can connect to for processing language model queries.
+
+### 3. Set Up ConfiChat
+
+Follow the instructions in the [Set Up ConfiChat](#3-set-up-confichat) section above.
+
+### Additional Resources
+
+For more detailed instructions and troubleshooting, please visit the [LlamaCpp documentation](https://github.com/ggerganov/llama.cpp) and the [ConfiChat repository](https://github.com/your-repository/ConfiChat).
