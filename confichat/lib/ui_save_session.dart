@@ -105,7 +105,6 @@ class SaveChatSessionState extends State<SaveChatSession>  {
     // Check encryption params
     if (_encrypt 
         && _encryptionKeyController.text.isNotEmpty
-        && _confirmKeyController.text.isNotEmpty
         && _encryptionKeyController.text != _confirmKeyController.text
     ){
       ScaffoldMessenger.of(context).showSnackBar(
