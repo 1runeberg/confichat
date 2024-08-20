@@ -304,8 +304,8 @@ class SidebarState extends State<Sidebar> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const DialogTitle(title: 'Confirm Delete'),
-              content: Text('Are you sure you want to delete $filename?'),
+              title: const DialogTitle(title: 'Confirm Delete', isError: true),
+              content: Text('Are you sure you want to delete $filename?', style: Theme.of(context).textTheme.bodyLarge,),
               actions: [
                 const SizedBox(height: 20),
                 ElevatedButton(

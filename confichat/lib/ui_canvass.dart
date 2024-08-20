@@ -350,7 +350,7 @@ class CanvassState extends State<Canvass> {
     final selectedModel = selectedModelProvider.selectedModel;
 
     if(selectedModel!.name.isEmpty) {
-      setState(() { _resetHistory(); });
+      setState(() { _resetHistory(true); });
       return false;
     }
 
@@ -362,7 +362,7 @@ class CanvassState extends State<Canvass> {
       // Set chat history to cached messages
       if (messages.isNotEmpty) {
         setState(() {
-          _resetHistory();
+          _resetHistory(true);
           for(var msg in messages){
             chatData.add(msg);
               _scrollToBottom();
@@ -419,14 +419,14 @@ class CanvassState extends State<Canvass> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const DialogTitle(title: 'Confirm Session Reset'),  
-          content: const Text('Are you sure you want to clear all chat messages?'),
+          title: const DialogTitle(title: 'Confirm Session Reset', isError: true),  
+          content: Text('Are you sure you want to clear all chat messages?', style: Theme.of(context).textTheme.bodyLarge,),
           actions: <Widget>[
             ElevatedButton(
               child: const Text('Clear'),
               onPressed: () {
                 Navigator.of(context).pop(); 
-                _resetHistory();
+                _resetHistory(true);
                 setState(() {
                   _promptController.text = '';
                 }); 
@@ -460,7 +460,52 @@ class CanvassState extends State<Canvass> {
 
 
   // Clear messages
-  void _resetHistory() {
+  Future<void> _resetHistory([bool force = false]) async {
+
+    bool shouldCancel = false;
+
+    if(!force && widget.appData.haveUnsavedMessages)
+    {
+      if(widget.appData.haveUnsavedMessages){
+
+        await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const DialogTitle(title: 'Warning', isError: true),
+              content: Text(
+                      'There are unsaved messages in the current chat window - they will be lost. Proceed?',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+              actions: <Widget>[
+
+                ElevatedButton(
+                  child: const Text('Yes'),
+                  onPressed: () {
+                    shouldCancel = false;
+                    Navigator.of(context).pop();
+                  },
+                ),
+
+                ElevatedButton(
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    shouldCancel = true;
+                    Navigator.of(context).pop();
+                  },
+                ),
+
+              ],
+            );
+          },
+        );
+
+      }
+    }
+
+    // Cancel if user intervened
+    if(shouldCancel) { return; }
+
     setState(() {
       base64Images.clear();
       documents.clear();
@@ -470,6 +515,9 @@ class CanvassState extends State<Canvass> {
       chatCodeFiles.clear();
       chatData.clear();
     }); 
+
+    // Untag unsaved changes
+    widget.appData.haveUnsavedMessages = false;
 
     // Reset prompt options
     widget.appData.api.temperature = widget.appData.api.defaultTemperature;
@@ -499,15 +547,16 @@ class CanvassState extends State<Canvass> {
                     )
                 ),
                 
-                child: OutlinedText(
-                      textData: 'Load Chat Session', 
-                      textStyle: Theme.of(context).textTheme.titleMedium,
+                child: const DialogTitle(
+                      title: 'Load Chat Session', 
+                      isError: true,
                       ) 
               ),
 
           content: Text(
-            'Are you sure you want to load chat session: $selectedChatSession?\n'
+            'Are you sure you want to load chat session: \n\n$selectedChatSession?\n\n'
             'This will clear all current messages and if unsaved, will be lost.',
+             style: Theme.of(context).textTheme.bodyMedium,
           ),
           actions: <Widget>[
             ElevatedButton(
@@ -614,6 +663,9 @@ class CanvassState extends State<Canvass> {
       if(documents.isNotEmpty) { chatDocuments[chatData.length - 1] = documents.keys.toList(); }
       if(codeFiles.isNotEmpty) { chatCodeFiles[chatData.length - 1] = codeFiles.keys.toList(); }   
     });
+
+    // Tag unsaved messages for warning
+    widget.appData.haveUnsavedMessages = true;
 
     // Scroll to bottom
     _scrollToBottom();
@@ -954,11 +1006,11 @@ class DecryptDialog {
       builder: (BuildContext context) {
 
         return AlertDialog(
-          title: const Text('Encrypted Content'),
+          title: const DialogTitle(title: 'Encrypted Content'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('This chat contains encrypted content. Please provide the key to decrypt.'),
+              Text('This chat contains encrypted content. Please provide the key to decrypt.', style: Theme.of(context).textTheme.bodyLarge,),
               TextField(
                 controller: keyController,
                 decoration: const InputDecoration(

@@ -274,8 +274,8 @@ class AdvancedOptionsState extends State<AdvancedOptions> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Unsaved changes'),
-          content: const Text('You have unsaved changes to the advanced options. Are you sure you want to exit?'),
+          title: const DialogTitle(title: 'Unsaved changes', isError: true),
+          content: Text('You have unsaved changes to the advanced options. Are you sure you want to exit?', style: Theme.of(context).textTheme.bodyLarge,),
           actions: [
             ElevatedButton(
               onPressed: () {

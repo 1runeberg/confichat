@@ -39,7 +39,7 @@ class CCAppBarState extends State<CCAppBar> {
   @override
   void initState() {
     super.initState();
-    _switchProvider(AiProvider.ollama);
+    _switchProvider(widget.appData.defaultProvider);
     _populateModelList(true); 
 
     widget.appData.callbackSwitchProvider = _switchProvider;
@@ -78,7 +78,7 @@ class CCAppBarState extends State<CCAppBar> {
             },
           ),
           actions: [        
-                _buildModelProviderDropdown(context, isPhone),
+                _buildModelProviderDropdown(context, isPhone, selectedProvider ?? AiProvider.ollama),
                 _buildModelDropdown(context, isPhone),
                 if (!isPhone) _buildConfigButton(context),
                 if (!isPhone) _buildAddButton(context),
@@ -88,11 +88,11 @@ class CCAppBarState extends State<CCAppBar> {
     );
   }
 
-  Widget _buildModelProviderDropdown(BuildContext context, bool isPhone) {
+  Widget _buildModelProviderDropdown(BuildContext context, bool isPhone, AiProvider selectedProvider) {
     return Container(
       margin: const EdgeInsets.all(10),
       child: DropdownMenu<AiProvider>(
-        initialSelection: AiProvider.ollama,
+        initialSelection: selectedProvider,
         controller: widget.providerController,
         requestFocusOnTap: true,
         textStyle: TextStyle(
@@ -292,19 +292,27 @@ class CCAppBarState extends State<CCAppBar> {
     } 
   }
 
-  void _showModelChangeWarning(BuildContext context, ModelItem newModel) {
-    showDialog(
+  Future<void> _showModelChangeWarning(BuildContext context, ModelItem newModel) async {
+    
+    if(!widget.appData.haveUnsavedMessages) {
+      _setModelItem(newModel);
+      return;
+    }
+
+    await showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Warning'),
-          content: const Text(
-            'Any messages in the current chat window will be lost. Proceed?',
+          title: const DialogTitle(title: 'Warning', isError: true),
+          content: Text(
+            'There are unsaved messages in the current chat window - they will be lost. Proceed?',
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
-          actions: <Widget>[
+          actions: [
             ElevatedButton(
               child: const Text('Yes'),
               onPressed: () {
+                widget.appData.haveUnsavedMessages = false;
                 _setModelItem(newModel);
                 Navigator.of(context).pop();
               },
@@ -312,6 +320,7 @@ class CCAppBarState extends State<CCAppBar> {
             ElevatedButton(
               child: const Text('Cancel'),
               onPressed: () {
+                if(mounted && selectedModel != null) {_setModelItem(selectedModel!);}
                 Navigator.of(context).pop();
               },
             ),
@@ -339,9 +348,8 @@ class CCAppBarState extends State<CCAppBar> {
     if(mounted) {
       setState(() {
         selectedProvider = provider;
+        _populateModelList(true);
       });
-
-      _populateModelList(true);
     }
   }
 
