@@ -169,7 +169,7 @@ Follow the instructions in the [Configure ConfiChat with Your API Key](#3-config
 For more detailed instructions and troubleshooting, please visit the [Ollama documentation](https://ollama.com/docs), the [OpenAI documentation](https://platform.openai.com/docs), and the [ConfiChat repository](https://github.com/your-repository/ConfiChat).
 
 
-## Using ConfiChat with LlamaCp
+## Using ConfiChat with LlamaCpp
 
 Set up **LlamaCpp** with **ConfiChat** by following these steps. This section will guide you through installing LlamaCpp, running the server, and configuring ConfiChat.
 
