@@ -14,9 +14,11 @@ import 'package:confichat/app_data.dart';
 
 typedef CallbackPassVoidReturnInt = int Function();
 typedef CallbackPassIntReturnVoid = Function(int);
+typedef CallbackPassIntReturnBool = bool Function(int);
 typedef CallbackPassIntStringReturnVoid = Function(int, String);
 typedef CallbackPassIntChunkReturnVoid = Function(int, StreamChunk);
 typedef CallbackPassDynReturnVoid = Function(dynamic);
+typedef CallbackPassIntDynReturnVoid = Function(int, dynamic);
 
 
 class StreamChunk{
@@ -67,10 +69,11 @@ abstract class LlmApi {
     Map<String, String>? documents,
     Map<String, String>? codeFiles,
     CallbackPassVoidReturnInt? onStreamRequestSuccess,
+    CallbackPassIntReturnBool? onStreamCancel,
     CallbackPassIntChunkReturnVoid? onStreamChunkReceived,
     CallbackPassIntReturnVoid? onStreamComplete,
     CallbackPassDynReturnVoid? onStreamRequestError,
-    CallbackPassDynReturnVoid? onStreamingError 
+    CallbackPassIntDynReturnVoid? onStreamingError 
   });
 
   // Concrete functions

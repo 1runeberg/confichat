@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -150,7 +151,7 @@ class ApiOllama extends LlmApi{
       );
 
       // Decode response
-      Map<String, dynamic> jsonData = jsonDecode(AppData.instance.api.responseData);
+      Map<String, dynamic> jsonData = jsonDecode(responseData);
 
       if (jsonData.containsKey('details')) {
         Map<String, dynamic> details = jsonData['details'];
@@ -215,10 +216,11 @@ class ApiOllama extends LlmApi{
     Map<String, String>? documents,
     Map<String, String>? codeFiles,
     CallbackPassVoidReturnInt? onStreamRequestSuccess,
+    CallbackPassIntReturnBool? onStreamCancel,
     CallbackPassIntChunkReturnVoid? onStreamChunkReceived,
     CallbackPassIntReturnVoid? onStreamComplete,
     CallbackPassDynReturnVoid? onStreamRequestError,
-    CallbackPassDynReturnVoid? onStreamingError 
+    CallbackPassIntDynReturnVoid? onStreamingError 
   }) async {
       try {
 
@@ -270,7 +272,17 @@ class ApiOllama extends LlmApi{
           if(onStreamRequestSuccess != null) { indexPayload = onStreamRequestSuccess();  }
 
           // Listen for json object stream from api
-          response.stream.transform(utf8.decoder).listen((chunk) {
+          StreamSubscription<String>? streamSub;
+          streamSub = response.stream.transform(utf8.decoder).listen((chunk) {
+
+              // Check if user requested a cancel
+              bool cancelRequested = onStreamCancel != null;
+              if(cancelRequested){ cancelRequested = onStreamCancel(indexPayload); }
+              if(cancelRequested){
+                if(onStreamComplete != null) { onStreamComplete(indexPayload); }
+                          streamSub?.cancel();
+                          return;
+              }
 
               // Handle callback (if any)
               if(onStreamChunkReceived != null) 
@@ -298,7 +310,7 @@ class ApiOllama extends LlmApi{
           }, onError: (error) {
 
               if (kDebugMode) {print('Streamed data request failed with error: $error');}
-              if(onStreamingError != null) { onStreamingError(error);  }
+              if(onStreamingError != null) { onStreamingError(indexPayload, error);  }
           });
 
         } else {

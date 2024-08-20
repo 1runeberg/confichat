@@ -125,7 +125,7 @@ class OllamaOptionsState extends State<OllamaOptions> {
 
     // Save the updated settings to disk
     await file.create(recursive: true);
-    await file.writeAsString(json.encode(settings));
+    await file.writeAsString(const JsonEncoder.withIndent(' ').convert(settings));
 
     // Reset model values
      if(widget.appData.api.aiProvider.name == AiProvider.ollama.name) {

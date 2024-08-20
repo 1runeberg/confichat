@@ -76,6 +76,7 @@ class ConfiChat extends StatelessWidget {
           return Consumer<ThemeProvider>(
             builder: (context, themeProvider, child) {
               return MaterialApp(
+                navigatorKey: AppData.instance.navigatorKey,
                 title: AppData.appTitle,
                 theme: themeProvider.currentTheme,
                 home: HomePage(appData: AppData.instance),
@@ -117,9 +118,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   final ChatSessionSelectedNotifier chatSessionSelectedNotifier = ChatSessionSelectedNotifier();
-
   TextEditingController providerController = TextEditingController();
   AiProvider? selectedProvider;
 

@@ -340,7 +340,10 @@ class CodePreviewBuilder extends MarkdownElementBuilder {
 class ChatBubble extends StatelessWidget {
   final String textData;
   final bool isUser;
+  final bool animateIcon;
 
+  final Function(int)? fnCancelProcessing;
+  final int? indexProcessing;
   final List<String>? images;
   final Iterable<String>? documents; 
   final Iterable<String>? codeFiles; 
@@ -348,7 +351,10 @@ class ChatBubble extends StatelessWidget {
   const ChatBubble({
     super.key, 
     required this.isUser, 
+    required this.animateIcon,
     required this.textData,
+    this.fnCancelProcessing,
+    this.indexProcessing,
     this.images,
     this.documents,
     this.codeFiles
@@ -402,7 +408,16 @@ class ChatBubble extends StatelessWidget {
 
                 // Icon
                 const SizedBox(width:10),
-                Icon(
+
+                // Animated icon
+                if(!isUser && animateIcon) const AnimIconColorFade(
+                  icon: Icons.psychology, 
+                  size: 24.0, 
+                  duration: 2
+                ),
+
+                // Regular icon
+                if(!animateIcon) Icon(
                   isUser? Icons.person : Icons.psychology,
                   color: Colors.grey,
                   size: 24.0,
@@ -430,11 +445,28 @@ class ChatBubble extends StatelessWidget {
                   ) )
                 ),
 
+                // Cancel
+                if (!isUser && animateIcon && indexProcessing != null)
+                  Container(
+                    constraints: const BoxConstraints(
+                      maxWidth: 50, 
+                    ),
+                    child: IconButton( 
+                      icon: const Icon(Icons.cancel), 
+                      onPressed: indexProcessing == null ? null : () {
+                            if (fnCancelProcessing != null && indexProcessing != null) {
+                              fnCancelProcessing!(indexProcessing!);
+                          }
+                        }
+                      ),
+                  ),
+
+
                 // Images
                 if (images != null && images!.isNotEmpty)
                   Container(
-                    constraints: const BoxConstraints(
-                      maxWidth: 250, 
+                    constraints: BoxConstraints(
+                      maxWidth: AppData.instance.getUserDeviceType(context) == UserDeviceType.phone ? 80 : 250, 
                     ),
                     child: Wrap(
                       spacing: 3.0,
@@ -494,6 +526,89 @@ class ChatBubble extends StatelessWidget {
     
     buffer.writeln('``');
     return buffer.toString();
+  }
+
+}
+
+class AnimIconColorFade extends StatefulWidget {
+  final IconData icon;
+  final double size;
+  final int duration;
+  const AnimIconColorFade({super.key, required this.icon, required this.size, required this.duration});
+
+  @override
+  AnimIconColorFadeState createState() => AnimIconColorFadeState();
+}
+
+class AnimIconColorFadeState extends State<AnimIconColorFade> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Color?> _colorAnimation;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize the animation controller
+    _controller = AnimationController(
+      duration: Duration(seconds: widget.duration), // Duration (in seconds) of the full spectrum transition
+      vsync: this,
+    )..repeat(reverse: true); // Repeat back and forth
+
+    // Define the color tween sequence to cover the entire color spectrum
+    _colorAnimation = _controller.drive(
+      TweenSequence<Color?>([
+        TweenSequenceItem(
+          tween: ColorTween(begin: Colors.red, end: Colors.purple),
+          weight: 1,
+        ),
+        TweenSequenceItem(
+          tween: ColorTween(begin: Colors.green, end: Colors.cyan),
+          weight: 1,
+        ),
+        TweenSequenceItem(
+          tween: ColorTween(begin: Colors.cyan, end: Colors.blue),
+          weight: 1,
+        ),
+        TweenSequenceItem(
+          tween: ColorTween(begin: Colors.blue, end: Colors.purple),
+          weight: 1,
+        ),
+        TweenSequenceItem(
+          tween: ColorTween(begin: Colors.purple, end: Colors.red),
+          weight: 1,
+        ),
+      ]),
+    );
+
+    // Define the fade transition animation
+    _fadeAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: AnimatedBuilder(
+        animation: _colorAnimation,
+        builder: (context, child) {
+          return Icon(
+            widget.icon, 
+            size: widget.size,
+            color: _colorAnimation.value,
+          );
+        },
+      ),
+    );
   }
 
 }

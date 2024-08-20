@@ -5,6 +5,7 @@
  */
 
 
+import 'package:confichat/api_llamacpp.dart';
 import 'package:confichat/api_openai.dart';
 import 'package:confichat/api_ollama.dart';
 import 'package:confichat/interfaces.dart';
@@ -16,6 +17,8 @@ class LlmApiFactory {
         return ApiOllama();
       case 'openai':
         return ApiChatGPT();
+      case 'llamacpp':
+        return ApiLlamaCpp();
       default:
         throw Exception('Unsupported API provider: $apiProvider');
     }

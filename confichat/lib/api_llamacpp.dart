@@ -17,21 +17,22 @@ import 'package:intl/intl.dart';
 import 'package:confichat/app_data.dart';
 
 
-class ApiChatGPT extends LlmApi{
+class ApiLlamaCpp extends LlmApi{
 
-  static final ApiChatGPT _instance = ApiChatGPT._internal();
-  static ApiChatGPT get instance => _instance;
+  static final ApiLlamaCpp _instance = ApiLlamaCpp._internal();
+  static ApiLlamaCpp get instance => _instance;
 
-  factory ApiChatGPT() {
+  factory ApiLlamaCpp() {
     return _instance;
   }
 
-  ApiChatGPT._internal() : super(AiProvider.openai) {
+  ApiLlamaCpp._internal() : super(AiProvider.llamacpp) {
 
-      scheme = 'https';
-      host = 'api.openai.com';
-      port = 443; 
+      scheme = 'http';
+      host = 'localhost';
+      port = 8080; 
       path = '/v1';
+      apiKey = '';
 
       defaultTemperature = 1.0;
       defaultProbability = 1.0;
@@ -54,10 +55,14 @@ class ApiChatGPT extends LlmApi{
       final fileContent = await File(filePath).readAsString();
       final Map<String, dynamic> settings = json.decode(fileContent);
 
-      if (settings.containsKey(AiProvider.openai.name)) {
+      if (settings.containsKey(AiProvider.llamacpp.name)) {
 
         // Override values in memory from disk
-        apiKey = settings[AiProvider.openai.name]['apikey'] ?? '';
+        scheme = settings[AiProvider.llamacpp.name]['scheme'] ?? 'http';
+        host = settings[AiProvider.llamacpp.name]['host'] ?? 'localhost';
+        port = settings[AiProvider.llamacpp.name]['port'] ?? 8080;
+        path = settings[AiProvider.llamacpp.name]['path'] ?? '/v1';
+        apiKey = settings[AiProvider.llamacpp.name]['apikey'] ?? '';
       }
     } 
   }
@@ -69,6 +74,9 @@ class ApiChatGPT extends LlmApi{
         
         // Add authorization header
         final Map<String, String> headers = {'Authorization': 'Bearer $apiKey'};
+        if(apiKey.trim().isEmpty){
+          headers['Authorization'] = 'Bearer no-key';
+        } 
 
         // Retrieve active models for provider
         await getData(url: getUri('/models'), requestHeaders: headers);
@@ -96,35 +104,41 @@ class ApiChatGPT extends LlmApi{
 
   @override
   Future<void> loadModelToMemory(String modelId) async {
-    return; // no need to preload model with chatgpt online models
+    return; // model is loaded  via llama-server -m (default is: models/7B/ggml-model-f16.gguf)
   }
 
   @override
   Future<void> getModelInfo(ModelInfo outModelInfo, String modelId) async {
 
+    // As of this writing, there doesn't appear to be an endpoint to probe model info,
+    // so we'll use general settings from models query
     try {
 
       // Add authorization header
       final Map<String, String> headers = {'Authorization': 'Bearer $apiKey'};
+      if(apiKey.trim().isEmpty){
+        headers['Authorization'] = 'Bearer no-key';
+      } 
 
       // Send api request
       await getData(
-        url: getUri('/models/$modelId'),
+        url: getUri('/models'),
         requestHeaders: headers
       );
 
       // Decode response
-      Map<String, dynamic> jsonData = jsonDecode(responseData);
-      outModelInfo.parameterSize = '';
-      outModelInfo.parentModel = jsonData['id'];
-      outModelInfo.quantizationLevel = '';        
-      outModelInfo.rootModel = '';
-      outModelInfo.languages = '';
-      outModelInfo.systemPrompt = '';
+      final Map<String, dynamic> jsonData = jsonDecode(responseData);
+      final List<dynamic> modelsJson = jsonData['data'];
+      int? unixTimestamp;
+
+      if(modelsJson.isNotEmpty)
+      {
+        outModelInfo.parentModel = modelsJson.first['id'] ?? '';
+        unixTimestamp = modelsJson.first['created'];       
+        outModelInfo.rootModel = '';
+      }
 
       // Parse unix timestamp
-      int? unixTimestamp = jsonData['created'];
-
       if(unixTimestamp != null){
         final DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(unixTimestamp * 1000, isUtc: true);
         final String formattedDate = DateFormat('yyyy-MMM-dd HH:mm:ss').format(dateTime);
@@ -159,7 +173,7 @@ class ApiChatGPT extends LlmApi{
     CallbackPassIntChunkReturnVoid? onStreamChunkReceived,
     CallbackPassIntReturnVoid? onStreamComplete,
     CallbackPassDynReturnVoid? onStreamRequestError,
-    CallbackPassIntDynReturnVoid? onStreamingError 
+    CallbackPassIntDynReturnVoid? onStreamingError  
   }) async {
       try {
 
@@ -171,9 +185,11 @@ class ApiChatGPT extends LlmApi{
         
         // Filter out empty stop sequences
         List<String> filteredStopSequences = stopSequences.where((s) => s.trim().isNotEmpty).toList();
-
-        // Assemble headers
-        Map<String, String> headers = {'Authorization': 'Bearer $apiKey'};
+        // Add authorization header
+        final Map<String, String> headers = {'Authorization': 'Bearer $apiKey'};
+        if(apiKey.trim().isEmpty){
+          headers['Authorization'] = 'Bearer no-key';
+        } 
         headers.addAll(AppData.headerJson);
 
         // Parse message for sending to chatgpt
@@ -232,6 +248,7 @@ class ApiChatGPT extends LlmApi{
         final response = await request.send();
 
         // Check the status of the response
+        String currentDelimiter = '';
         if (response.statusCode == 200) {
 
           // Handle callback if any
@@ -240,17 +257,22 @@ class ApiChatGPT extends LlmApi{
 
           // Listen for json object stream from api
           StreamSubscription<String>? streamSub;
-          streamSub = response.stream
-            .transform(utf8.decoder)
-            .transform(const LineSplitter()) // Split by lines
-            .transform(SseTransformer()) // Transform into SSE events
-            .listen((chunk) {
+          streamSub = response.stream.transform(utf8.decoder).listen((chunk) {
 
               // Check if user requested a cancel
               bool cancelRequested = onStreamCancel != null;
               if(cancelRequested){ cancelRequested = onStreamCancel(indexPayload); }
               if(cancelRequested){
                 if(onStreamComplete != null) { onStreamComplete(indexPayload); }
+                          currentDelimiter = '';
+                          streamSub?.cancel();
+                          return;
+              }
+
+              // Check for end of stream
+              if (currentDelimiter.isNotEmpty && currentDelimiter.contains('<|im_end|>')) {
+                          if(onStreamComplete != null) { onStreamComplete(indexPayload); }
+                          currentDelimiter = '';
                           streamSub?.cancel();
                           return;
               }
@@ -262,7 +284,7 @@ class ApiChatGPT extends LlmApi{
                 //print(chunk);
 
                 // Parse the JSON string
-                Map<String, dynamic> jsonMap = jsonDecode(chunk);
+                Map<String, dynamic> jsonMap = jsonDecode(chunk.substring(6));
                 
                 // Extract the first choice
                 if (jsonMap.containsKey('choices') && jsonMap['choices'].isNotEmpty) {
@@ -273,7 +295,48 @@ class ApiChatGPT extends LlmApi{
                   if (delta.containsKey('content')) {
                     String content = delta['content'];
                     if (content.isNotEmpty && onStreamChunkReceived != null) {
-                      onStreamChunkReceived(indexPayload, StreamChunk(content)); 
+
+                      // Check for delimeters
+                      if(currentDelimiter.isEmpty && content == '<') {
+                        // Start delimeter
+                        currentDelimiter = content;
+                      } else if (currentDelimiter.isNotEmpty && content == '>'){
+                        // End delimeter
+                        currentDelimiter += content;
+
+                        if(currentDelimiter == '<|im_start|>' || currentDelimiter.contains('<|im_start|>')){
+                          // content start
+                        } else if(currentDelimiter == '<|im_end|>' || currentDelimiter.contains('<|im_end|>')){
+                          // content end
+                          if(onStreamComplete != null) { onStreamComplete(indexPayload); }
+                          currentDelimiter = '';
+                          streamSub?.cancel();
+                          return;
+                        } else {
+                          // not actually a delimeter
+                          onStreamChunkReceived(indexPayload, StreamChunk(currentDelimiter)); 
+                        }
+
+                        currentDelimiter = '';
+                      
+                      } else if (currentDelimiter.isNotEmpty && currentDelimiter.contains('<|im_start|>') ) {
+                        currentDelimiter = '';
+
+                      } else if (currentDelimiter.isNotEmpty && currentDelimiter.contains('<|im_end|>') ) {
+                          if(onStreamComplete != null) { onStreamComplete(indexPayload); }
+                          currentDelimiter = '';
+                          streamSub?.cancel();
+                          return;
+
+                      } else if (currentDelimiter.isNotEmpty 
+                                && !currentDelimiter.contains('<|im_start|>') 
+                                && !currentDelimiter.contains('<|im_end|>')) {
+                        currentDelimiter += content;
+
+                      } else {
+                        onStreamChunkReceived(indexPayload, StreamChunk(content)); 
+                        currentDelimiter = '';
+                      }     
                     }
                   }
                 }
@@ -302,4 +365,4 @@ class ApiChatGPT extends LlmApi{
 
   }
 
-} // ApiChatGPT
+} // ApiLlamaCpp
