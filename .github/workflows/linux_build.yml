@@ -13,9 +13,16 @@ on:
   push:
     branches:
       - '**'
+    paths-ignore:
+      - '**/*.md'
+      - '**.md'
+      - '.github/**'
+      - 'docs/**'
+
   pull_request:
     branches:
       - main
+
 
 jobs:
   linux-build:

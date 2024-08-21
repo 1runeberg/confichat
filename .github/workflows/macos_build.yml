@@ -13,10 +13,17 @@ on:
   push:
     branches:
       - '**'
+    paths-ignore:
+      - '**/*.md'
+      - '**.md'
+      - '.github/**'
+      - 'docs/**'
+
   pull_request:
     branches:
       - main
-      
+  
+
 jobs:
   macos-build:
     runs-on: macos-latest
