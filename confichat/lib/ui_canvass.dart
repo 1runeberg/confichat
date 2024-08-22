@@ -45,8 +45,6 @@ class CanvassState extends State<Canvass> {
 
   late Directory _chatSessionsDir;
   late SelectedModelProvider _selectedModelProvider;
-
-  String currentChatSession = '';
   
   List<Map<String, dynamic>> chatData = [];
   Map<int, Iterable<String>> chatDocuments = {};
@@ -98,6 +96,10 @@ class CanvassState extends State<Canvass> {
     
     if (selectedModel != null) {
 
+      // Reset selected chat session
+      _sessionNameController.text = '';
+      widget.chatSessionSelectedNotifier.value = '';
+
       // Load any cached messages within the model (if any)
       _loadCachedMessages();
 
@@ -124,14 +126,12 @@ class CanvassState extends State<Canvass> {
       builder: (context, selectedChatSession, child) {
         
         // Load messages
-        if( selectedChatSession.isNotEmpty && currentChatSession != selectedChatSession ){
+        if( selectedChatSession.isNotEmpty && _sessionNameController.text != selectedChatSession ){
             WidgetsBinding.instance.addPostFrameCallback((_) {   
 
-              currentChatSession = selectedChatSession;   
-              _loadChatSession(context, selectedChatSession);
-
               setState(() {
-                _sessionNameController.text = currentChatSession;  
+                _sessionNameController.text = selectedChatSession;              
+                _loadChatSession(context, selectedChatSession);
               });
               
           });
@@ -514,6 +514,10 @@ class CanvassState extends State<Canvass> {
       chatDocuments.clear();
       chatCodeFiles.clear();
       chatData.clear();
+
+      // Reset selected chat session
+      _sessionNameController.text = '';
+      widget.chatSessionSelectedNotifier.value = '';
     }); 
 
     // Untag unsaved changes
@@ -662,13 +666,15 @@ class CanvassState extends State<Canvass> {
       // Add any document or code file in to the chat data
       if(documents.isNotEmpty) { chatDocuments[chatData.length - 1] = documents.keys.toList(); }
       if(codeFiles.isNotEmpty) { chatCodeFiles[chatData.length - 1] = codeFiles.keys.toList(); }   
+
+      // Reset selected chat session
+      _sessionNameController.text = '';
+      widget.chatSessionSelectedNotifier.value = '';
     });
 
     // Tag unsaved messages for warning
     widget.appData.haveUnsavedMessages = true;
 
-    // Scroll to bottom
-    _scrollToBottom();
 
     // ignore: use_build_context_synchronously
     FocusScope.of(context).requestFocus(_focusNodePrompt);
