@@ -117,7 +117,7 @@ class SaveChatSessionState extends State<SaveChatSession>  {
     ){
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+          backgroundColor: Theme.of(context).colorScheme.error,
           content: const Text('Encyption key and confirmation does not match!'),
         ),
       );
@@ -126,7 +126,7 @@ class SaveChatSessionState extends State<SaveChatSession>  {
     }
 
     // Encrypt chat data if needed 
-    String iv = _encrypt ? CryptoUtils.encryptChatData(userKey: _encryptionKeyController.text, chatData: widget.chatData) : '';
+    String iv = _encrypt ? CryptoUtils.encryptChatDataGenerateIV(userKey: _encryptionKeyController.text, chatData: widget.chatData) : '';
 
     // Encrypt system prompt
     if( _encrypt && AppData.instance.api.systemPrompt.trim().isNotEmpty) { 
@@ -146,7 +146,6 @@ class SaveChatSessionState extends State<SaveChatSession>  {
         selectedModelName, 
         fileName, 
         content,
-        _encrypt,
         iv
         );
 
