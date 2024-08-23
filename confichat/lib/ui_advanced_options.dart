@@ -93,15 +93,14 @@ class AdvancedOptionsState extends State<AdvancedOptions> {
             const SizedBox(height: 24),
 
           ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxHeight: 500.0, 
-            ),
+            constraints: BoxConstraints(
+              maxHeight: AppData.instance.getUserDeviceType(context) == UserDeviceType.phone ? 250.0 : 500, ),
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Column( 
                 children: [
 
-                  const Text('Scroll down to see more tuning options', style: TextStyle(fontStyle: FontStyle.italic)),
+                  const Text('Scroll to see more tuning options', style: TextStyle(fontStyle: FontStyle.italic)),
                   const SizedBox(height: 16),
 
                   _buildSliderWithTooltip(
@@ -317,6 +316,7 @@ class AdvancedOptionsState extends State<AdvancedOptions> {
     widget.api.probability = probability;
     widget.api.maxTokens = maxTokens;
     widget.api.stopSequences = stopSequenceController.text.split(',').map((s) => s.trim()).toList();
+    widget.api.systemPrompt = systemPromptController.text;
   }
 
 }

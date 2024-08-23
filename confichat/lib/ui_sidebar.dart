@@ -135,7 +135,7 @@ class SidebarState extends State<Sidebar> {
                                 itemBuilder: (context) => [
 
                                   // Allow updates if there are unsaved messages
-                                  if(widget.appData.haveUnsavedMessages)
+                                  if(widget.appData.haveUnsavedMessages )
                                   const PopupMenuItem(
                                     value: 'update',
                                     child: Text('Update'),

@@ -296,7 +296,7 @@ class CanvassState extends State<Canvass> {
                                 context: context,
                                 barrierDismissible: false,
                                 builder: (BuildContext context) {
-                                  return AdvancedOptions(api: widget.appData.api, enableSystemPrompt: chatData.isEmpty);
+                                  return AdvancedOptions(api: widget.appData.api, enableSystemPrompt: true);
                                 },
                               );
                             },
@@ -732,8 +732,6 @@ class CanvassState extends State<Canvass> {
                         // ignore: use_build_context_synchronously
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Theme.of(context).colorScheme.error, content: Text('Unable to save encrypted chat session: ${e.toString()}')));
                       } finally{
-                        // Cleanup
-                        encryptionKeyController.dispose();
                         // ignore: use_build_context_synchronously
                         Navigator.of(context).pop(); 
                       }
@@ -755,8 +753,6 @@ class CanvassState extends State<Canvass> {
                   // ignore: use_build_context_synchronously
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Theme.of(context).colorScheme.primaryContainer, content: const Text('Chat session updated.')));
 
-                  // Cleanup
-                  encryptionKeyController.dispose();
                   // ignore: use_build_context_synchronously
                   Navigator.of(context).pop(); 
                 }
@@ -766,8 +762,6 @@ class CanvassState extends State<Canvass> {
             ElevatedButton(
               child: const Text('Cancel'),
               onPressed: () {
-                // Cleanup
-                encryptionKeyController.dispose();
                 Navigator.of(context).pop();
               },
             ),
@@ -828,6 +822,24 @@ class CanvassState extends State<Canvass> {
           "content": widget.appData.api.systemPrompt
           });
       });
+    } else if(chatData.isNotEmpty 
+      && widget.appData.api.systemPrompt.isNotEmpty 
+      && chatData[0].containsKey('role')
+      && chatData[0].containsKey('content')) {
+
+        setState(() {
+          if( chatData[0]['role'] == 'system') {
+            // update system prompt
+            chatData[0]['content'] = widget.appData.api.systemPrompt;
+          } else {
+            // Add system prompt
+            chatData.insert( 0, {
+              "role": "system", 
+              "content": widget.appData.api.systemPrompt
+            });
+          }
+        });
+
     }
 
     // Add prompt to messages
