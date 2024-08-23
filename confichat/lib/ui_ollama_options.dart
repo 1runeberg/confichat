@@ -162,6 +162,7 @@ class OllamaOptionsState extends State<OllamaOptions> {
                   maxHeight: widget.appData.getUserDeviceType(context) != UserDeviceType.phone ? 400 : 250, 
                 ), 
                 child: SingleChildScrollView(
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, 
                 scrollDirection: Axis.vertical, child: Column ( children: [
 
                   // Scheme

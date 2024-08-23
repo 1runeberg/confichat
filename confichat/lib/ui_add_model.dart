@@ -60,6 +60,7 @@ class AddModelDialogState extends State<AddModelDialog> {
               
               child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, 
 
               child: SizedBox(width: 400, height: 300,
                child: Column(

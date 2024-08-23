@@ -93,13 +93,16 @@ class AdvancedOptionsState extends State<AdvancedOptions> {
             const SizedBox(height: 24),
 
           ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxHeight: 500.0, 
-            ),
+            constraints: BoxConstraints(
+              maxHeight: AppData.instance.getUserDeviceType(context) == UserDeviceType.phone ? 250.0 : 500, ),
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, 
               child: Column( 
                 children: [
+
+                  const Text('Scroll to see more tuning options', style: TextStyle(fontStyle: FontStyle.italic)),
+                  const SizedBox(height: 16),
 
                   _buildSliderWithTooltip(
                     label: 'Temperature',
@@ -108,8 +111,8 @@ class AdvancedOptionsState extends State<AdvancedOptions> {
                     max: 2.0,
                     divisions: 20,
                     onChanged: (value) => setState(() => temperature = value),
-                    description: 'Controls the randomness of the output. Lower values make responses more focused and deterministic, while higher values increase variability and creativity.',
-                    whatItMeans: 'Use lower temperatures for precise and predictable outputs and higher values for more creative and varied responses.',
+                    description: 'Controls the randomness of the output.',
+                    whatItMeans: 'Use lower temperatures (e.g., 0.2) for tasks that require precision and predictable outcomes, such as technical writing or code generation. Use higher temperatures (e.g., 1.5) for more open-ended tasks like creative writing or brainstorming.',
                   ),
                   const SizedBox(height: 8),
 
@@ -120,33 +123,37 @@ class AdvancedOptionsState extends State<AdvancedOptions> {
                       max: 1.0,
                       divisions: 10,
                       onChanged: (value) => setState(() => probability = value),
-                      description: 'Determines the diversity of the response by sampling from the top tokens. Lower values focus on the most likely tokens, while higher values consider a wider range of possibilities.',
-                      whatItMeans: 'Set lower values for predictable outputs and higher values for more diverse and creative responses.',
+                      description: 'Determines the diversity of the response.',
+                      whatItMeans: 'Lower values (e.g., 0.3) result in more focused and predictable outputs by limiting the model to a smaller subset of the most probable tokens. Higher values (e.g., 0.9) allow for a wider variety of tokens, producing more creative and less predictable responses.',
                     ),
+
                     _buildTextInputWithTooltip(
                       label: 'Max Tokens',
                       controller: maxTokensController,
                       onChanged: (value) => setState(() => maxTokens = int.tryParse(value) ?? maxTokens),
-                      description: 'Sets the maximum number of tokens that the model will generate in the response. Limits response length for concise or detailed answers.',
+                      description: 'Sets the maximum number of tokens that the model will generate in the response.',
                       whatItMeans: 'Limits response length. Use lower values for concise answers and higher values for detailed responses.',
                     ),
-                    _buildTextInputWithTooltip(
-                      label: 'Stop Sequences',
-                      controller: stopSequenceController,
-                      onChanged: (value) { setState(() { 
-                        widget.api.stopSequences = value.split(',').map((s) => s.trim()).toList();}); }, 
-                      description: 'Specifies one or more sequences where the model should stop generating text.  Enter multiple sequences separated by commas.',
-                      whatItMeans: 'Define where the response should end to prevent overly lengthy or unnecessary outputs. (example: .,\\n, user:)',
-                    ),
+
                     _buildTextInputWithTooltip(
                       label: 'System Prompt',
                       controller: systemPromptController,
                       isEnabled: widget.enableSystemPrompt,
                       maxLines: 5,
                       onChanged: (value) { setState(() {widget.api.systemPrompt = value;}); }, 
-                      description: 'Initial instruction that sets the context or role for the entire conversation. It influences how the model understands and responds to user inputs by defining its persona, tone, or task.',
+                      description: 'Initial instruction that sets the context or role for the entire conversation.',
                       whatItMeans: 'By setting the model\'s role or focus, such as acting as a helpful assistant, technical expert, or creative writer, it aligns the model\'s responses to user expectations and the intended application',
                     ),
+
+                    _buildTextInputWithTooltip(
+                      label: 'Stop Sequences',
+                      controller: stopSequenceController,
+                      onChanged: (value) { setState(() { 
+                        widget.api.stopSequences = value.split(',').map((s) => s.trim()).toList();}); }, 
+                      description: 'Enter multiple sequences separated by commas.',
+                      whatItMeans: 'Define where the response should end to prevent overly lengthy or unnecessary outputs. (example: .,\\n, user:)',
+                    ),
+
                 ] )           
               ),
             ),
@@ -310,6 +317,7 @@ class AdvancedOptionsState extends State<AdvancedOptions> {
     widget.api.probability = probability;
     widget.api.maxTokens = maxTokens;
     widget.api.stopSequences = stopSequenceController.text.split(',').map((s) => s.trim()).toList();
+    widget.api.systemPrompt = systemPromptController.text;
   }
 
 }

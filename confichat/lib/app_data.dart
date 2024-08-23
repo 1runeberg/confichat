@@ -15,6 +15,8 @@ import 'package:confichat/factories.dart';
 
 
 typedef CallbackSwitchProvider = Function(AiProvider?);
+typedef CallbackUpdateSession = Future<void> Function(Directory chatSessionsDir, String modelName, String filename, EncryptionPayload encryptionPayload);
+
 class AppData {
 
   // Singleton setup
@@ -49,6 +51,7 @@ class AppData {
   double windowHeight = 1024;
   AiProvider defaultProvider = AiProvider.ollama;
   String rootPath = '';
+  CallbackUpdateSession? callbackUpdateSession;
 
   void defaultCallback(AiProvider? provider) {
   }
@@ -102,6 +105,13 @@ enum UserDeviceType {
   desktop,
   phone,
   tablet
+}
+
+class EncryptionPayload {
+  final String base64IV;
+  final String encryptedData;
+
+  EncryptionPayload(this.base64IV, this.encryptedData);
 }
 
 class ModelItem {

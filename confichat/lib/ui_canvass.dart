@@ -36,6 +36,7 @@ class Canvass extends StatefulWidget {
 }
 
 class CanvassState extends State<Canvass> {
+
   final TextEditingController _promptController = TextEditingController();
   final TextEditingController _sessionNameController = TextEditingController();
 
@@ -45,8 +46,6 @@ class CanvassState extends State<Canvass> {
 
   late Directory _chatSessionsDir;
   late SelectedModelProvider _selectedModelProvider;
-
-  String currentChatSession = '';
   
   List<Map<String, dynamic>> chatData = [];
   Map<int, Iterable<String>> chatDocuments = {};
@@ -61,6 +60,9 @@ class CanvassState extends State<Canvass> {
   @override
   void initState() {
     super.initState();
+
+    // Set callback to update chat session
+    widget.appData.callbackUpdateSession = updateChatSession;
 
     // Listen for changes in the selected model
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -98,6 +100,10 @@ class CanvassState extends State<Canvass> {
     
     if (selectedModel != null) {
 
+      // Reset selected chat session
+      _sessionNameController.text = '';
+      widget.chatSessionSelectedNotifier.value = '';
+
       // Load any cached messages within the model (if any)
       _loadCachedMessages();
 
@@ -124,14 +130,12 @@ class CanvassState extends State<Canvass> {
       builder: (context, selectedChatSession, child) {
         
         // Load messages
-        if( selectedChatSession.isNotEmpty && currentChatSession != selectedChatSession ){
+        if( selectedChatSession.isNotEmpty && _sessionNameController.text != selectedChatSession ){
             WidgetsBinding.instance.addPostFrameCallback((_) {   
 
-              currentChatSession = selectedChatSession;   
-              _loadChatSession(context, selectedChatSession);
-
               setState(() {
-                _sessionNameController.text = currentChatSession;  
+                _sessionNameController.text = selectedChatSession;              
+                _loadChatSession(context, selectedChatSession);
               });
               
           });
@@ -154,6 +158,7 @@ class CanvassState extends State<Canvass> {
                       controller: _scrollController,
                       itemCount: chatData.length,
                       reverse: true,
+                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                       padding: const EdgeInsets.all(8),
                       
                       itemBuilder: (context, index) {
@@ -292,7 +297,7 @@ class CanvassState extends State<Canvass> {
                                 context: context,
                                 barrierDismissible: false,
                                 builder: (BuildContext context) {
-                                  return AdvancedOptions(api: widget.appData.api, enableSystemPrompt: chatData.isEmpty);
+                                  return AdvancedOptions(api: widget.appData.api, enableSystemPrompt: true);
                                 },
                               );
                             },
@@ -514,6 +519,10 @@ class CanvassState extends State<Canvass> {
       chatDocuments.clear();
       chatCodeFiles.clear();
       chatData.clear();
+
+      // Reset selected chat session
+      _sessionNameController.text = '';
+      widget.chatSessionSelectedNotifier.value = '';
     }); 
 
     // Untag unsaved changes
@@ -532,6 +541,7 @@ class CanvassState extends State<Canvass> {
 
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Container( 
@@ -624,6 +634,170 @@ class CanvassState extends State<Canvass> {
     );
   }
 
+  Future<void> updateChatSession(Directory chatSessionsDir, String modelName, String filename, EncryptionPayload encryptionPayload) async {
+    
+    bool isEncrypted = encryptionPayload.base64IV.isNotEmpty && encryptionPayload.encryptedData.isNotEmpty;
+    TextEditingController encryptionKeyController = TextEditingController();
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Container( 
+                width: 100, 
+                height: 50, 
+                alignment: Alignment.center, 
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primaryContainer, 
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16.0),
+                    topRight: Radius.circular(16.0), bottomLeft: Radius.circular(16.0),
+                    bottomRight: Radius.circular(16.0),
+                    )
+                ),
+                
+                child: const DialogTitle(
+                      title: 'Update Chat Session', 
+                      isError: true,
+                      ) 
+              ),
+
+          content:        
+            ConstrainedBox( constraints: const BoxConstraints(maxWidth: 400), 
+            child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+
+                // Warning message
+                Text(
+                  'Are you sure you want to update chat session: \n\n$filename\n\n'
+                  'This will OVERWRITE the messages on disk with the current messages on screen, this operation is unrecoverable.',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+
+                // Get key if encryption is enabled
+                if(isEncrypted) const SizedBox(height: 8),
+                if(isEncrypted) 
+                  TextFormField(
+                    controller: encryptionKeyController,
+                    decoration: const InputDecoration(
+                      labelText: 'Encryption Key',
+                    ),
+                    obscureText: true,
+                  ),
+
+            ])),
+
+          actions: <Widget>[
+            ElevatedButton(
+              child: const Text('Yes'),
+              onPressed: () async {
+
+                // Check encryption key
+                if(isEncrypted){
+
+                  if(encryptionKeyController.text.isEmpty){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(backgroundColor: Theme.of(context).colorScheme.error, content: const Text('Chat session is encrypted. You must provide the encryption key to update.')),
+                    );
+                  } else {
+
+                    // Validate encryption key
+                    if(CryptoUtils.testKey(encryptionPayload: encryptionPayload, userKey: encryptionKeyController.text)){
+
+                      try{ 
+                        // Update encrypted chat session
+                        CryptoUtils.encryptChatDataWithIV(base64IV: encryptionPayload.base64IV, userKey: encryptionKeyController.text, chatData: chatData);
+                        String content = jsonEncode(chatData);
+                        await _saveSession(chatSessionsDir, modelName, filename, content, encryptionPayload.base64IV, encryptionKeyController.text);
+
+                        // Decrypt system prompt for current session
+                        if(AppData.instance.api.systemPrompt.isNotEmpty) {
+                          AppData.instance.api.systemPrompt = CryptoUtils.decryptString(
+                            base64IV: encryptionPayload.base64IV, 
+                            userKey: encryptionKeyController.text, 
+                            encryptedData: AppData.instance.api.systemPrompt );
+                        }
+                      
+                        // Decrypt chat data back for current session
+                        CryptoUtils.decryptChatData(base64IV: encryptionPayload.base64IV, userKey: encryptionKeyController.text, chatData: chatData); 
+
+                        // Inform user of status
+                        // ignore: use_build_context_synchronously
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Theme.of(context).colorScheme.primaryContainer, content: const Text('Chat session updated.')));
+
+                      } catch(e) {
+                        // ignore: use_build_context_synchronously
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Theme.of(context).colorScheme.error, content: Text('Unable to save encrypted chat session: ${e.toString()}')));
+                      } finally{
+                        // ignore: use_build_context_synchronously
+                        Navigator.of(context).pop(); 
+                      }
+
+                    } else{
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(backgroundColor: Theme.of(context).colorScheme.error, content: const Text('Incorrect encryption key. Unable to update chat session.')),
+                      );
+                    }
+
+                  }
+
+                } else {
+                  // Update chat session
+                  String content = jsonEncode(chatData);
+                  await _saveSession(chatSessionsDir, modelName, filename, content, '', '');
+
+                  // Inform user of status
+                  // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Theme.of(context).colorScheme.primaryContainer, content: const Text('Chat session updated.')));
+
+                  // ignore: use_build_context_synchronously
+                  Navigator.of(context).pop(); 
+                }
+
+              }
+            ),
+            ElevatedButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _saveSession(Directory chatSessionsDir, String modelname, String filename, String content, String base64IV, String userKey) async {
+
+    // Encrypt system prompt
+    if( base64IV.isNotEmpty && userKey.isNotEmpty && AppData.instance.api.systemPrompt.trim().isNotEmpty) { 
+      AppData.instance.api.systemPrompt = CryptoUtils.encryptStringIV(
+        base64IV: base64IV, 
+        userKey: userKey, 
+        data: AppData.instance.api.systemPrompt );
+    }
+
+    try {
+      await PersistentStorage.saveFile(
+        chatSessionsDir, 
+        modelname, 
+        filename, 
+        content,
+        base64IV
+        );
+
+      widget.appData.haveUnsavedMessages = false;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+
   Future<void> _sendPromptMobile(String? s) async {
     await _sendPrompt(s, null);
   }
@@ -649,6 +823,24 @@ class CanvassState extends State<Canvass> {
           "content": widget.appData.api.systemPrompt
           });
       });
+    } else if(chatData.isNotEmpty 
+      && widget.appData.api.systemPrompt.isNotEmpty 
+      && chatData[0].containsKey('role')
+      && chatData[0].containsKey('content')) {
+
+        setState(() {
+          if( chatData[0]['role'] == 'system') {
+            // update system prompt
+            chatData[0]['content'] = widget.appData.api.systemPrompt;
+          } else {
+            // Add system prompt
+            chatData.insert( 0, {
+              "role": "system", 
+              "content": widget.appData.api.systemPrompt
+            });
+          }
+        });
+
     }
 
     // Add prompt to messages
@@ -662,13 +854,15 @@ class CanvassState extends State<Canvass> {
       // Add any document or code file in to the chat data
       if(documents.isNotEmpty) { chatDocuments[chatData.length - 1] = documents.keys.toList(); }
       if(codeFiles.isNotEmpty) { chatCodeFiles[chatData.length - 1] = codeFiles.keys.toList(); }   
+
+      // Reset selected chat session
+      _sessionNameController.text = '';
+      widget.chatSessionSelectedNotifier.value = '';
     });
 
     // Tag unsaved messages for warning
     widget.appData.haveUnsavedMessages = true;
 
-    // Scroll to bottom
-    _scrollToBottom();
 
     // ignore: use_build_context_synchronously
     FocusScope.of(context).requestFocus(_focusNodePrompt);
@@ -752,14 +946,14 @@ class CanvassState extends State<Canvass> {
 
     final String errorMessage = error.toString();
     ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(backgroundColor: Theme.of(context).colorScheme.primaryContainer, content: Text('Error requesting chat completion: $errorMessage')),
+                    SnackBar(backgroundColor: Theme.of(context).colorScheme.error, content: Text('Error requesting chat completion: $errorMessage')),
                   );
   }
 
   dynamic _onChatStreamError( int index, dynamic error ){
     _onChatStreamComplete(index);
     ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(backgroundColor: Theme.of(context).colorScheme.primaryContainer, content: Text('Error encountered in response stream: $error')),
+                    SnackBar(backgroundColor: Theme.of(context).colorScheme.error, content: Text('Error encountered in response stream: $error')),
                   );
   }
 

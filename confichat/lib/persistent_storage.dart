@@ -29,7 +29,7 @@ class PersistentStorage {
   }
 
   // Create a chat session file in json format
-  static Future<void> saveFile(Directory dir, String modelName, String fileName, String content, bool isEncrypted, String encryptionIV) async {
+  static Future<void> saveFile(Directory dir, String modelName, String fileName, String content, String encryptionIV) async {
     // Create directory if it doesn't exist
     String folder = cleanupModelName(modelName);
     final directory = Directory('${dir.path}/$folder');
@@ -81,6 +81,47 @@ class PersistentStorage {
       if (kDebugMode) {print('Error checking encryption $e');}
       return '';
     }    
+  }
+
+  static Future<EncryptionPayload> getEncryptionPayload(Directory dir, String modelName, String fileName) async {
+
+    try {
+
+     // Read the file from disk
+      String folder = cleanupModelName(modelName);
+      final file = File('${dir.path}/$folder/${AppData.appFilenameBookend}$fileName${AppData.appFilenameBookend}.json');
+      final fileContent = await file.readAsString();
+
+      // Decode json and extract metadata
+      final jsonData = jsonDecode(fileContent);
+      final options = jsonData['options'];
+      final messages = jsonData['messages'];
+      final encryptionIV = options['encryptionIV'] ?? '';
+
+      // Check for encryption IV which indicates this session has been encrypted
+      if(encryptionIV == null || messages == null || messages.isEmpty) { return EncryptionPayload('', '');}
+
+      // Retrieve first message
+      List<Map<String, dynamic>> chatData = List<Map<String, dynamic>>.from(jsonDecode(messages));
+      String firstUserMessage = '';
+      for (var message in chatData) {
+        if (message.containsKey('role') && message['role'] == 'user') {
+          firstUserMessage = message['content'] as String;
+          break;
+        }
+      }
+
+      // No message found
+      if(firstUserMessage.isEmpty) { return EncryptionPayload('', '');}
+
+      return EncryptionPayload(encryptionIV as String, firstUserMessage) ;
+
+    } catch (e) {
+      if (kDebugMode) {print('Error reading encryptionIV: $e');}
+    }
+
+    return EncryptionPayload('', '');
+
   }
 
   // Retrieve encrypted chat session file
@@ -239,6 +280,22 @@ class PersistentStorage {
 
 class CryptoUtils {
 
+static bool testKey({
+    required EncryptionPayload encryptionPayload,
+    required String userKey,
+  }) {
+    try{
+      String decrypted = decryptString(
+        base64IV: encryptionPayload.base64IV, 
+        userKey: userKey, 
+        encryptedData: encryptionPayload.encryptedData);
+      return decrypted.isNotEmpty;
+    } catch (e)
+    {
+      return false;
+    }
+  }
+
 static String encryptStringIV({
     required String base64IV,
     required String userKey,
@@ -267,8 +324,7 @@ static String encryptStringIV({
 
       return outBase64Data;
     } catch (e) {
-      // Handle or rethrow the exception as needed
-      throw Exception('Encryption failed: $e');
+        throw Exception('Encryption failed: $e');
     }
 
   }
@@ -302,7 +358,17 @@ static String encryptStringIV({
 
   }
 
-  static String encryptChatData({
+  static void encryptChatDataWithIV({
+    required String base64IV,
+    required String userKey,
+    required List<Map<String, dynamic>> chatData,
+  }) {
+    final iv = encrypt.IV.fromBase64(base64IV);
+    encryptChatData(iv: iv, userKey: userKey, chatData: chatData);
+  }
+
+
+  static String encryptChatDataGenerateIV({
     required String userKey,
     required List<Map<String, dynamic>> chatData,
   }) {
@@ -310,6 +376,16 @@ static String encryptStringIV({
     // Define an initialization vector (IV)
     final iv = encrypt.IV.fromLength(16);
     final base64IV = iv.base64;
+
+    encryptChatData(iv: iv, userKey: userKey, chatData: chatData);
+    return base64IV;
+  }
+
+   static void encryptChatData({
+    required encrypt.IV iv,
+    required String userKey,
+    required List<Map<String, dynamic>> chatData,
+  }) {
 
     for (var entry in chatData) {
       // Encrypt content
@@ -322,26 +398,24 @@ static String encryptStringIV({
         entry['content'] = encryptedContent;
       }
 
-    // Encrypt images if they exist
-    if (entry['images'] != null && entry['images'] is List) {
-      entry['images'] = (entry['images'] as List).map((image) {
-        if (image is String) {
-          final encryptedImage = CryptoUtils.encryptString(
-            iv: iv,
-            userKey: userKey,
-            data: image,
-          );
-          return encryptedImage;
-        } else {
-          if (kDebugMode) { print('Warning: Non-string image data encountered');   }
-          return null;
-        }
-      }).whereType<String>().toList();
+      // Encrypt images if they exist
+      if (entry['images'] != null && entry['images'] is List) {
+        entry['images'] = (entry['images'] as List).map((image) {
+          if (image is String) {
+            final encryptedImage = CryptoUtils.encryptString(
+              iv: iv,
+              userKey: userKey,
+              data: image,
+            );
+            return encryptedImage;
+          } else {
+            if (kDebugMode) { print('Warning: Non-string image data encountered');   }
+            return null;
+          }
+        }).whereType<String>().toList();
+      }
     }
 
-  }
-
-    return base64IV;
   }
 
   static void decryptChatData({
@@ -385,7 +459,7 @@ static String encryptStringIV({
     }
   }
 
-      static void decryptToChatData({
+  static void decryptToChatData({
     required String base64IV,
     required String userKey,
     required dynamic jsonData,

@@ -121,6 +121,7 @@ class SidebarState extends State<Sidebar> {
                       maxHeight: 400.0, 
                       ),
                       child: SingleChildScrollView(
+                        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, 
                         child: Column(
                           children: _chatSessionFiles.map((filename) {
                             return ListTile(
@@ -133,14 +134,24 @@ class SidebarState extends State<Sidebar> {
                                   _handlePopupMenuAction(value, filename, selectedModelProvider.selectedModel);
                                 },
                                 itemBuilder: (context) => [
+
+                                  // Allow updates if there are unsaved messages
+                                  if(widget.appData.haveUnsavedMessages )
                                   const PopupMenuItem(
-                                    value: 'delete',
-                                    child: Text('Delete'),
+                                    value: 'update',
+                                    child: Text('Update'),
                                   ),
+
                                   const PopupMenuItem(
                                     value: 'rename',
                                     child: Text('Rename'),
                                   ),
+
+                                  const PopupMenuItem(
+                                    value: 'delete',
+                                    child: Text('Delete'),
+                                  ),
+
                                 ],
                               ),
                             );
@@ -296,8 +307,16 @@ class SidebarState extends State<Sidebar> {
   );
  }
 
-  void _handlePopupMenuAction(String action, String filename, ModelItem? model) {
+  void _handlePopupMenuAction(String action, String filename, ModelItem? model) async {
     switch (action) {
+
+      case 'update':
+        await _updateChatSession(filename, model);
+        break;
+
+      case 'rename':
+        _showRenameDialog(filename, model);
+        break;
 
       case 'delete':
         showDialog(
@@ -328,9 +347,6 @@ class SidebarState extends State<Sidebar> {
         );
         break;
 
-      case 'rename':
-        _showRenameDialog(filename, model);
-        break;
     }
 
   } // _handlePopupMenuAction
@@ -400,7 +416,7 @@ class SidebarState extends State<Sidebar> {
                   _renameChatSession(filename, newName, model);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(backgroundColor: Theme.of(context).colorScheme.primaryContainer, content: const Text('New name is required')),
+                    SnackBar(backgroundColor: Theme.of(context).colorScheme.error, content: const Text('New name is required')),
                   );
                 }
               },
@@ -430,5 +446,22 @@ class SidebarState extends State<Sidebar> {
       await _loadChatSessionFiles(model.name, true);
 
   } // _renameChatSession
+
+  Future<void> _updateChatSession(String filename, ModelItem? model) async {
+
+    if(model==null || widget.appData.callbackUpdateSession == null){ return; }
+
+    // Check for encryption
+    final directory = AppData.instance.rootPath.isEmpty ? await getApplicationDocumentsDirectory() : Directory(AppData.instance.rootPath);
+    Directory chatSessionsDir = Directory('${directory.path}/${AppData.appStoragePath}');
+    EncryptionPayload encryptionPayload = await PersistentStorage.getEncryptionPayload(chatSessionsDir, model.name, filename);
+
+    // Close sidebar
+    if(mounted){ Navigator.of(context).pop();  }
+
+    // Get the canvass to update the chat session
+    await widget.appData.callbackUpdateSession!(chatSessionsDir, model.name, filename, encryptionPayload);
+
+  }
 
 } // Sidebar state

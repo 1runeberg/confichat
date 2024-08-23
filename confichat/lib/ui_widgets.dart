@@ -402,7 +402,8 @@ class ChatBubble extends StatelessWidget {
           
         child: Container(
           color: isUser? Colors.blue[50] : Colors.amber[100],
-          margin: const EdgeInsets.all(3),
+          margin: AppData.instance.getUserDeviceType(context) == UserDeviceType.desktop ? 
+            const EdgeInsets.all(3) : const EdgeInsets.symmetric(horizontal: 3, vertical: 8).copyWith(right: 10),
 
           child: 
             Row ( 
@@ -428,9 +429,9 @@ class ChatBubble extends StatelessWidget {
                 // Text
                 const SizedBox(width:20),
                 Expanded( 
+                  child: SelectionArea(
                   child: Container( 
                     margin: const EdgeInsets.all(5), 
-                    child: SelectionArea(
                     child: Markdown(
                       data: sanitizedText, 
                       builders: {
@@ -444,8 +445,8 @@ class ChatBubble extends StatelessWidget {
                           ),
                         ),
                       ) 
-                  ) )
-                ),
+                  )
+                )),
 
                 // Cancel
                 if (!isUser && animateIcon && indexProcessing != null)
