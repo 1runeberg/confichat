@@ -30,7 +30,7 @@ We provide [pre-built binaries/executables]() for various platforms, making it e
 
 **Note for macOS and iOS users**: *Binaries are not provided due to platform restrictions. Please see the [Compiling on your own](docs/compiling.md) section.*
 
-**Note for Windows users**: *You may encounter a SmartScreen warning since the binaries aren't signed. Rest assured they are safely built via GitHub CI when downloaded directly from the [Releases section](https://github.com/1runeberg/confichat/releases). You can also view the [full build logs](https://github.com/1runeberg/confichat/actions/workflows/publish_release.yml). And of course you can [build from source](docs/compiling.md).*
+**Note for Windows users**: *You may encounter a SmartScreen warning since the binaries aren't signed. They are safely built via GitHub CI when downloaded directly from the [Releases section](https://github.com/1runeberg/confichat/releases). You can also view the [full build logs](https://github.com/1runeberg/confichat/actions/workflows/publish_release.yml). And of course you can [build from source](docs/compiling.md).*
 
 ❤️ If you find this app useful, consider sponsoring us in [GitHub Sponsors](https://github.com/sponsors/1runeberg) to help us secure necessary certificates and accounts for future binary distributions.
 
@@ -40,7 +40,10 @@ We provide [pre-built binaries/executables]() for various platforms, making it e
 
 ### 📖 2. Quick Start Guides
 
-Get started quickly with **ConfiChat** by following one of our [quick start guides](docs/quickstart.md)  depending on whether you want to use local models, online models, or both.
+If you're completely new to offline LLMs, check out this easy [Three-Step guide to get started (including ConfiChat)](https://runeberg.medium.com/getting-started-with-local-ai-llms-in-three-easy-steps-bddebcf26570) - a no-coding, no-dependencies approach.
+
+You can also get started quickly with **ConfiChat** by following one of our [quick start guides](docs/quickstart.md)  depending on whether you want to use local models, online models, or both.
+
 
 <br/>
 

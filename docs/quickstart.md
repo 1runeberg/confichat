@@ -62,31 +62,15 @@ ollama pull llama3.1
 
 This command will download the Llama 3.1 model to your local machine.
 
-### 3. Set Up ConfiChat
+### 3. Run ConfiChat
 
-Next, download and set up the ConfiChat interface:
-
-- Clone the ConfiChat repository:
-  ```bash
-  git clone https://github.com/your-repository/ConfiChat.git
-  cd ConfiChat
-  ```
-
-- Install dependencies:
-  ```bash
-  flutter pub get
-  ```
-
-- Run the application:
-  ```bash
-  flutter run
-  ```
+Next, [download](https://github.com/1runeberg/confichat) and run ConfiChat.
 
 Now, you're ready to start using ConfiChat with your local Llama 3.1 model!
 
 ### Additional Resources
 
-For more detailed instructions and troubleshooting, please visit the [Ollama documentation](https://ollama.com/docs) and the [ConfiChat repository](https://github.com/your-repository/ConfiChat).
+For more detailed instructions and troubleshooting, please visit the [Ollama documentation](https://ollama.com/docs)
 
 ---
 
@@ -104,25 +88,11 @@ To use OpenAI with ConfiChat, you first need to obtain an API key:
 
 Keep your API key secure and do not share it publicly.
 
-### 2. Set Up ConfiChat
+### 2. Run ConfiChat
 
-Next, download and set up the ConfiChat interface:
+Next, [download](https://github.com/1runeberg/confichat) and run ConfiChat.
 
-- Clone the ConfiChat repository:
-  ```bash
-  git clone https://github.com/your-repository/ConfiChat.git
-  cd ConfiChat
-  ```
-
-- Install dependencies:
-  ```bash
-  flutter pub get
-  ```
-
-- Run the application:
-  ```bash
-  flutter run
-  ```
+Note: There may be a warning during first run as the binaries are unsigned.
 
 ### 3. Configure ConfiChat with Your API Key
 
@@ -136,7 +106,7 @@ ConfiChat is now configured to use OpenAI for its language model capabilities!
 
 ### Additional Resources
 
-For more detailed instructions and troubleshooting, please visit the [OpenAI documentation](https://platform.openai.com/docs) and the [ConfiChat repository](https://github.com/your-repository/ConfiChat).
+For more detailed instructions and troubleshooting, please visit the [OpenAI documentation](https://platform.openai.com/docs).
 
 ---
 
@@ -152,9 +122,11 @@ Follow the instructions in the [Install Ollama](#1-install-ollama) section above
 
 Follow the instructions in the [Download a Model](#2-download-a-model) section above to download the Llama 3.1 model.
 
-### 3. Set Up ConfiChat
+### 3. Run ConfiChat
 
-Follow the instructions in the [Set Up ConfiChat](#3-set-up-confichat) section above.
+[Download](https://github.com/1runeberg/confichat) and run ConfiChat.
+
+Note: There may be a warning during first run as the binaries are unsigned.
 
 ### 4. Get Your OpenAI API Key
 
@@ -198,9 +170,11 @@ llama-server -m /path/to/your/model --port 8080
 
 This command will start the LlamaCpp server, which ConfiChat can connect to for processing language model queries.
 
-### 3. Set Up ConfiChat
+### 3. Run ConfiChat
 
-Follow the instructions in the [Set Up ConfiChat](#3-set-up-confichat) section above.
+[Download](https://github.com/1runeberg/confichat) and run ConfiChat.
+
+Note: There may be a warning during first run as the binaries are unsigned.
 
 ### Additional Resources
 
