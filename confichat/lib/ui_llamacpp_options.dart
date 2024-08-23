@@ -167,7 +167,9 @@ class LlamaCppOptionsState extends State<LlamaCppOptions> {
                   maxHeight: widget.appData.getUserDeviceType(context) != UserDeviceType.phone ? 400 : 250, 
                 ), 
                 child: SingleChildScrollView(
-                scrollDirection: Axis.vertical, child: Column ( children: [
+                scrollDirection: Axis.vertical, 
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, 
+                child: Column ( children: [
 
                   // Scheme
                   const SizedBox(height: 16),

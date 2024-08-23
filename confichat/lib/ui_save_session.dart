@@ -210,7 +210,8 @@ class SaveChatSessionState extends State<SaveChatSession>  {
     return AlertDialog(
       title: const DialogTitle(title: 'Save Chat Session'), 
       content: SingleChildScrollView(
-      scrollDirection: Axis.vertical,      
+      scrollDirection: Axis.vertical, 
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,      
       child: ConstrainedBox( constraints:  
         const BoxConstraints(
           minWidth: 300, 

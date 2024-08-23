@@ -71,6 +71,7 @@ class ModelConfigDialogState extends State<ModelConfigDialog> {
       content: SizedBox(
         width: 400,
         child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, 
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

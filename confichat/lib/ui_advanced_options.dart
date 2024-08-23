@@ -97,6 +97,7 @@ class AdvancedOptionsState extends State<AdvancedOptions> {
               maxHeight: AppData.instance.getUserDeviceType(context) == UserDeviceType.phone ? 250.0 : 500, ),
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, 
               child: Column( 
                 children: [
 

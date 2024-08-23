@@ -221,7 +221,9 @@ class AppSettingsState extends State<AppSettings> {
               const SizedBox(height: 18),
 
               SingleChildScrollView(
-                scrollDirection: Axis.vertical, child: Column ( children: [
+                scrollDirection: Axis.vertical, 
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, 
+                child: Column ( children: [
 
                   // Clear messages
                   SwitchListTile(

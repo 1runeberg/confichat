@@ -158,6 +158,7 @@ class CanvassState extends State<Canvass> {
                       controller: _scrollController,
                       itemCount: chatData.length,
                       reverse: true,
+                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                       padding: const EdgeInsets.all(8),
                       
                       itemBuilder: (context, index) {

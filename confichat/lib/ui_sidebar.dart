@@ -121,6 +121,7 @@ class SidebarState extends State<Sidebar> {
                       maxHeight: 400.0, 
                       ),
                       child: SingleChildScrollView(
+                        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, 
                         child: Column(
                           children: _chatSessionFiles.map((filename) {
                             return ListTile(
