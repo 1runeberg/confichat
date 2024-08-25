@@ -10,7 +10,7 @@ Get up and running with **ConfiChat** by following this guide. Whether you're us
    - [3. Set Up ConfiChat](#3-set-up-confichat)
    - [Additional Resources](#additional-resources)
 2. [Getting started with Online Models](#using-online-models)
-   - [1. Get Your OpenAI API Key](#1-get-your-openai-api-key)
+   - [1. Get Your OpenAI or Anthropic API Key](#1-get-your-api-key)
    - [2. Set Up ConfiChat](#2-set-up-confichat)
    - [3. Configure ConfiChat with Your API Key](#3-configure-confichat-with-your-api-key)
    - [Additional Resources](#additional-resources-1)
@@ -18,7 +18,7 @@ Get up and running with **ConfiChat** by following this guide. Whether you're us
    - [1. Install Ollama](#1-install-ollama)
    - [2. Download a Model](#2-download-a-model)
    - [3. Set Up ConfiChat](#3-set-up-confichat)
-   - [4. Get Your OpenAI API Key](#4-get-your-openai-api-key)
+   - [4. Get Your OpenAI or Anthropic API Key](#4-get-your-api-key)
    - [5. Configure ConfiChat with Your API Key](#5-configure-confichat-with-your-api-key)
    - [Additional Resources](#additional-resources-2)
 4. [Using ConfiChat with LlamaCpp](#using-confichat-with-llamacpp)
@@ -78,13 +78,13 @@ For more detailed instructions and troubleshooting, please visit the [Ollama doc
 
 Get started with **ConfiChat** and **OpenAI** by following these simple steps. You'll set up your OpenAI API key, download ConfiChat, and configure it to use OpenAI.
 
-### 1. Get Your OpenAI API Key
+### 1. Get Your API Key
 
 To use OpenAI with ConfiChat, you first need to obtain an API key:
 
-1. Go to the [OpenAI API](https://platform.openai.com/account/api-keys) page.
-2. Log in with your OpenAI account.
-3. Click on "Create new secret key" and copy the generated API key.
+1. Go to the [OpenAI API](https://platform.openai.com/account/api-keys) or [Anthropic API](https://console.anthropic.com/settings/keys) page.
+2. Log in with your account.
+3. Follow the on screen instructions.
 
 Keep your API key secure and do not share it publicly.
 
@@ -98,15 +98,15 @@ Note: There may be a warning during first run as the binaries are unsigned.
 
 Once ConfiChat is running:
 
-1. Navigate to **Settings > OpenAI**.
-2. Paste your OpenAI API key into the provided form.
+1. Navigate to **Settings > OpenAI** or **Settings > Anthropic**.
+2. Paste your API key into the provided form.
 3. Click "Save" to apply the changes.
 
 ConfiChat is now configured to use OpenAI for its language model capabilities!
 
 ### Additional Resources
 
-For more detailed instructions and troubleshooting, please visit the [OpenAI documentation](https://platform.openai.com/docs).
+For more detailed instructions and troubleshooting, please visit the [OpenAI documentation](https://platform.openai.com/docs) or the [Anthropic documentation](https://docs.anthropic.com/en/docs/welcome).
 
 ---
 
@@ -128,9 +128,9 @@ Follow the instructions in the [Download a Model](#2-download-a-model) section a
 
 Note: There may be a warning during first run as the binaries are unsigned.
 
-### 4. Get Your OpenAI API Key
+### 4. Get Your API Key
 
-Follow the instructions in the [Get Your OpenAI API Key](#1-get-your-openai-api-key) section above.
+Follow the instructions in the [Get Your API Key](#1-get-your-api-key) section above.
 
 ### 5. Configure ConfiChat with Your API Key
 
@@ -138,7 +138,7 @@ Follow the instructions in the [Configure ConfiChat with Your API Key](#3-config
 
 ### Additional Resources
 
-For more detailed instructions and troubleshooting, please visit the [Ollama documentation](https://ollama.com/docs), the [OpenAI documentation](https://platform.openai.com/docs), and the [ConfiChat repository](https://github.com/your-repository/ConfiChat).
+For more detailed instructions and troubleshooting, please visit the [Ollama documentation](https://ollama.com/docs), the [OpenAI documentation](https://platform.openai.com/docs), the [Anthropic documentation](https://docs.anthropic.com/en/docs/welcome)  and the [ConfiChat repository](https://github.com/your-repository/ConfiChat).
 
 
 ## Using ConfiChat with LlamaCpp

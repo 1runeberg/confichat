@@ -252,33 +252,3 @@ abstract class LlmApi {
 
 } // LlmApi
 
-
-class SseTransformer extends StreamTransformerBase<String, String> {
-  
-  @override
-  Stream<String> bind(Stream<String> stream) {
-    final controller = StreamController<String>();
-    final buffer = StringBuffer();
-
-    stream.listen((line) {
-      if (line.startsWith('data: ')) {
-        // Append line data to buffer, excluding the 'data: ' prefix
-        buffer.write(line.substring(6));
-      } else if (line.isEmpty) {
-        // Empty line indicates end of an event
-        if (buffer.isNotEmpty) {
-          final event = buffer.toString();
-          if (event != '[DONE]') { controller.add(event); }
-          buffer.clear();
-        }
-      }
-    }, onDone: () {
-      controller.close();
-    }, onError: (error) {
-      controller.addError(error);
-    });
-
-    return controller.stream;
-  }
-
-} 

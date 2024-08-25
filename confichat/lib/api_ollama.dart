@@ -233,6 +233,29 @@ class ApiOllama extends LlmApi{
         // Filter out empty stop sequences
         List<String> filteredStopSequences = stopSequences.where((s) => s.trim().isNotEmpty).toList();
 
+        // Process messages to extract images
+        List<Map<String, dynamic>> processedMessages = messages.map((message) {
+          // Check for images in the message
+          if (message['images'] != null) {
+            // If images exist, extract the base64 values
+            List<String> base64Images = [];
+            var images = message['images'] as List<Map<String, String>>;
+
+            for (var image in images) {
+              base64Images.add(image['base64'] ?? '');
+            }
+
+            // Create a new message with extracted base64 images
+            return {
+              "role": message['role'],
+              "content": message['content'],
+              "images": base64Images, // Use only base64 images
+            };
+          }
+          return message; // Return the message as is if no images
+        }).toList();
+
+
         // Assemble request
         final request = http.Request('POST', getUri('/chat'))
           ..headers.addAll(AppData.headerJson);
@@ -249,7 +272,7 @@ class ApiOllama extends LlmApi{
         request.body = jsonEncode({
               'model': modelId,
               'messages': [ 
-                ...messages, 
+                ...processedMessages, 
                 if (getSummary) summaryRequest,
               ],
               'options': {

@@ -12,36 +12,40 @@ import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'interfaces.dart';
-import 'package:intl/intl.dart';
 
 import 'package:confichat/app_data.dart';
 
 
-class ApiChatGPT extends LlmApi{
+class ApiAnthropic extends LlmApi{
 
-  static final ApiChatGPT _instance = ApiChatGPT._internal();
-  static ApiChatGPT get instance => _instance;
+  static String version = '2023-06-01';
+  static final ApiAnthropic _instance = ApiAnthropic._internal();
+  static ApiAnthropic get instance => _instance;
 
-  factory ApiChatGPT() {
+  factory ApiAnthropic() {
     return _instance;
   }
-
-  ApiChatGPT._internal() : super(AiProvider.openai) {
+  ApiAnthropic._internal() : super(AiProvider.anthropic) {
 
       scheme = 'https';
-      host = 'api.openai.com';
+      host = 'api.anthropic.com';
       port = 443; 
       path = '/v1';
 
       defaultTemperature = 1.0;
       defaultProbability = 1.0;
-      defaultMaxTokens = 4096;
+      defaultMaxTokens = 1024;
       defaultStopSequences = [];
 
       temperature = 1.0;
       probability = 1.0;
-      maxTokens = 4096;
+      maxTokens = 1024;
       stopSequences = [];
+  }
+
+  bool isImageTypeSupported(String extension){
+    const allowedExtensions = ['jpeg', 'png', 'gif', 'webp'];
+    return allowedExtensions.contains(extension.toLowerCase());
   }
 
   // Implementations
@@ -54,10 +58,10 @@ class ApiChatGPT extends LlmApi{
       final fileContent = await File(filePath).readAsString();
       final Map<String, dynamic> settings = json.decode(fileContent);
 
-      if (settings.containsKey(AiProvider.openai.name)) {
+      if (settings.containsKey(AiProvider.anthropic.name)) {
 
         // Override values in memory from disk
-        apiKey = settings[AiProvider.openai.name]['apikey'] ?? '';
+        apiKey = settings[AiProvider.anthropic.name]['apikey'] ?? '';
       }
     } 
   }
@@ -65,29 +69,11 @@ class ApiChatGPT extends LlmApi{
   @override
   Future<void> getModels(List<ModelItem> outModels) async  {
 
-    try {
-        
-        // Add authorization header
-        final Map<String, String> headers = {'Authorization': 'Bearer $apiKey'};
-
-        // Retrieve active models for provider
-        await getData(url: getUri('/models'), requestHeaders: headers);
-
-        // Decode response
-        final Map<String, dynamic> jsonData = jsonDecode(responseData);
-        final List<dynamic> modelsJson = jsonData['data'];
-
-        // Parse to ModelItem
-        for (var json in modelsJson) {
-          final String id = json['id'];
-          outModels.add(ModelItem(id, id));
-        }
-
-      } catch (e) {
-        // Catch and handle the FormatException
-        if (kDebugMode) { print('Unable to retrieve models ($host): $e\n $responseData'); }
-    } 
-
+    // As of this writing, there doesn't seem to be an api endpoint to grab model names
+    outModels.add(ModelItem('claude-3-5-sonnet-20240620', 'claude-3-5-sonnet-20240620'));
+    outModels.add(ModelItem('claude-3-opus-20240229', 'claude-3-opus-20240229'));
+    outModels.add(ModelItem('claude-3-sonnet-20240229', 'claude-3-sonnet-20240229'));
+    outModels.add(ModelItem('claude-3-haiku-20240307', 'claude-3-haiku-20240307'));
   } 
 
   @override
@@ -101,45 +87,7 @@ class ApiChatGPT extends LlmApi{
 
   @override
   Future<void> getModelInfo(ModelInfo outModelInfo, String modelId) async {
-
-    try {
-
-      // Add authorization header
-      final Map<String, String> headers = {'Authorization': 'Bearer $apiKey'};
-
-      // Send api request
-      await getData(
-        url: getUri('/models/$modelId'),
-        requestHeaders: headers
-      );
-
-      // Decode response
-      Map<String, dynamic> jsonData = jsonDecode(responseData);
-      outModelInfo.parameterSize = '';
-      outModelInfo.parentModel = jsonData['id'];
-      outModelInfo.quantizationLevel = '';        
-      outModelInfo.rootModel = '';
-      outModelInfo.languages = '';
-      outModelInfo.systemPrompt = '';
-
-      // Parse unix timestamp
-      int? unixTimestamp = jsonData['created'];
-
-      if(unixTimestamp != null){
-        final DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(unixTimestamp * 1000, isUtc: true);
-        final String formattedDate = DateFormat('yyyy-MMM-dd HH:mm:ss').format(dateTime);
-        outModelInfo.createdOn = '$formattedDate (UTC)';
-      } else {
-        outModelInfo.createdOn = '';
-      }
-
-    } catch (e) {
-      // Catch and handle the FormatException
-      if (kDebugMode) {
-        print('Unable to retrieve models: $e\n ${AppData.instance.api.responseData}');
-      }
-    }
-
+    // No function for this exists in Anthropic as of this writing
   }
 
   @override
@@ -172,13 +120,15 @@ class ApiChatGPT extends LlmApi{
         // Filter out empty stop sequences
         List<String> filteredStopSequences = stopSequences.where((s) => s.trim().isNotEmpty).toList();
 
-        // Assemble headers
-        Map<String, String> headers = {'Authorization': 'Bearer $apiKey'};
+        // Assemble headers - this sequence seems to matter with Anthropic streaming
+        Map<String, String> headers = {'anthropic-version': version};
         headers.addAll(AppData.headerJson);
+        headers.addAll({'x-api-key': apiKey});
 
         // Parse message for sending to chatgpt
         List<Map<String, dynamic>> apiMessages = [];
 
+        String systemPrompt = '';
         for (var message in messages) {
           List<Map<String, dynamic>> contentList = [];
 
@@ -193,17 +143,35 @@ class ApiChatGPT extends LlmApi{
           // Add the images if any
           if (message['images'] != null) {
             for (var imageFile in message['images']) {
-              contentList.add({
-                "type": "image_url",
-                "image_url": {"url": "data:image/${imageFile['ext']};base64,${imageFile['base64']}"},
-              });
+              
+              if(isImageTypeSupported(imageFile['ext'])){
+                contentList.add({
+                  "type": "image",
+                  "source": { 
+                      "type": "base64",
+                      "media_type": "image/${imageFile['ext']}",
+                      "data": imageFile['base64'],
+                  }
+                });
+              }
+
             }
           }
 
-          apiMessages.add({
-            "role": message['role'],
-            "content": contentList,
-          });
+          // Check for valid message         
+          if(message.containsKey('role')) {
+
+             // Check for system prompt
+            if(message['role'] == 'system') {
+              systemPrompt = message['content'];
+            } else {
+              // Add to message history
+              apiMessages.add({
+                "role": message['role'],
+                "content":  contentList,
+              });
+            }
+          }
         }
 
         // Add summary prompt
@@ -215,7 +183,7 @@ class ApiChatGPT extends LlmApi{
         }
 
         // Assemble request
-        final request = http.Request('POST', getUri('/chat/completions'))
+        final request = http.Request('POST', getUri('/messages'))
           ..headers.addAll(headers);
 
         request.body = jsonEncode({
@@ -224,7 +192,8 @@ class ApiChatGPT extends LlmApi{
               'temperature': temperature,
               'top_p': probability,
               'max_tokens': maxTokens,
-               if (filteredStopSequences.isNotEmpty) 'stop': filteredStopSequences,
+               if (filteredStopSequences.isNotEmpty) 'stop_sequences': filteredStopSequences,
+               if (systemPrompt.isNotEmpty) 'system': systemPrompt,
               'stream': true
         });
 
@@ -265,13 +234,12 @@ class ApiChatGPT extends LlmApi{
                 Map<String, dynamic> jsonMap = jsonDecode(chunk);
                 
                 // Extract the first choice
-                if (jsonMap.containsKey('choices') && jsonMap['choices'].isNotEmpty) {
-                  var firstChoice = jsonMap['choices'][0];
-                  var delta = firstChoice['delta'];
+                if (jsonMap.containsKey('delta') && jsonMap['delta'].isNotEmpty) {
+                  var delta = jsonMap['delta'];
 
                   // Extract the content
-                  if (delta.containsKey('content')) {
-                    String content = delta['content'];
+                  if (delta.containsKey('text')) {
+                    String content = delta['text'];
                     if (content.isNotEmpty && onStreamChunkReceived != null) {
                       onStreamChunkReceived(indexPayload, StreamChunk(content)); 
                     }
@@ -314,11 +282,10 @@ class SseTransformer extends StreamTransformerBase<String, String> {
     stream.listen((line) {
 
       // Uncomment for troubleshooting
-      // print(line);
+      //print(line);
 
-      if (line.startsWith('data: ')) {
-        // Append line data to buffer, excluding the 'data: ' prefix
-        buffer.write(line.substring(6));
+      if (line.startsWith('data: {"type":"content_block_delta')) {    // We're only interested with the content deltas
+        buffer.write(line.substring(6));                              // Append line data to buffer, excluding the 'data: ' prefix
       } else if (line.isEmpty) {
         // Empty line indicates end of an event
         if (buffer.isNotEmpty) {

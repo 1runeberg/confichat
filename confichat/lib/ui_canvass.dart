@@ -51,7 +51,7 @@ class CanvassState extends State<Canvass> {
   Map<int, Iterable<String>> chatDocuments = {};
   Map<int, Iterable<String>> chatCodeFiles = {};
 
-  List<String> base64Images = [];
+  List<ImageFile> base64Images = [];
   Map<String, String> documents = {}; 
   Map<String, String> codeFiles = {}; 
   Map<int, bool> processingData = {};
@@ -172,11 +172,12 @@ class CanvassState extends State<Canvass> {
                           fnCancelProcessing: isProcessing ? _cancelProcessing : null,
                           indexProcessing: (isProcessing && (processingData[currentIndex] != null && processingData[currentIndex]!)) ? currentIndex : null,
                           textData: chatData[currentIndex]['role'] == 'system' ? "!system_prompt_ignore" : chatData[currentIndex]['content'],
-                          images:chatData[currentIndex]['images'] != null
-                                ? (chatData[currentIndex]['images'] as List<dynamic>)
-                                    .map((item) => item as String)
-                                    .toList()
-                                : null,
+                          images: chatData[currentIndex]['images'] != null
+                              ? (chatData[currentIndex]['images'] as List<Map<String, String>>)
+                                  .map((item) => item['base64'] as String) 
+                                  .toList() 
+                              : null,
+
                           documents: chatDocuments.containsKey(currentIndex) ? chatDocuments[currentIndex] : null,
                           codeFiles: chatCodeFiles.containsKey(currentIndex) ? chatCodeFiles[currentIndex] : null,
                         );
@@ -208,13 +209,13 @@ class CanvassState extends State<Canvass> {
                                       context: context,
                                       builder: (BuildContext context) {
                                         return Dialog(
-                                          child: ImagePreview(base64Image: image),
+                                          child: ImagePreview(base64Image: image.base64),
                                         );
                                       },
                                     );
                                   },
                                   child: Image.memory(
-                                    base64Decode(image),
+                                    base64Decode(image.base64),
                                     height: 50,
                                     width: 50,
                                     fit: BoxFit.cover,
@@ -610,18 +611,44 @@ class CanvassState extends State<Canvass> {
                 } else {
 
                   PersistentStorage.setAppData(jsonData);
-                  final messageHistory = jsonData['messages'];
+                  final messageHistory = jsonDecode(jsonData['messages']);
 
-                  if(messageHistory != null && messageHistory.isNotEmpty)
-                  {
+                  if (messageHistory != null && messageHistory.isNotEmpty) {
                     setState(() {
-                      chatData = List<Map<String, dynamic>>.from(jsonDecode(messageHistory));
-                    });
-                  }
-                }
+                      chatData = List<Map<String, dynamic>>.from(messageHistory.map((message) {
+                        // Handle images separately
+                        if (message['images'] != null) {
+                          var images = message['images'] as List<dynamic>;
 
-              },
+                          // Prepare a list to hold parsed images
+                          List<Map<String, String>> parsedImages = [];
+
+                          for (var item in images) {
+                            if (item is String) {
+                              // If the item is a String, assume it's a base64 and set the default ext - v0.4.0 and below
+                              parsedImages.add({
+                                'ext': 'jpeg', // Default extension from v0.4.0
+                                'base64': item,
+                              });
+                            } else if (item is Map<String, dynamic>) {
+                              // If the item is a Map<String, dynamic>, extract base64 = v0.5.0 and above
+                              parsedImages.add({
+                                'ext': item['ext'] ?? 'jpeg', // Get the ext if available, otherwise default to 'jpeg' (0.4.0)
+                                'base64': item['base64'] ?? '', // Get the base64 value
+                              });
+                            }
+                          }
+
+                          // Assign the parsed images back to the message
+                          message['images'] = parsedImages.isNotEmpty ? parsedImages : null;
+                        }
+
+                        return message; // Return the modified message
+                      }));
+                    });
+              }}}
             ),
+
             ElevatedButton(
               child: const Text('Cancel'),
               onPressed: () {
@@ -848,7 +875,12 @@ class CanvassState extends State<Canvass> {
       chatData.add({
         "role": "user", 
         "content": promptText,
-        "images": base64Images.isNotEmpty ? List<String>.from(base64Images) : null
+        "images": base64Images.isNotEmpty
+          ? base64Images.map((image) => {
+              "ext": image.ext,
+              "base64": image.base64,
+            }).toList()
+          : null
         });
 
       // Add any document or code file in to the chat data

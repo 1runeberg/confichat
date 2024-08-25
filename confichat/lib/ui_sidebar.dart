@@ -4,18 +4,20 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import 'package:confichat/ui_llamacpp_options.dart';
-import 'package:confichat/ui_terms_and_conditions.dart';
 import 'package:flutter/material.dart';
-
 import 'dart:io';
 
 import 'package:confichat/app_data.dart';
 import 'package:confichat/chat_notifiers.dart';
 import 'package:confichat/persistent_storage.dart';
 import 'package:confichat/ui_app_settings.dart';
-import 'package:confichat/ui_openai_options.dart';
+
 import 'package:confichat/ui_ollama_options.dart';
+import 'package:confichat/ui_llamacpp_options.dart';
+import 'package:confichat/ui_openai_options.dart';
+import 'package:confichat/ui_anthropic_options.dart';
+import 'package:confichat/ui_terms_and_conditions.dart';
+
 import 'package:confichat/ui_widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -198,21 +200,7 @@ class SidebarState extends State<Sidebar> {
                       },
                     ),
 
-                    // (2.2.2) OpenAI options
-                    ListTile(
-                      title: Text(AiProvider.openai.name),
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (BuildContext context) {
-                            return ChatGPTOptions(appData: widget.appData);
-                          },
-                        );
-                      },
-                    ),
-
-                    // (2.2.3) LlamaCpp options
+                    // (2.2.2) LlamaCpp options
                     ListTile(
                       title: Text(AiProvider.llamacpp.name),
                       onTap: () {
@@ -226,7 +214,35 @@ class SidebarState extends State<Sidebar> {
                       },
                     ),
 
-                    // (2.2.4) App settings
+                    // (2.2.3) OpenAI options
+                    ListTile(
+                      title: Text(AiProvider.openai.name),
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return ChatGPTOptions(appData: widget.appData);
+                          },
+                        );
+                      },
+                    ),
+
+                    // (2.2.4) Anthropic options
+                    ListTile(
+                      title: Text(AiProvider.anthropic.name),
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return AnthropicOptions(appData: widget.appData);
+                          },
+                        );
+                      },
+                    ),
+
+                    // (2.2.5) App settings
                     ListTile(
                       title: const Text('Application settings'),
                       onTap: () {
