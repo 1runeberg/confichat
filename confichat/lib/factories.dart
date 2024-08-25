@@ -5,20 +5,25 @@
  */
 
 
+import 'package:confichat/interfaces.dart';
+
+import 'package:confichat/api_ollama.dart';
 import 'package:confichat/api_llamacpp.dart';
 import 'package:confichat/api_openai.dart';
-import 'package:confichat/api_ollama.dart';
-import 'package:confichat/interfaces.dart';
+import 'package:confichat/api_anthropic.dart';
+
 
 class LlmApiFactory {
   static LlmApi create(String apiProvider) {
     switch (apiProvider.toLowerCase()) {
       case 'ollama':
         return ApiOllama();
-      case 'openai':
-        return ApiChatGPT();
       case 'llamacpp':
         return ApiLlamaCpp();
+      case 'openai':
+        return ApiChatGPT();
+      case 'anthropic':
+        return ApiAnthropic();
       default:
         throw Exception('Unsupported API provider: $apiProvider');
     }

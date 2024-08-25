@@ -17,7 +17,7 @@
 
 <ul style="color: #555; font-size: 20px;">
   <li><strong>Offline providers</strong> like <a href="https://ollama.com">Ollama</a> and <a href="https://github.com/ggerganov/llama.cpp">LlamaCpp</a> provide privacy by operating on your local machine or network without cloud services.</li>
-  <li><strong>Online providers</strong> like <a href="https://openai.com">OpenAI</a> offer cutting-edge models via APIs, which have different privacy policies than their chat services, giving you greater control over your data.</li>
+  <li><strong>Online providers</strong> like <a href="https://openai.com">OpenAI</a> and <a href="https://anthropic.com">Anthropic</a> offer cutting-edge models via APIs, which have different privacy policies than their chat services, giving you greater control over your data.</li>
 </ul>
 
 
@@ -67,7 +67,7 @@ In a nutshell, ConfiChat caters to users who value transparent control over thei
 
 - **Local Model Support (Ollama and LlamaCpp)**: [Ollama](https://ollama.com) & [LlamaCpp](https://github.com/ggerganov/llama.cpp) both offer a range of lightweight, open-source local models, such as [Llama by Meta](https://ai.meta.com/llama/), [Gemma by Google](https://ai.google.dev/gemma), and [Llava](https://github.com/haotian-liu/LLaVA) for multimodal/image support. These models are designed to run efficiently even on machines with limited resources. 
 
-- **OpenAI Integration**: Seamlessly integrates with [OpenAI](https://openai.com) to provide advanced language model capabilities using your [own API key](https://platform.openai.com/docs/quickstart). Please note that while the API does not store conversations like ChatGPT does, OpenAI retains input data for abuse monitoring purposes. You can review their latest [data retention and security policies](https://openai.com/enterprise-privacy/). In particular, check the "How does OpenAI handle data retention and monitoring for API usage?" in their FAQ (https://openai.com/enterprise-privacy/).
+- **OpenAI and Anthropic Support**: Seamlessly integrates with [OpenAI](https://openai.com) and [Anthropic](https://anthropic.com) to provide advanced language model capabilities using your [own API key](https://platform.openai.com/docs/quickstart). Please note that while the API does not store conversations like ChatGPT does, OpenAI retains input data for abuse monitoring purposes. You can review their latest [data retention and security policies](https://openai.com/enterprise-privacy/). In particular, check the "How does OpenAI handle data retention and monitoring for API usage?" in their FAQ (https://openai.com/enterprise-privacy/).
 
 - **Privacy-Focused**: Privacy is at the core of ConfiChat's development. The app is designed to prioritize user confidentiality, with optional chat history encryption ensuring that your data remains secure. 
 

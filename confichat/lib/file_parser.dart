@@ -23,6 +23,14 @@ enum ParserFileType {
     unknown,
   }
 
+
+class ImageFile {
+  final String base64;
+  final String ext;
+
+  ImageFile(this.base64, this.ext);
+}
+
 class FileParser {
 
   static const List<String> imageFormats = [
@@ -65,13 +73,35 @@ class FileParser {
     return ParserFileType.unknown;
   }
 
+  static String getImageExtension(String filename){
+
+    final parts = filename.split('.');
+    if (parts.length < 2) {
+      return '';
+    }
+
+    final extension = parts.last.toLowerCase();
+    if(imageFormats.contains(extension)){
+      if(extension == 'jpg' || extension == 'jpeg' ) {
+          return 'jpeg';
+      }
+
+      return extension;
+    }
+
+    return '';
+  }
+
   static Future<void> processImages({
     required File file,
-    required List<String> outImages,
+    required List<ImageFile> outImages,
   }) async {
     List<int> imageBytes = file.readAsBytesSync();
-    String base64String = base64Encode(imageBytes);
-    outImages.add(base64String);
+    ImageFile imageFile = ImageFile(base64Encode(imageBytes), getImageExtension(file.path));
+    
+    if(imageFile.ext.isNotEmpty && imageFile.base64.isNotEmpty){
+      outImages.add(imageFile);
+    }
   }
 
   static Future<void> processTextDocuments({
@@ -127,7 +157,7 @@ class FileParser {
   static Future<void> processPlatformFiles({
     required List<PlatformFile> files,
     required BuildContext context,
-    List<String>? outImages,
+    List<ImageFile>? outImages,
     Map<String, String>? outDocuments,
     Map<String, String>? outCodeFiles,
   }) async {
@@ -177,7 +207,7 @@ class FileParser {
   static Future<void> processDroppedFiles({
     required DropDoneDetails details,
     required BuildContext context,
-    List<String>? outImages,
+    List<ImageFile>? outImages,
     Map<String,String>? outDocuments,
     Map<String,String>? outCodeFiles,
   }) async {

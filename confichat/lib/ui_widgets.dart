@@ -6,12 +6,12 @@
 
 import 'dart:math';
 
+import 'package:code_highlight_view/code_highlight_view.dart';
+import 'package:code_highlight_view/themes/github.dart';
 import 'package:confichat/persistent_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:flutter_highlight/flutter_highlight.dart';
-import 'package:flutter_highlight/themes/github.dart';
 import 'package:confichat/app_data.dart';
 
 import 'package:markdown/markdown.dart' as md;
@@ -297,7 +297,7 @@ class CodePreviewBuilder extends MarkdownElementBuilder {
               border: Border.all(color: Colors.grey),
               borderRadius: BorderRadius.circular(3),
             ),
-            child: HighlightView(
+            child: CodeHighlightView(
               element.textContent,
               padding: const EdgeInsets.all(10),
               language: getCodeLanguage(element),

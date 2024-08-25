@@ -381,12 +381,11 @@ static String encryptStringIV({
     return base64IV;
   }
 
-   static void encryptChatData({
+  static void encryptChatData({
     required encrypt.IV iv,
     required String userKey,
     required List<Map<String, dynamic>> chatData,
   }) {
-
     for (var entry in chatData) {
       // Encrypt content
       if (entry['content'] != null) {
@@ -400,30 +399,69 @@ static String encryptStringIV({
 
       // Encrypt images if they exist
       if (entry['images'] != null && entry['images'] is List) {
+
         entry['images'] = (entry['images'] as List).map((image) {
+
           if (image is String) {
+
+            // If the image is a base64 string, encrypt it - v0.4.0 and below
             final encryptedImage = CryptoUtils.encryptString(
               iv: iv,
               userKey: userKey,
               data: image,
             );
-            return encryptedImage;
+
+            return {
+              'ext': 'jpeg', // Use a default extension if needed
+              'base64': encryptedImage,
+            };
+
+          } else if (image is Map<String, String>) {
+
+            // If the image is a map, encrypt the base64 - v0.5.0 and above
+            final encryptedBase64 = CryptoUtils.encryptString(
+              iv: iv,
+              userKey: userKey,
+              data: image['base64'] ?? '',
+            );
+
+            return {
+              'ext': image['ext'] ?? 'jpeg', // Keep the existing extension or default to 'jpeg'
+              'base64': encryptedBase64,
+            };
+
+          } else if (image is Map<String, dynamic>) {
+
+            // If the image is a map, encrypt the base64 - failsafe for other platforms
+            final encryptedBase64 = CryptoUtils.encryptString(
+              iv: iv,
+              userKey: userKey,
+              data: image['base64'] ?? '',
+            );
+
+            return {
+              'ext': image['ext'] ?? 'jpeg', // Keep the existing extension or default to 'jpeg'
+              'base64': encryptedBase64,
+            };
+
           } else {
-            if (kDebugMode) { print('Warning: Non-string image data encountered');   }
+            if (kDebugMode) {
+              print('Warning: Non-string or non-map image data encountered');
+            }
             return null;
           }
-        }).whereType<String>().toList();
+        }).whereType<Map<String, String>>().toList(); // Filter out nulls and ensure the output is a List<Map>
       }
-    }
 
+    }
   }
+
 
   static void decryptChatData({
     required String base64IV,
     required String userKey,
     required List<Map<String, dynamic>> chatData,
   }) {
-
     for (var entry in chatData) {
       // Decrypt content
       if (entry['content'] != null) {
@@ -435,29 +473,79 @@ static String encryptStringIV({
         entry['content'] = decryptedContent;
       }
 
-    // Decrypt images if they exist
-    if (entry['images'] != null && entry['images'] is List) {
-      entry['images'] = (entry['images'] as List).map((encryptedImage) {
-        if (encryptedImage is String) {
-          try {
-            final decryptedImage = CryptoUtils.decryptString(
-              base64IV: base64IV,
-              userKey: userKey,
-              encryptedData: encryptedImage,
-            );
-            return decryptedImage;
-          } catch (e) {
-            if (kDebugMode) { print('Error decrypting image: $e'); }
-            return null;
+      // Decrypt images if they exist
+      if (entry['images'] != null && entry['images'] is List) {
+        entry['images'] = (entry['images'] as List).map((encryptedImage) {
+
+          if (encryptedImage is String) {
+            // If the image is a base64 string - v0.4.0 and below
+            try {
+              final decryptedImage = CryptoUtils.decryptString(
+                base64IV: base64IV,
+                userKey: userKey,
+                encryptedData: encryptedImage,
+              );
+              return {
+                'ext': 'jpeg', // Default extension; modify if needed
+                'base64': decryptedImage,
+              };
+            } catch (e) {
+              if (kDebugMode) {
+                print('Error decrypting image: $e');
+              }
+              return null; // Return null for failed decryptions
+            }
+
+          } else if (encryptedImage is Map<String, String>) {
+
+            // If the image is a map, decrypt the base64 value - v0.5.0 and above
+            try {
+              final decryptedBase64 = CryptoUtils.decryptString(
+                base64IV: base64IV,
+                userKey: userKey,
+                encryptedData: encryptedImage['base64'] ?? '',
+              );
+              return {
+                'ext': encryptedImage['ext'] ?? 'jpeg', // Retain the existing extension
+                'base64': decryptedBase64,
+              };
+            } catch (e) {
+              if (kDebugMode) {
+                print('Error decrypting image map: $e');
+              }
+              return null; // Return null for failed decryptions
+            }
+          } else if (encryptedImage is Map<String, dynamic>) {
+
+            // If the image is a map, decrypt the base64 value - failsafe for other platforms
+            try {
+              final decryptedBase64 = CryptoUtils.decryptString(
+                base64IV: base64IV,
+                userKey: userKey,
+                encryptedData: encryptedImage['base64'] ?? '',
+              );
+              return {
+                'ext': encryptedImage['ext'] ?? 'jpeg', // Retain the existing extension
+                'base64': decryptedBase64,
+              };
+            } catch (e) {
+              if (kDebugMode) {
+                print('Error decrypting image map: $e');
+              }
+              return null; // Return null for failed decryptions
+            }
+
+          } else {
+            if (kDebugMode) {
+              print('Warning: Non-string or non-map encrypted image data encountered');
+            }
+            return null; // Return null for non-string and non-map values
           }
-        } else {
-          if (kDebugMode) { print('Warning: Non-string encrypted image data encountered'); }
-          return null;
-        }
-      }).whereType<String>().toList();
-    }
+        }).whereType<Map<String, String>>().toList(); // Filter out null values and ensure output is List<Map>
+      }
     }
   }
+
 
   static void decryptToChatData({
     required String base64IV,
@@ -465,18 +553,19 @@ static String encryptStringIV({
     required dynamic jsonData,
     required List<Map<String, dynamic>> chatData,
   }) {
-
     final List<Map<String, dynamic>> encryptedData = List<Map<String, dynamic>>.from(jsonDecode(jsonData));
 
-    if(encryptedData.isEmpty) { return; }
+    if (encryptedData.isEmpty) {
+      return;
+    }
 
     chatData.clear();
     for (var entry in encryptedData) {
-
       String decryptedContent = '';
+
       // Decrypt content
       if (entry['content'] != null) {
-          decryptedContent = CryptoUtils.decryptString(
+        decryptedContent = CryptoUtils.decryptString(
           base64IV: base64IV,
           userKey: userKey,
           encryptedData: entry['content']!,
@@ -484,40 +573,56 @@ static String encryptStringIV({
       }
 
       // Decrypt images if they exist
-      List<String> decryptedImages = [];
-        if (entry['images'] != null && entry['images'] is List) {
-          decryptedImages = (entry['images'] as List).map((encryptedImage) {
-            if (encryptedImage is String) {
-              try {
-                return CryptoUtils.decryptString(
+      List<Map<String, String>> decryptedImages = [];
+      if (entry['images'] != null) {
+        var images = entry['images'] as List<dynamic>;
+
+        for (var item in images) {
+          if (item is String) {
+            // Decrypting string images
+            try {
+              decryptedImages.add({
+                'ext': 'jpeg', // Default extension; adjust as necessary
+                'base64': CryptoUtils.decryptString(
                   base64IV: base64IV,
                   userKey: userKey,
-                  encryptedData: encryptedImage,
-                );
-              } catch (e) {
-                if (kDebugMode) {
-                  print('Error decrypting image: $e');
-                }
-                return null; // Return null to filter out failed decryptions
-              }
-            } else {
+                  encryptedData: item,
+                ),
+              });
+            } catch (e) {
               if (kDebugMode) {
-                print('Warning: Non-string encrypted image data encountered');
+                print('Error decrypting image: $e');
               }
-              return null; // Return null for non-string values
             }
-          }).whereType<String>().toList(); // Filter out null values
+          } else if (item is Map<String, dynamic>) {
+            // Decrypting map images
+            try {
+              decryptedImages.add({
+                'ext': item['ext'] ?? 'jpeg', // Get the ext if available
+                'base64': CryptoUtils.decryptString(
+                  base64IV: base64IV,
+                  userKey: userKey,
+                  encryptedData: item['base64'] ?? '',
+                ),
+              });
+            } catch (e) {
+              if (kDebugMode) {
+                print('Error decrypting map image: $e');
+              }
+            }
+          }
         }
+      }
 
       // Add entry to chat data
-      chatData.add( {
+      chatData.add({
         "role": entry['role'] ?? '',
         "content": decryptedContent,
-        "images": decryptedImages 
+        "images": decryptedImages.isNotEmpty ? decryptedImages : null, // Only include images if there are any
       });
-
     }
   }
+
 
 }
 

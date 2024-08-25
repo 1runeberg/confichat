@@ -77,11 +77,14 @@ class ConfiChat extends StatelessWidget {
             case 'ollama':
               selectedProvider = AiProvider.ollama;
               break;
+            case 'llamacpp':
+              selectedProvider = AiProvider.llamacpp;
+              break;
             case 'openai':
               selectedProvider = AiProvider.openai;
               break;
-            case 'llamacpp':
-              selectedProvider = AiProvider.llamacpp;
+            case 'anthropic':
+              selectedProvider = AiProvider.anthropic;
               break;
             default:
               selectedProvider = AiProvider.ollama; // Fallback to Ollama if the string doesn't match
@@ -119,11 +122,7 @@ class ConfiChat extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      'assets/confichat_logo.png',
-                      width: 100, // Set the desired width for the logo
-                      height: 100, // Set the desired height for the logo
-                    ),
+                    Image.asset('assets/confichat_logo.png', width: 100, height: 100,),
                     const SizedBox(height: 20),
                     const CircularProgressIndicator(),
                   ],

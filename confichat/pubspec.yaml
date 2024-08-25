@@ -12,7 +12,6 @@ dependencies:
   file_picker: ^8.0.0+1
   flutter:
     sdk: flutter
-  flutter_highlight: ^0.7.0
   flutter_markdown: ^0.7.3+1
   http: ^1.2.2
   intl: ^0.19.0
@@ -23,6 +22,7 @@ dependencies:
   pdfrx: ^1.0.82
   encrypt: ^5.0.3
   crypto: ^3.0.3
+  code_highlight_view: ^0.1.1
 
 dev_dependencies:
   flutter_test:
