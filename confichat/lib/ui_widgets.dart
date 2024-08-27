@@ -455,7 +455,7 @@ class ChatBubble extends StatelessWidget {
                     child: SelectionArea(
                     child: Container( 
                       margin: const EdgeInsets.all(5), 
-                      child: Markdown(
+                      child: isUser? Text(sanitizedText) : Markdown(
                         data: sanitizedText, 
                         builders: {
                           'code': CodePreviewBuilder(context),

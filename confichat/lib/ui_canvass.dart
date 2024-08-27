@@ -1357,20 +1357,10 @@ class ShiftEnterTextFormFieldState extends State<ShiftEnterTextFormField> {
     onKeyEvent: (KeyEvent event) {
       if (event is KeyDownEvent) {
         if (HardwareKeyboard.instance.isShiftPressed  && event.logicalKey == LogicalKeyboardKey.enter) {
-
-          // Insert a newline at the current cursor position
-          final currentText = widget.promptController.text;
-          final cursorPosition = widget.promptController.selection.baseOffset;
-          final newText = '${currentText.substring(0, cursorPosition)}\n${currentText.substring(cursorPosition)}';
-
-          setState(() {
-            widget.promptController.text = newText;
-            widget.promptController.selection = TextSelection.fromPosition(
-              TextPosition(offset: cursorPosition + 1),
-            );
-
-          });
-
+          // Capture shift-enter
+        } else if (HardwareKeyboard.instance.isControlPressed  && event.logicalKey == LogicalKeyboardKey.enter) {
+          // Capture ctrl-enter
+          widget.promptController.text += '\n';
         } else if (event.logicalKey == LogicalKeyboardKey.enter) {
             sendPromptKeyEvent();
         }
