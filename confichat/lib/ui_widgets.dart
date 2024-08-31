@@ -433,7 +433,7 @@ class ChatBubble extends StatelessWidget {
 
                 // Chat contents
                 Row( children: [
-                  const SizedBox(width:10),
+                  const SizedBox(height: 40, width: 10), 
 
                   // Animated icon
                   if(!isUser && animateIcon) const AnimIconColorFade(
