@@ -339,13 +339,35 @@ class CodePreviewBuilder extends MarkdownElementBuilder {
 
 } // class CodePreviewBuilder
 
+enum AiStatus {
+  complete,
+  processing
+}
+
+enum ChatActionType {
+  cancel,
+  delete,
+  regenerate
+}
+
+class ChatActionPayload {
+  final int index;
+  final ChatActionType actionType;
+
+  ChatActionPayload(
+    this.index,
+    this.actionType,
+  );
+}
+
+
 class ChatBubble extends StatelessWidget {
   final String textData;
   final bool isUser;
   final bool animateIcon;
 
-  final Function(int)? fnCancelProcessing;
-  final int? indexProcessing;
+  final Function(ChatActionPayload) fnChatActionCallback;
+  final int index;
   final List<String>? images;
   final Iterable<String>? documents; 
   final Iterable<String>? codeFiles; 
@@ -355,8 +377,8 @@ class ChatBubble extends StatelessWidget {
     required this.isUser, 
     required this.animateIcon,
     required this.textData,
-    this.fnCancelProcessing,
-    this.indexProcessing,
+    required this.index,
+    required this.fnChatActionCallback, 
     this.images,
     this.documents,
     this.codeFiles
@@ -406,104 +428,144 @@ class ChatBubble extends StatelessWidget {
             const EdgeInsets.all(3) : const EdgeInsets.symmetric(horizontal: 3, vertical: 8).copyWith(right: 10),
 
           child: 
-            Row ( 
+            Stack ( 
               children: [
 
-                // Icon
-                const SizedBox(width:10),
+                // Chat contents
+                Row( children: [
+                  const SizedBox(width:10),
 
-                // Animated icon
-                if(!isUser && animateIcon) const AnimIconColorFade(
-                  icon: Icons.psychology, 
-                  size: 24.0, 
-                  duration: 2
-                ),
+                  // Animated icon
+                  if(!isUser && animateIcon) const AnimIconColorFade(
+                    icon: Icons.psychology, 
+                    size: 24.0, 
+                    duration: 2
+                  ),
 
-                // Regular icon
-                if(!animateIcon) Icon(
-                  isUser? Icons.person : Icons.psychology,
-                  color: Colors.grey,
-                  size: 24.0,
-                ),
+                  // Regular icon
+                  if(!animateIcon) Icon(
+                    isUser? Icons.person : Icons.psychology,
+                    color: Colors.grey,
+                    size: 24.0,
+                  ),
 
-                // Text
-                const SizedBox(width:20),
-                Expanded( 
-                  child: SelectionArea(
-                  child: Container( 
-                    margin: const EdgeInsets.all(5), 
-                    child: Markdown(
-                      data: sanitizedText, 
-                      builders: {
-                        'code': CodePreviewBuilder(context),
-                      },
-                      shrinkWrap: true,
-                      styleSheet: MarkdownStyleSheet(
-                          h3: const TextStyle(color: Colors.black, fontSize: 18),
-                          codeblockDecoration: BoxDecoration(
-                            color:  Colors.amber[100],
+                  // Text
+                  const SizedBox(width:20),
+                  Expanded( 
+                    child: SelectionArea(
+                    child: Container( 
+                      margin: const EdgeInsets.all(5), 
+                      child: isUser? Text(sanitizedText) : Markdown(
+                        data: sanitizedText, 
+                        builders: {
+                          'code': CodePreviewBuilder(context),
+                        },
+                        shrinkWrap: true,
+                        styleSheet: MarkdownStyleSheet(
+                            h3: const TextStyle(color: Colors.black, fontSize: 18),
+                            codeblockDecoration: BoxDecoration(
+                              color:  Colors.amber[100],
+                            ),
                           ),
-                        ),
-                      ) 
-                  )
-                )),
+                        ) 
+                    )
+                  )),
+
+                  // Images
+                  if (images != null && images!.isNotEmpty)
+                    Container(
+                      constraints: BoxConstraints(
+                        maxWidth: AppData.instance.getUserDeviceType(context) == UserDeviceType.phone ? 80 : 250, 
+                      ),
+                      child: Wrap(
+                        spacing: 3.0,
+                        children: images!.map((image) {
+                          return GestureDetector(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return Dialog(
+                                    child: ImagePreview(base64Image: image),
+                                  );
+                                },
+                              );
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.all(8),
+                              child: Image.memory(
+                                base64Decode(image),
+                                height: 50,
+                                width: 50,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+
+                ]),
+
+                // Action icons
 
                 // Cancel
-                if (!isUser && animateIcon && indexProcessing != null)
-                  Container(
+                if (!isUser && animateIcon)
+                Positioned( 
+                  right: 0, 
+                  bottom: 0,
+                  child: Container(
                     constraints: const BoxConstraints(
                       maxWidth: 50, 
                     ),
-                    child: IconButton( 
-                      icon: const Icon(Icons.cancel), 
-                      onPressed: indexProcessing == null ? null : () {
-                            if (fnCancelProcessing != null && indexProcessing != null) {
-                              fnCancelProcessing!(indexProcessing!);
-                          }
-                        }
-                      ),
-                  ),
-
-
-                // Images
-                if (images != null && images!.isNotEmpty)
-                  Container(
-                    constraints: BoxConstraints(
-                      maxWidth: AppData.instance.getUserDeviceType(context) == UserDeviceType.phone ? 80 : 250, 
-                    ),
-                    child: Wrap(
-                      spacing: 3.0,
-                      children: images!.map((image) {
-                        return GestureDetector(
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return Dialog(
-                                  child: ImagePreview(base64Image: image),
-                                );
-                              },
-                            );
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.all(8),
-                            child: Image.memory(
-                              base64Decode(image),
-                              height: 50,
-                              width: 50,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        );
-                      }).toList(),
+                  child: IconButton( 
+                    icon: const Icon(Icons.cancel), 
+                    onPressed: () => fnChatActionCallback ( ChatActionPayload(index, ChatActionType.cancel) )        
                     ),
                   ),
+                ),
 
-              ],
+                // Regenerate
+                if (!isUser && !animateIcon)
+                Positioned(
+                    right: 0, 
+                    bottom: 0,
+                    child: PopupMenuButton<String>(
+                      tooltip: 'Remove/Regen',
+                      iconColor: const Color.fromARGB(127, 158, 158, 158),
+                      onSelected: (value) => fnChatActionCallback(ChatActionPayload(index, ChatActionType.regenerate)),
+                      itemBuilder: (context) => [
+                        const PopupMenuItem(
+                          value: 'regenerate',
+                          child: Text('Remove/Regenerate'),
+                        ),
+                      ],
+                    )  
+                ),
+
+                // Delete
+                if (isUser)
+                Positioned(
+                    right: 0, 
+                    bottom: 0,
+                    child: PopupMenuButton<String>(
+                      tooltip: 'Delete',
+                      iconColor: const Color.fromARGB(127, 158, 158, 158),
+                      onSelected: (value) => fnChatActionCallback(ChatActionPayload(index, ChatActionType.delete)),
+                      itemBuilder: (context) => [
+                        const PopupMenuItem(
+                          value: 'delete',
+                          child: Text('Delete'),
+                        ),
+                      ],
+                    )  
+                ),
+
+              ],          
             ),
-
         ),
     );
+
   }
 
  String removeAutoPrompt(String text, String delimeter) {

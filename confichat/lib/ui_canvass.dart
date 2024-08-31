@@ -164,13 +164,11 @@ class CanvassState extends State<Canvass> {
                       itemBuilder: (context, index) {
 
                         int currentIndex = (chatData.length - 1) - index;
-                        bool isProcessing = processingData.containsKey(currentIndex) && processingData.containsKey(currentIndex);
-
                         return ChatBubble(
                           isUser: chatData[currentIndex]['role'] == 'user', 
-                          animateIcon: isProcessing,
-                          fnCancelProcessing: isProcessing ? _cancelProcessing : null,
-                          indexProcessing: (isProcessing && (processingData[currentIndex] != null && processingData[currentIndex]!)) ? currentIndex : null,
+                          animateIcon: processingData.containsKey(currentIndex) && processingData[currentIndex]!,
+                          fnChatActionCallback: _processChatAction,
+                          index: currentIndex,
                           textData: chatData[currentIndex]['role'] == 'system' ? "!system_prompt_ignore" : chatData[currentIndex]['content'],
                           images: chatData[currentIndex]['images'] != null
                               ? (chatData[currentIndex]['images'] as List<Map<String, String>>)
@@ -912,7 +910,7 @@ class CanvassState extends State<Canvass> {
 
   }
 
-  Future<void> _sendPromptWithHistory() async {
+  Future<void> _sendPromptWithHistory({bool clearUserPrompt = true}) async {
     if (!mounted) return;
 
     final selectedModelProvider = Provider.of<SelectedModelProvider>(context, listen: false);
@@ -932,10 +930,12 @@ class CanvassState extends State<Canvass> {
     );
 
     setState(() {
-      // Clear files
-      base64Images.clear();
-      documents.clear();
-      codeFiles.clear();
+      if(clearUserPrompt){
+        // Clear files
+        base64Images.clear();
+        documents.clear();
+        codeFiles.clear();
+      }
 
       // Add placeholder
       chatData.add({'role': 'assistant', 'content': ''});
@@ -989,10 +989,45 @@ class CanvassState extends State<Canvass> {
                   );
   }
 
-  void _cancelProcessing(int index){
-    if(processingData.containsKey(index)) {
-      processingData[index] = false;
+  void _processChatAction(ChatActionPayload payload) {
+
+    // Cancel
+    if( payload.actionType == ChatActionType.cancel)
+    {
+      if(processingData.containsKey(payload.index)) {
+            processingData[payload.index] = false;
+          }
+
+      return;
     }
+
+    // Regenerate
+    if( payload.actionType == ChatActionType.regenerate)
+    {
+      setState(() {
+        // Remove the message
+        // todo: cache so user can switch back to prior responses
+        chatData.removeAt(payload.index);
+
+      });
+
+      // If this is(was) the last message - regenerate
+      if(payload.index == chatData.length)
+      {
+           _sendPromptWithHistory(clearUserPrompt: false);
+      } 
+      return;
+    }
+
+    // Delete
+    if( payload.actionType == ChatActionType.delete)
+    {
+      setState(() {
+        chatData.removeAt(payload.index);
+      });
+      return;
+    }
+
   }
 
   bool _onChatStreamCancel(int index){
@@ -1322,20 +1357,10 @@ class ShiftEnterTextFormFieldState extends State<ShiftEnterTextFormField> {
     onKeyEvent: (KeyEvent event) {
       if (event is KeyDownEvent) {
         if (HardwareKeyboard.instance.isShiftPressed  && event.logicalKey == LogicalKeyboardKey.enter) {
-
-          // Insert a newline at the current cursor position
-          final currentText = widget.promptController.text;
-          final cursorPosition = widget.promptController.selection.baseOffset;
-          final newText = '${currentText.substring(0, cursorPosition)}\n${currentText.substring(cursorPosition)}';
-
-          setState(() {
-            widget.promptController.text = newText;
-            widget.promptController.selection = TextSelection.fromPosition(
-              TextPosition(offset: cursorPosition + 1),
-            );
-
-          });
-
+          // Capture shift-enter
+        } else if (HardwareKeyboard.instance.isControlPressed  && event.logicalKey == LogicalKeyboardKey.enter) {
+          // Capture ctrl-enter
+          widget.promptController.text += '\n';
         } else if (event.logicalKey == LogicalKeyboardKey.enter) {
             sendPromptKeyEvent();
         }
