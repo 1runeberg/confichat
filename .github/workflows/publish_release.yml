@@ -77,12 +77,6 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: cd confichat && flutter build apk --release
 
-    - name: Archive Android Build
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        cd confichat/build/app/outputs/flutter-apk
-        zip -r android-release.zip app-release.apk
-
     - name: Create Release (Windows)
       if: matrix.os == 'windows-latest'
       uses: softprops/action-gh-release@v2.0.8
@@ -112,6 +106,6 @@ jobs:
         tag_name: ${{ github.event.inputs.release_tag }}
         name: ${{ github.event.inputs.release_name }}
         body: ${{ env.RELEASE_NOTES }}
-        files: confichat/build/app/outputs/flutter-apk/android-release.zip
+        files: confichat/build/app/outputs/flutter-apk/app-release.apk
       env:
         GITHUB_TOKEN: ${{ secrets.CONFICHAT_SECRET }}
