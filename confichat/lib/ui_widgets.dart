@@ -387,7 +387,7 @@ class ChatBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    // Check if this is a syustem prompt
+    // Check if this is a system prompt
     if( textData == AppData.ignoreSystemPrompt){ return const SizedBox.shrink(); }
 
     // Parse textData for documents and code files

@@ -66,7 +66,6 @@ class AnthropicOptionsState extends State<AnthropicOptions> {
   }
 
   void _useDefaultSettings() {
-    //_apiKeyController.text = '';
     _applyValues();
   }
 

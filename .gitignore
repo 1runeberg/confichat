@@ -28,3 +28,9 @@ app.*.settings.local
 
 .flutter-plugins
 .flutter-plugins-dependencies
+
+# intellij
+.idea/
+
+# vscode
+.vscode/*
