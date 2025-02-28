@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Rune Berg (http://runeberg.io | https://github.com/1runeberg)
+ * Copyright 2024-25 Rune Berg (http://runeberg.io | https://github.com/1runeberg)
  * Licensed under Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -27,8 +27,28 @@ class AddModelDialogState extends State<AddModelDialog> {
 
   final FocusNode _focusNodeButton = FocusNode();
 
-  String? _selectedModel;
+
   bool _isLoading = false; // To track loading state
+  
+  String? _selectedModel; 
+  String _selectedQuantization = 'none';
+  final List<String> _quantizationOptions = [
+    'none',
+    'q8_0',
+    'q6_K',
+    'q5_K_S',
+    'q5_K_M',
+    'q5_1',
+    'q5_0',
+    'q4_K_S',
+    'q4_K_M',
+    'q4_1',
+    'q4_0',
+    'q3_K_S',
+    'q3_K_M',
+    'q3_K_L',
+    'q2_K',
+  ]; 
 
   @override
   void initState() {
@@ -103,7 +123,35 @@ class AddModelDialogState extends State<AddModelDialog> {
                       }).toList(),
                     ),
 
-                    // (3) System prompt
+                    // (3) Quantization
+                    DropdownButtonFormField<String>(
+                      value: _selectedQuantization,
+                      decoration: const InputDecoration(
+                        labelText: 'Quantize',
+                      ),
+                      onChanged: (newValue) {
+                        setState(() {
+                          _selectedQuantization = newValue!;
+                        });
+                      },
+                      items: _quantizationOptions.map((quantization) {
+                        return DropdownMenuItem<String>(
+                          value: quantization,
+                          child: Text(
+                            quantization,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.normal,
+                              color: Theme.of(context).colorScheme.onSurface
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    // (4) System prompt
                     TextFormField(
                       controller: _systemPromptController,
                       decoration: const InputDecoration(
@@ -141,18 +189,14 @@ class AddModelDialogState extends State<AddModelDialog> {
     });
 
     // Assemble modelfile
-    String modelParam = 'FROM $_selectedModel';
-    if (_selectedModel!.isNotEmpty) {
-      modelParam += '\nSYSTEM ${_systemPromptController.text}';
-    }
-
     await AppData.instance.api.postData(
       url: AppData.instance.api.getUri('/create'),
       requestHeaders: AppData.headerJson,
       requestPayload: jsonEncode({
-        'name': _nameController.text,
-        'modelfile': modelParam,
-        'format': 'json',
+        'model': _nameController.text,
+        'from': _selectedModel,
+        'system': _systemPromptController.text,
+        'quantize': _selectedQuantization == 'none' ? null : _selectedQuantization,
         'stream': false
       }),
     );

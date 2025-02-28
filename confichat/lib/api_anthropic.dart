@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Rune Berg (http://runeberg.io | https://github.com/1runeberg)
+ * Copyright 2024-25 Rune Berg (http://runeberg.io | https://github.com/1runeberg)
  * Licensed under Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -70,6 +70,7 @@ class ApiAnthropic extends LlmApi{
   Future<void> getModels(List<ModelItem> outModels) async  {
 
     // As of this writing, there doesn't seem to be an api endpoint to grab model names
+    outModels.add(ModelItem('claude-3-7-sonnet-20250219', 'claude-3-7-sonnet-20250219'));
     outModels.add(ModelItem('claude-3-5-sonnet-20241022', 'claude-3-5-sonnet-20241022'));
     outModels.add(ModelItem('claude-3-5-haiku-20241022', 'claude-3-5-haiku-20241022'));
     outModels.add(ModelItem('claude-3-opus-20240229', 'claude-3-opus-20240229'));
