@@ -43,16 +43,6 @@ class ApiOllama extends LlmApi{
       stopSequences = [];
   }
   
-  String cleanupModelName(String input) {
-    int colonIndex = input.indexOf(':');
-    
-    if (colonIndex != -1) {
-      return input.substring(0, colonIndex);
-    }
-
-    return input; // Return the original string if no colon is found
-  }
-
   // Implementations
   @override
   Future<void> loadSettings() async {
@@ -88,8 +78,7 @@ class ApiOllama extends LlmApi{
       
       // Process list of models
       for (var apiModel in apiModels) {
-        final String modelName = cleanupModelName(apiModel['name']);
-        outModels.insert(0, ModelItem(modelName, modelName));
+        outModels.insert(0, ModelItem(apiModel['name'], apiModel['name']));
       }
 
     } catch (e) {
