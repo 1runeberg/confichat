@@ -308,26 +308,26 @@ class CodePreviewBuilder extends MarkdownElementBuilder {
 
           // Copy to clipboard button
           Positioned(
-            top: 0,
-            right: 0,
-            child: SizedBox(
-              width: 25,
-              height: 25,
-              child: FloatingActionButton(
-                mini: true,
-                onPressed: () {
-                  Clipboard.setData(ClipboardData(text: element.textContent));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(backgroundColor: Theme.of(context).colorScheme.primaryContainer, content: const Text('Code copied to clipboard')),
-                  );
-                },
-                backgroundColor: const Color.fromARGB(80, 82, 172, 247),
-                shape: const CircleBorder(),
-                elevation: 3,
-                highlightElevation: 0,
-                child: const Icon(Icons.copy, size: 16),
-              ),
+          bottom: 0,
+          right: 0,
+          child: SizedBox(
+            width: 25,
+            height: 25,
+            child: FloatingActionButton(
+            mini: true,
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: element.textContent));
+              ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(backgroundColor: Theme.of(context).colorScheme.primaryContainer, content: const Text('Code copied to clipboard')),
+              );
+            },
+            backgroundColor: const Color.fromARGB(80, 82, 172, 247),
+            shape: const CircleBorder(),
+            elevation: 3,
+            highlightElevation: 0,
+            child: const Icon(Icons.copy, size: 16),
             ),
+          ),
           ),
 
         ], // Stack (children)
