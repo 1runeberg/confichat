@@ -70,6 +70,7 @@ class ApiAnthropic extends LlmApi{
   Future<void> getModels(List<ModelItem> outModels) async  {
 
     // As of this writing, there doesn't seem to be an api endpoint to grab model names
+    outModels.add(ModelItem('claude-3-7-sonnet-20250219', 'claude-3-7-sonnet-20250219'));
     outModels.add(ModelItem('claude-3-5-sonnet-20241022', 'claude-3-5-sonnet-20241022'));
     outModels.add(ModelItem('claude-3-5-haiku-20241022', 'claude-3-5-haiku-20241022'));
     outModels.add(ModelItem('claude-3-opus-20240229', 'claude-3-opus-20240229'));
