@@ -3,18 +3,26 @@ description: "Lightweight, multi-platform, and privacy focused LLM chat interfac
 publish_to: 'none'
 version: 0.1.0
 
+msix_config:
+  display_name: ConfiChat
+  publisher: CN=3D1F3D3D-3D3D-3D3D-3D3D-3D3D3D3D3D3D
+  publisher_display_name: Beyond Reality Labs Limited
+  identity_name: ai.confichat.windows
+  msix_version: 0.7.1.0
+  capabilities: internetClient, location
+
 environment:
   sdk: '>=3.4.4 <4.0.0'
 
 dependencies:
-  desktop_drop: ^0.4.4
+  desktop_drop: ^0.5.0
   desktop_window: ^0.4.0
-  file_picker: ^8.0.0+1
+  file_picker: ^9.2.1
   flutter:
     sdk: flutter
   flutter_markdown: ^0.7.3+1
   http: ^1.2.2
-  intl: ^0.19.0
+  intl: ^0.20.2
   markdown: ^7.2.2
   path_provider: ^2.1.4
   provider: ^6.1.2
@@ -27,8 +35,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
-  flutter_oss_licenses: ^2.0.1
+  flutter_lints: ^5.0.0
+  flutter_oss_licenses: ^3.0.4
+  msix: ^3.16.8
 
 flutter:
   uses-material-design: true
