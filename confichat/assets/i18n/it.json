@@ -1,0 +1,249 @@
+{
+  "language": "Lingua",
+  "warning": "Avviso",
+  "unsavedMessagesWarning": "Ci sono messaggi non salvati nella finestra di chat attuale - andranno persi. Procedere?",
+  "yes": "Sì",
+  "cancel": "Annulla",
+  "ok": "OK",
+  "settings": "Impostazioni",
+  "clearMessagesOnSwitch": "Cancella messaggi al cambio di modello",
+  "filterHistoryByModel": "Filtra cronologia per modello",
+  "theme": "Tema",
+  "defaultProvider": "Provider Predefinito",
+  "loading": "Caricamento...",
+  "unknown": "Sconosciuto",
+  "modelConfigDialog": {
+    "title": "Configurazione Modello",
+    "fields": {
+      "name": "Nome",
+      "parentModel": "Modello Genitore",
+      "rootModel": "Modello Radice",
+      "createdOn": "Creato il",
+      "languages": "Lingue",
+      "parameterSize": "Dimensione Parametri",
+      "quantizationLevel": "Livello di Quantizzazione",
+      "systemPrompt": "Prompt di Sistema (nel modello)"
+    },
+    "buttons": {
+      "delete": "Elimina",
+      "close": "Chiudi"
+    },
+    "confirmDelete": {
+      "title": "Conferma Eliminazione",
+      "message": "Sei sicuro di voler eliminare {modelName}?",
+      "buttons": {
+        "delete": "Elimina",
+        "cancel": "Annulla"
+      }
+    }
+  },
+  "providerOptions": {
+    "title": "Opzioni {provider}",
+    "fields": {
+      "scheme": "Schema",
+      "host": "Host",
+      "port": "Porta",
+      "path": "Percorso",
+      "apiKey": "Chiave API",
+      "confirmKey": "Conferma Chiave"
+    },
+    "buttons": {
+      "save": "Salva",
+      "cancel": "Annulla"
+    }
+  },
+  "sidebar": {
+    "sections": {
+      "chatSessions": "Sessioni di Chat",
+      "settings": "Impostazioni",
+      "legal": "Legale"
+    },
+    "options": {
+      "update": "Aggiorna",
+      "rename": "Rinomina",
+      "delete": "Elimina",
+      "applicationSettings": "Impostazioni applicazione"
+    },
+    "legal": {
+      "termsAndConditions": "Termini e Condizioni",
+      "thirdPartyLicenses": "Licenze di Terze Parti"
+    },
+    "confirmDelete": {
+      "title": "Conferma Eliminazione",
+      "message": "Sei sicuro di voler eliminare {filename}?",
+      "buttons": {
+        "delete": "Elimina",
+        "cancel": "Annulla"
+      }
+    },
+    "renameDialog": {
+      "title": "Rinomina",
+      "fields": {
+        "name": "Nome",
+        "newName": "Nuovo nome *"
+      },
+      "buttons": {
+        "rename": "Rinomina",
+        "cancel": "Annulla"
+      },
+      "validation": {
+        "required": "Il nuovo nome è obbligatorio",
+        "invalidFormat": "Formato non valido: Usa solo caratteri alfanumerici. Può includere spazi, underscore, trattini o punti, ma non punti consecutivi."
+      }
+    }
+  },
+  "saveChatSession": {
+    "title": "Salva Sessione di Chat",
+    "fields": {
+      "modelName": "Nome Modello",
+      "sessionSubject": "Soggetto sessione (nome file) *",
+      "encrypt": "Crittografa",
+      "encryptionKey": "Chiave di Crittografia",
+      "confirmKey": "Conferma Chiave"
+    },
+    "buttons": {
+      "save": "Salva",
+      "cancel": "Annulla"
+    },
+    "validation": {
+      "unknownModel": "Modello sconosciuto",
+      "nameRequired": "Il nome è obbligatorio",
+      "keysMismatch": "La chiave di crittografia e la conferma non corrispondono!",
+      "enterName": "Inserisci un nome (verrà utilizzato anche come nome del file)"
+    },
+    "resultDialog": {
+      "success": "Successo",
+      "fail": "Fallimento",
+      "buttons": {
+        "close": "Chiudi"
+      }
+    }
+  },
+  "errorDialog": {
+    "buttons": {
+      "close": "Chiudi"
+    }
+  },
+  "codePreview": {
+    "copied": "Codice copiato negli appunti"
+  },
+  "chatBubble": {
+    "actions": {
+      "removeRegenerate": "Rimuovi/Rigenera",
+      "delete": "Elimina"
+    }
+  },
+  "canvass": {
+    "title": "Canvas",
+    "promptLabel": "Prompt",
+    "tuningLabel": "Regolazioni",
+    "attachFilesTooltip": "Allega file",
+    "sendPromptTooltip": "Invia prompt",
+    "scrollToTopTooltip": "Scorri verso l'alto",
+    "scrollToBottomTooltip": "Scorri verso il basso",
+    "resetMessagesTooltip": "Reimposta/Cancella messaggi",
+    "saveSessionTooltip": "Salva sessione",
+    "promptMessage": "Prompt (puoi trascinare file qui sotto)",
+    "encryptedContentDialog": {
+      "title": "Contenuto Crittografato",
+      "message": "Questa chat contiene contenuto crittografato. Fornisci la chiave per decrittografare.",
+      "encryptionKeyLabel": "Chiave di crittografia",
+      "decryptButton": "Decrittografa",
+      "cancelButton": "Annulla",
+      "errorDialog": {
+        "title": "Errore",
+        "message": "Impossibile decrittografare con la chiave: {key}",
+        "closeButton": "Chiudi"
+      }
+    },
+    "warningDialog": {
+      "title": "Avviso",
+      "message": "Ci sono messaggi non salvati nella finestra di chat attuale - andranno persi. Procedere?",
+      "yesButton": "Sì",
+      "cancelButton": "Annulla"
+    },
+    "confirmSessionResetDialog": {
+      "title": "Conferma Reset Sessione",
+      "message": "Sei sicuro di voler cancellare tutti i messaggi della chat?",
+      "clearButton": "Cancella",
+      "cancelButton": "Annulla"
+    },
+    "loadChatSessionDialog": {
+      "title": "Carica Sessione di Chat",
+      "message": "Sei sicuro di voler caricare la sessione di chat: \n\n{sessionName}?\n\nQuesto cancellerà tutti i messaggi correnti e, se non salvati, andranno persi.",
+      "yesButton": "Sì",
+      "cancelButton": "Annulla"
+    },
+    "updateChatSessionDialog": {
+      "title": "Aggiorna Sessione di Chat",
+      "message": "Sei sicuro di voler aggiornare la sessione di chat: \n\n{sessionName}\n\nQuesto SOVRASCRIVERÀ i messaggi sul disco con i messaggi correnti sullo schermo, questa operazione è irreversibile.",
+      "yesButton": "Sì",
+      "cancelButton": "Annulla",
+      "encryptionKeyLabel": "Chiave di Crittografia",
+      "provideKey:": "La sessione di chat è crittografata. Devi fornire la chiave di crittografia per aggiornarla.",
+      "chatUpdateSuccess": "Sessione di chat aggiornata.",
+      "chatUpdateFail": "Impossibile salvare la sessione di chat crittografata: {sessionName}",
+      "incorrectKey": "Chiave di crittografia errata. Impossibile aggiornare la sessione di chat."
+    },
+    "chatStream": {
+      "errorCompletion": "Errore nella richiesta di completamento chat: {errorMessage}",
+      "errorStream": "Errore riscontrato nel flusso di risposta: {errorMessage}"
+    }
+  },
+  "termsAndConditions": {
+    "title": "Termini e Condizioni",
+    "errorFileLoad": "Errore nel caricamento del file",
+    "closeButton": "Chiudi"
+  },
+  "appBar": {
+    "provider": "Provider",
+    "currentModel": "Modello Attuale",
+    "addModelLabel": "AGGIUNGI NUOVO MODELLO"
+  },
+  "advancedPrompt": {
+    "title": "Opzioni Prompt Avanzate",
+    "scrollMessage": "Scorri per vedere più opzioni di regolazione",
+    "tempLabel": "Temperatura",
+    "tempDesc": "Controlla la casualità dell'output.",
+    "tempMeans": "Usa temperature più basse (es. 0.2) per attività che richiedono precisione e risultati prevedibili, come la scrittura tecnica o la generazione di codice. Usa temperature più alte (es. 1.5) per attività più aperte come la scrittura creativa o il brainstorming.",
+    "probLabel": "Probabilità",
+    "probDesc": "Determina la diversità della risposta.",
+    "probMeans": "Valori più bassi (es. 0.3) producono output più mirati e prevedibili limitando il modello a un sottoinsieme più piccolo dei token più probabili. Valori più alti (es. 0.9) permettono una maggiore varietà di token, producendo risposte più creative e meno prevedibili.",
+    "tokensLabel": "Token Massimi",
+    "tokensDesc": "Imposta il numero massimo di token che il modello genererà nella risposta.",
+    "tokensMeans": "Limita la lunghezza della risposta. Usa valori più bassi per risposte concise e valori più alti per risposte dettagliate.",
+    "systemLabel": "Prompt di Sistema",
+    "systemDesc": "Istruzione iniziale che imposta il contesto o il ruolo per l'intera conversazione.",
+    "systemMeans": "Impostando il ruolo o il focus del modello, come agire da assistente utile, esperto tecnico o scrittore creativo, allinea le risposte del modello alle aspettative dell'utente e all'applicazione prevista",
+    "stopLabel": "Sequenze di Stop",
+    "stopDesc": "Inserisci sequenze multiple separate da virgole.",
+    "stopMeans": "Definisci dove la risposta dovrebbe terminare per evitare output eccessivamente lunghi o non necessari. (esempio: .,\\\\n, user:)",
+    "saveButton": "Salva",
+    "resetButton": "Reimposta",
+    "defaultsButton": "Predefiniti",
+    "cancelButton": "Annulla",
+    "exitButton": "Esci",
+    "unsavedChangesTitle": "Modifiche non salvate",
+    "unsavedChangesMessage": "Hai modifiche non salvate. Sei sicuro di voler uscire?"
+  },
+  "appSettings": {
+    "title": "Impostazioni Applicazione",
+    "clearMessages": "Cancella messaggi al cambio di Modelli",
+    "theme": "Tema",
+    "defaultProvider": "Provider predefinito",
+    "scrollDuration": "Durata auto-scroll (ms)",
+    "windowWidth": "Larghezza finestra predefinita",
+    "windowHeight": "Altezza finestra predefinita",
+    "overridePath": "Sostituisci percorso dati app (lascia vuoto per predefinito di sistema)",
+    "pickDirectory": "Seleziona Directory",
+    "buttons": {
+      "save": "Salva",
+      "cancel": "Annulla",
+      "exit": "Esci"
+    },
+    "unsavedChanges": {
+      "title": "Modifiche non salvate",
+      "message": "Hai modifiche non salvate. Vuoi salvarle?"
+    }
+  }
+}

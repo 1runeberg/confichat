@@ -11,6 +11,7 @@ import 'package:confichat/ui_config_model.dart';
 import 'package:confichat/ui_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:confichat/app_localizations.dart';
 
 class CCAppBar extends StatefulWidget implements PreferredSizeWidget {
   final AppData appData;
@@ -101,7 +102,7 @@ class CCAppBarState extends State<CCAppBar> {
           fontSize: 18,
         ),
         label: OutlinedText(
-          textData: 'Provider',
+          textData: AppLocalizations.of(context).translate('appBar.provider'),
           outlineColor: Theme.of(context).colorScheme.onSurface,
           textStyle: TextStyle(
             color: Theme.of(context).colorScheme.surface,
@@ -157,7 +158,7 @@ class CCAppBarState extends State<CCAppBar> {
                 fontSize: 18,
               ),
               label: OutlinedText(
-                textData: 'Current Model',
+                textData: AppLocalizations.of(context).translate('appBar.currentModel'),
                 outlineColor: Colors.black,
                 textStyle: TextStyle(
                   color: Theme.of(context).colorScheme.surface,
@@ -201,7 +202,7 @@ class CCAppBarState extends State<CCAppBar> {
                 if (isPhone)
                   DropdownMenuEntry<ModelItem>(
                     value: ModelItem('AddNewModelItem', 'AddNewModelItem'),
-                    label: 'ADD NEW MODEL',
+                    label: AppLocalizations.of(context).translate('appBar.addModelLabel'),
                   ),
 
               ],

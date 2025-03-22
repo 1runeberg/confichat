@@ -1,0 +1,249 @@
+{
+  "language": "语言",
+  "warning": "警告",
+  "unsavedMessagesWarning": "当前聊天窗口有未保存的消息 - 它们将会丢失。是否继续？",
+  "yes": "是",
+  "cancel": "取消",
+  "ok": "确定",
+  "settings": "设置",
+  "clearMessagesOnSwitch": "切换模型时清除消息",
+  "filterHistoryByModel": "按模型筛选历史记录",
+  "theme": "主题",
+  "defaultProvider": "默认提供商",
+  "loading": "加载中...",
+  "unknown": "未知",
+  "modelConfigDialog": {
+    "title": "模型配置",
+    "fields": {
+      "name": "名称",
+      "parentModel": "父模型",
+      "rootModel": "根模型",
+      "createdOn": "创建于",
+      "languages": "语言",
+      "parameterSize": "参数大小",
+      "quantizationLevel": "量化级别",
+      "systemPrompt": "系统提示（模型内置）"
+    },
+    "buttons": {
+      "delete": "删除",
+      "close": "关闭"
+    },
+    "confirmDelete": {
+      "title": "确认删除",
+      "message": "您确定要删除 {modelName} 吗？",
+      "buttons": {
+        "delete": "删除",
+        "cancel": "取消"
+      }
+    }
+  },
+  "providerOptions": {
+    "title": "{provider} 选项",
+    "fields": {
+      "scheme": "协议",
+      "host": "主机",
+      "port": "端口",
+      "path": "路径",
+      "apiKey": "API密钥",
+      "confirmKey": "确认密钥"
+    },
+    "buttons": {
+      "save": "保存",
+      "cancel": "取消"
+    }
+  },
+  "sidebar": {
+    "sections": {
+      "chatSessions": "聊天会话",
+      "settings": "设置",
+      "legal": "法律信息"
+    },
+    "options": {
+      "update": "更新",
+      "rename": "重命名",
+      "delete": "删除",
+      "applicationSettings": "应用程序设置"
+    },
+    "legal": {
+      "termsAndConditions": "条款和条件",
+      "thirdPartyLicenses": "第三方许可"
+    },
+    "confirmDelete": {
+      "title": "确认删除",
+      "message": "您确定要删除 {filename} 吗？",
+      "buttons": {
+        "delete": "删除",
+        "cancel": "取消"
+      }
+    },
+    "renameDialog": {
+      "title": "重命名",
+      "fields": {
+        "name": "名称",
+        "newName": "新名称 *"
+      },
+      "buttons": {
+        "rename": "重命名",
+        "cancel": "取消"
+      },
+      "validation": {
+        "required": "需要新名称",
+        "invalidFormat": "格式无效：仅使用字母数字字符。可以包含空格、下划线、连字符或句点，但不能有连续的句点。"
+      }
+    }
+  },
+  "saveChatSession": {
+    "title": "保存聊天会话",
+    "fields": {
+      "modelName": "模型名称",
+      "sessionSubject": "会话主题（文件名）*",
+      "encrypt": "加密",
+      "encryptionKey": "加密密钥",
+      "confirmKey": "确认密钥"
+    },
+    "buttons": {
+      "save": "保存",
+      "cancel": "取消"
+    },
+    "validation": {
+      "unknownModel": "未知模型",
+      "nameRequired": "需要名称",
+      "keysMismatch": "加密密钥和确认密钥不匹配！",
+      "enterName": "请输入名称（这也将用作文件名）"
+    },
+    "resultDialog": {
+      "success": "成功",
+      "fail": "失败",
+      "buttons": {
+        "close": "关闭"
+      }
+    }
+  },
+  "errorDialog": {
+    "buttons": {
+      "close": "关闭"
+    }
+  },
+  "codePreview": {
+    "copied": "代码已复制到剪贴板"
+  },
+  "chatBubble": {
+    "actions": {
+      "removeRegenerate": "删除/重新生成",
+      "delete": "删除"
+    }
+  },
+  "canvass": {
+    "title": "画布",
+    "promptLabel": "提示",
+    "tuningLabel": "调参",
+    "attachFilesTooltip": "附加文件",
+    "sendPromptTooltip": "发送提示",
+    "scrollToTopTooltip": "滚动到顶部",
+    "scrollToBottomTooltip": "滚动到底部",
+    "resetMessagesTooltip": "重置/清除消息",
+    "saveSessionTooltip": "保存会话",
+    "promptMessage": "提示（您可以在下方拖放文件）",
+    "encryptedContentDialog": {
+      "title": "加密内容",
+      "message": "此聊天包含加密内容。请提供密钥以解密。",
+      "encryptionKeyLabel": "加密密钥",
+      "decryptButton": "解密",
+      "cancelButton": "取消",
+      "errorDialog": {
+        "title": "错误",
+        "message": "无法使用密钥解密：{key}",
+        "closeButton": "关闭"
+      }
+    },
+    "warningDialog": {
+      "title": "警告",
+      "message": "当前聊天窗口有未保存的消息 - 它们将会丢失。是否继续？",
+      "yesButton": "是",
+      "cancelButton": "取消"
+    },
+    "confirmSessionResetDialog": {
+      "title": "确认会话重置",
+      "message": "您确定要清除所有聊天消息吗？",
+      "clearButton": "清除",
+      "cancelButton": "取消"
+    },
+    "loadChatSessionDialog": {
+      "title": "加载聊天会话",
+      "message": "您确定要加载聊天会话：\n\n{sessionName}？\n\n这将清除所有当前消息，如果未保存，将会丢失。",
+      "yesButton": "是",
+      "cancelButton": "取消"
+    },
+    "updateChatSessionDialog": {
+      "title": "更新聊天会话",
+      "message": "您确定要更新聊天会话：\n\n{sessionName}\n\n这将用屏幕上当前的消息覆盖磁盘上的消息，此操作不可恢复。",
+      "yesButton": "是",
+      "cancelButton": "取消",
+      "encryptionKeyLabel": "加密密钥",
+      "provideKey:": "聊天会话已加密。您必须提供加密密钥才能更新。",
+      "chatUpdateSuccess": "聊天会话已更新。",
+      "chatUpdateFail": "无法保存加密的聊天会话：{sessionName}",
+      "incorrectKey": "加密密钥不正确。无法更新聊天会话。"
+    },
+    "chatStream": {
+      "errorCompletion": "请求聊天完成时出错：{errorMessage}",
+      "errorStream": "响应流中遇到错误：{errorMessage}"
+    }
+  },
+  "termsAndConditions": {
+    "title": "条款和条件",
+    "errorFileLoad": "加载文件错误",
+    "closeButton": "关闭"
+  },
+  "appBar": {
+    "provider": "提供商",
+    "currentModel": "当前模型",
+    "addModelLabel": "添加新模型"
+  },
+  "advancedPrompt": {
+    "title": "高级提示选项",
+    "scrollMessage": "滚动查看更多调优选项",
+    "tempLabel": "温度",
+    "tempDesc": "控制输出的随机性。",
+    "tempMeans": "对于需要精确和可预测结果的任务（如技术写作或代码生成），使用较低的温度（例如0.2）。对于更开放性的任务（如创意写作或头脑风暴），使用较高的温度（例如1.5）。",
+    "probLabel": "概率",
+    "probDesc": "决定响应的多样性。",
+    "probMeans": "较低的值（例如0.3）通过将模型限制在最可能的token的较小子集，产生更专注和可预测的输出。较高的值（例如0.9）允许更广泛的token多样性，产生更有创意且不太可预测的响应。",
+    "tokensLabel": "最大token数",
+    "tokensDesc": "设置模型在响应中生成的最大token数量。",
+    "tokensMeans": "限制响应长度。对于简洁的答案使用较低的值，对于详细的响应使用较高的值。",
+    "systemLabel": "系统提示",
+    "systemDesc": "为整个对话设置上下文或角色的初始指令。",
+    "systemMeans": "通过设置模型的角色或重点，如扮演有用的助手、技术专家或创意作家，使模型的响应与用户期望和预期应用保持一致",
+    "stopLabel": "停止序列",
+    "stopDesc": "输入多个序列，用逗号分隔。",
+    "stopMeans": "定义响应应在何处结束，以防止过长或不必要的输出。（例如：.,\\\\n, user:）",
+    "saveButton": "保存",
+    "resetButton": "重置",
+    "defaultsButton": "默认值",
+    "cancelButton": "取消",
+    "exitButton": "退出",
+    "unsavedChangesTitle": "未保存的更改",
+    "unsavedChangesMessage": "您有未保存的更改。确定要退出吗？"
+  },
+  "appSettings": {
+    "title": "应用程序设置",
+    "clearMessages": "切换模型时清除消息",
+    "theme": "主题",
+    "defaultProvider": "默认提供商",
+    "scrollDuration": "自动滚动持续时间（毫秒）",
+    "windowWidth": "默认窗口宽度",
+    "windowHeight": "默认窗口高度",
+    "overridePath": "覆盖应用数据路径（留空使用系统默认值）",
+    "pickDirectory": "选择目录",
+    "buttons": {
+      "save": "保存",
+      "cancel": "取消",
+      "exit": "退出"
+    },
+    "unsavedChanges": {
+      "title": "未保存的更改",
+      "message": "您有未保存的更改。您想保存它们吗？"
+    }
+  }
+}

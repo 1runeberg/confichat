@@ -10,6 +10,7 @@ import 'dart:convert';
 
 import 'package:confichat/app_data.dart';
 import 'package:confichat/ui_widgets.dart';
+import 'package:confichat/app_localizations.dart';
 
 
 class AddModelDialog extends StatefulWidget {
@@ -71,8 +72,10 @@ class AddModelDialogState extends State<AddModelDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return AlertDialog(
-      title: const DialogTitle(title: 'Add New Model'),  
+      title: const DialogTitle(title: 'Add New Model'),
       content: _isLoading ? const SizedBox(width: 400, height: 300,
                 child: Center(child: CircularProgressIndicator())) 
           : Form(

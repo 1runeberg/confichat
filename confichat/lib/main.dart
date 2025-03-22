@@ -13,6 +13,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:desktop_window/desktop_window.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'dart:io';
 import 'dart:convert';
 
@@ -21,6 +22,8 @@ import 'package:confichat/chat_notifiers.dart';
 import 'package:confichat/ui_sidebar.dart';
 import 'package:confichat/ui_canvass.dart';
 import 'package:confichat/ui_app_bar.dart';
+import 'package:confichat/app_localizations.dart';
+import 'package:confichat/locale_provider.dart';
 
 
 void main() {
@@ -28,6 +31,7 @@ void main() {
     MultiProvider(
       providers: [
           ChangeNotifierProvider(create: (context) => ThemeProvider()),
+          ChangeNotifierProvider(create: (context) => LocaleProvider()),
           ChangeNotifierProvider(create: (context) => ModelProvider()),
           ChangeNotifierProvider(create: (context) => SelectedModelProvider()),
       ],
@@ -68,6 +72,13 @@ class ConfiChat extends StatelessWidget {
           themeProvider.setTheme(selectedTheme); 
         }
 
+        // Set language
+        if (context.mounted) {
+          final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
+          final selectedLanguage = jsonContent['app']['selectedLanguage'] ?? 'en';
+          localeProvider.setLocale(Locale(selectedLanguage, ''));
+        }
+
         // Set default provider
         if(context.mounted){
           final defaultProvider = jsonContent['app']['selectedDefaultProvider'] ?? 'Ollama';
@@ -104,19 +115,58 @@ class ConfiChat extends StatelessWidget {
       future: _loadAppSettings(context),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          return Consumer<ThemeProvider>(
-            builder: (context, themeProvider, child) {
+          // In the ConfiChat build method, update the MaterialApp to use the LocaleProvider
+          return Consumer2<ThemeProvider, LocaleProvider>(
+            builder: (context, themeProvider, localeProvider, child) {
               return MaterialApp(
                 navigatorKey: AppData.instance.navigatorKey,
                 title: AppData.appTitle,
                 theme: themeProvider.currentTheme,
+                locale: localeProvider.locale,  // Use the locale from provider
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: const [
+                  Locale('en', ''),
+                  Locale('ar', ''),
+                  Locale('de', ''),
+                  Locale('es', ''),
+                  Locale('fil', ''),
+                  Locale('fr', ''),
+                  Locale('he', ''),
+                  Locale('it', ''),
+                  Locale('th', ''),
+                  Locale('zh', 'CN')
+                ],
                 home: HomePage(appData: AppData.instance),
               );
             },
           );
+
         } else {
           // Display a loading screen with a logo and a progress indicator
           return MaterialApp(
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en', ''),
+              Locale('ar', ''),
+              Locale('de', ''),
+              Locale('es', ''),
+              Locale('fil', ''),
+              Locale('fr', ''),
+              Locale('he', ''),
+              Locale('it', ''),
+              Locale('th', ''),
+              Locale('zh', 'CN')
+            ],
             home: Scaffold(
               body: Center(
                 child: Column(
@@ -179,21 +229,21 @@ class _HomePageState extends State<HomePage>  {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const DialogTitle(title: 'Warning', isError: true),
+          title: DialogTitle(title: AppLocalizations.of(context).translate("warning"), isError: true),
           content: Text(
-            'There are unsaved messages in the current chat window - they will be lost. Proceed?',
+            AppLocalizations.of(context).translate("unsavedMessagesWarning"),
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           actions: [
             ElevatedButton(
-              child: const Text('Yes'),
+              child: Text(AppLocalizations.of(context).translate("yes")),
               onPressed: () {
                 shouldExit = true;
                 Navigator.of(context).pop();
               },
             ),
             ElevatedButton(
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(context).translate("cancel")),
               onPressed: () {
                 shouldExit = false;
                 Navigator.of(context).pop();

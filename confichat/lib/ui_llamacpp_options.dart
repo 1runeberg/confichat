@@ -9,9 +9,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:confichat/ui_widgets.dart';
 import 'package:path_provider/path_provider.dart';
-
 import 'package:confichat/app_data.dart';
-
+import 'package:confichat/app_localizations.dart';
 
 class LlamaCppOptions extends StatefulWidget {
   final AppData appData;
@@ -146,6 +145,8 @@ class LlamaCppOptionsState extends State<LlamaCppOptions> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Dialog(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -157,7 +158,7 @@ class LlamaCppOptionsState extends State<LlamaCppOptions> {
             children: [
 
               // Window title
-              DialogTitle(title:  '${AiProvider.llamacpp.name} Options'),
+              DialogTitle(title: loc.translate('providerOptions.title').replaceAll('{provider}', AiProvider.llamacpp.name)),
               const SizedBox(height: 24),
 
 
@@ -176,7 +177,7 @@ class LlamaCppOptionsState extends State<LlamaCppOptions> {
                   TextField(
                     controller: _schemeController,
                     decoration: InputDecoration(
-                      labelText: 'Scheme',
+                      labelText:  loc.translate('providerOptions.fields.scheme'),
                       labelStyle: Theme.of(context).textTheme.labelSmall,
                       border: const UnderlineInputBorder(),
                     ),
@@ -187,7 +188,7 @@ class LlamaCppOptionsState extends State<LlamaCppOptions> {
                   TextField(
                     controller: _hostController,
                     decoration:  InputDecoration(
-                      labelText: 'Host',
+                      labelText: loc.translate('providerOptions.fields.host'),
                       labelStyle: Theme.of(context).textTheme.labelSmall,
                       border: const UnderlineInputBorder(),
                     ),
@@ -198,7 +199,7 @@ class LlamaCppOptionsState extends State<LlamaCppOptions> {
                   TextField(
                     controller: _portController,
                     decoration: InputDecoration(
-                      labelText: 'Port', 
+                      labelText: loc.translate('providerOptions.fields.port'),
                       labelStyle: Theme.of(context).textTheme.labelSmall,
                       border: const UnderlineInputBorder(),
                     ),
@@ -209,7 +210,7 @@ class LlamaCppOptionsState extends State<LlamaCppOptions> {
                   TextField(
                     controller: _pathController,
                     decoration: InputDecoration(
-                      labelText: 'Path',
+                      labelText: loc.translate('providerOptions.fields.path'),
                       labelStyle: Theme.of(context).textTheme.labelSmall,
                       border: const UnderlineInputBorder(),
                     ),
@@ -220,7 +221,7 @@ class LlamaCppOptionsState extends State<LlamaCppOptions> {
                   TextField(
                     controller: _apiKeyController,
                     decoration: InputDecoration(
-                      labelText: 'API Key',
+                      labelText: loc.translate('providerOptions.fields.apiKey'),
                       labelStyle: Theme.of(context).textTheme.labelSmall,
                       border: const UnderlineInputBorder(),
                     ),
@@ -240,7 +241,7 @@ class LlamaCppOptionsState extends State<LlamaCppOptions> {
                       onPressed: () async {
                         await _saveSettings();
                       },
-                      child: const Text('Save'),
+                      child: Text(AppLocalizations.of(context).translate('providerOptions.buttons.save')),
                     ),
 
                     const SizedBox(width: 8),
@@ -249,7 +250,7 @@ class LlamaCppOptionsState extends State<LlamaCppOptions> {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: const Text('Cancel'),
+                      child: Text(AppLocalizations.of(context).translate('providerOptions.buttons.cancel')),
                     ),
                   ],
                 ),

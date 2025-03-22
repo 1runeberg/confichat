@@ -1,0 +1,249 @@
+{
+  "language": "Wika",
+  "warning": "Babala",
+  "unsavedMessagesWarning": "May mga hindi na-save na mensahe sa kasalukuyang window ng chat - mawawala ang mga ito. Magpatuloy?",
+  "yes": "Oo",
+  "cancel": "Kanselahin",
+  "ok": "OK",
+  "settings": "Mga Setting",
+  "clearMessagesOnSwitch": "Burahin ang mga mensahe kapag nagpalit ng modelo",
+  "filterHistoryByModel": "I-filter ang kasaysayan ayon sa modelo",
+  "theme": "Tema",
+  "defaultProvider": "Default na Provider",
+  "loading": "Naglo-load...",
+  "unknown": "Hindi Kilala",
+  "modelConfigDialog": {
+    "title": "Kompigurasyon ng Modelo",
+    "fields": {
+      "name": "Pangalan",
+      "parentModel": "Parent na Modelo",
+      "rootModel": "Root na Modelo",
+      "createdOn": "Nilikha Noong",
+      "languages": "Mga Wika",
+      "parameterSize": "Sukat ng Parameter",
+      "quantizationLevel": "Antas ng Quantization",
+      "systemPrompt": "System Prompt (nasa-modelo)"
+    },
+    "buttons": {
+      "delete": "Burahin",
+      "close": "Isara"
+    },
+    "confirmDelete": {
+      "title": "Kumpirmahin ang Pagbura",
+      "message": "Sigurado ka bang gusto mong burahin ang {modelName}?",
+      "buttons": {
+        "delete": "Burahin",
+        "cancel": "Kanselahin"
+      }
+    }
+  },
+  "providerOptions": {
+    "title": "Mga Opsyon ng {provider}",
+    "fields": {
+      "scheme": "Scheme",
+      "host": "Host",
+      "port": "Port",
+      "path": "Path",
+      "apiKey": "API Key",
+      "confirmKey": "Kumpirmahin ang Key"
+    },
+    "buttons": {
+      "save": "I-save",
+      "cancel": "Kanselahin"
+    }
+  },
+  "sidebar": {
+    "sections": {
+      "chatSessions": "Mga Session ng Chat",
+      "settings": "Mga Setting",
+      "legal": "Legal"
+    },
+    "options": {
+      "update": "I-update",
+      "rename": "Palitan ang pangalan",
+      "delete": "Burahin",
+      "applicationSettings": "Mga setting ng aplikasyon"
+    },
+    "legal": {
+      "termsAndConditions": "Mga Tuntunin at Kondisyon",
+      "thirdPartyLicenses": "Mga Third-Party License"
+    },
+    "confirmDelete": {
+      "title": "Kumpirmahin ang Pagbura",
+      "message": "Sigurado ka bang gusto mong burahin ang {filename}?",
+      "buttons": {
+        "delete": "Burahin",
+        "cancel": "Kanselahin"
+      }
+    },
+    "renameDialog": {
+      "title": "Palitan ang Pangalan",
+      "fields": {
+        "name": "Pangalan",
+        "newName": "Bagong pangalan *"
+      },
+      "buttons": {
+        "rename": "Palitan ang pangalan",
+        "cancel": "Kanselahin"
+      },
+      "validation": {
+        "required": "Kailangan ang bagong pangalan",
+        "invalidFormat": "Hindi valid na format: Gumamit lamang ng mga alphanumeric na karakter. Maaaring kasama ang mga puwang, underscore, gitling, o tuldok, ngunit hindi sunod-sunod na mga tuldok."
+      }
+    }
+  },
+  "saveChatSession": {
+    "title": "I-save ang Session ng Chat",
+    "fields": {
+      "modelName": "Pangalan ng Modelo",
+      "sessionSubject": "Paksa ng session (filename) *",
+      "encrypt": "I-encrypt",
+      "encryptionKey": "Encryption Key",
+      "confirmKey": "Kumpirmahin ang Key"
+    },
+    "buttons": {
+      "save": "I-save",
+      "cancel": "Kanselahin"
+    },
+    "validation": {
+      "unknownModel": "Hindi kilalang modelo",
+      "nameRequired": "Kailangan ang pangalan",
+      "keysMismatch": "Hindi magkatugma ang encryption key at kumpirmasyon!",
+      "enterName": "Mangyaring maglagay ng pangalan (ito ay gagamitin din bilang filename)"
+    },
+    "resultDialog": {
+      "success": "Tagumpay",
+      "fail": "Nabigo",
+      "buttons": {
+        "close": "Isara"
+      }
+    }
+  },
+  "errorDialog": {
+    "buttons": {
+      "close": "Isara"
+    }
+  },
+  "codePreview": {
+    "copied": "Nakopya ang code sa clipboard"
+  },
+  "chatBubble": {
+    "actions": {
+      "removeRegenerate": "Tanggalin/I-regenerate",
+      "delete": "Burahin"
+    }
+  },
+  "canvass": {
+    "title": "Canvass",
+    "promptLabel": "Prompt",
+    "tuningLabel": "Pag-aayos",
+    "attachFilesTooltip": "Maglakip ng mga file",
+    "sendPromptTooltip": "Ipadala ang prompt",
+    "scrollToTopTooltip": "Mag-scroll sa itaas",
+    "scrollToBottomTooltip": "Mag-scroll sa ibaba",
+    "resetMessagesTooltip": "I-reset/Burahin ang mga mensahe",
+    "saveSessionTooltip": "I-save ang session",
+    "promptMessage": "Prompt (maaari kang mag-drag-and-drop ng mga file sa ibaba)",
+    "encryptedContentDialog": {
+      "title": "Na-encrypt na Nilalaman",
+      "message": "Ang chat na ito ay naglalaman ng na-encrypt na content. Mangyaring ibigay ang key para i-decrypt.",
+      "encryptionKeyLabel": "Encryption key",
+      "decryptButton": "I-decrypt",
+      "cancelButton": "Kanselahin",
+      "errorDialog": {
+        "title": "Error",
+        "message": "Hindi ma-decrypt gamit ang key: {key}",
+        "closeButton": "Isara"
+      }
+    },
+    "warningDialog": {
+      "title": "Babala",
+      "message": "May mga hindi na-save na mensahe sa kasalukuyang window ng chat - mawawala ang mga ito. Magpatuloy?",
+      "yesButton": "Oo",
+      "cancelButton": "Kanselahin"
+    },
+    "confirmSessionResetDialog": {
+      "title": "Kumpirmahin ang Pag-reset ng Session",
+      "message": "Sigurado ka bang gusto mong burahin lahat ng mensahe sa chat?",
+      "clearButton": "Burahin",
+      "cancelButton": "Kanselahin"
+    },
+    "loadChatSessionDialog": {
+      "title": "Mag-load ng Session ng Chat",
+      "message": "Sigurado ka bang gusto mong i-load ang session ng chat: \n\n{sessionName}?\n\nBuburahin nito ang lahat ng kasalukuyang mensahe at kung hindi na-save, mawawala ang mga ito.",
+      "yesButton": "Oo",
+      "cancelButton": "Kanselahin"
+    },
+    "updateChatSessionDialog": {
+      "title": "I-update ang Session ng Chat",
+      "message": "Sigurado ka bang gusto mong i-update ang session ng chat: \n\n{sessionName}\n\nPAPALITAN nito ang mga mensahe sa disk ng mga kasalukuyang mensahe sa screen, hindi na mababawi ang operasyong ito.",
+      "yesButton": "Oo",
+      "cancelButton": "Kanselahin",
+      "encryptionKeyLabel": "Encryption Key",
+      "provideKey:": "Na-encrypt ang session ng chat. Kailangan mong ibigay ang encryption key para i-update.",
+      "chatUpdateSuccess": "Na-update ang session ng chat.",
+      "chatUpdateFail": "Hindi ma-save ang na-encrypt na session ng chat: {sessionName}",
+      "incorrectKey": "Mali ang encryption key. Hindi ma-update ang session ng chat."
+    },
+    "chatStream": {
+      "errorCompletion": "Error sa paghiling ng chat completion: {errorMessage}",
+      "errorStream": "May naganap na error sa response stream: {errorMessage}"
+    }
+  },
+  "termsAndConditions": {
+    "title": "Mga Tuntunin at Kondisyon",
+    "errorFileLoad": "Error sa pag-load ng file",
+    "closeButton": "Isara"
+  },
+  "appBar": {
+    "provider": "Provider",
+    "currentModel": "Kasalukuyang Modelo",
+    "addModelLabel": "MAGDAGDAG NG BAGONG MODELO"
+  },
+  "advancedPrompt": {
+    "title": "Mga Advanced na Opsyon ng Prompt",
+    "scrollMessage": "Mag-scroll para makita ang higit pang mga opsyon ng pag-aayos",
+    "tempLabel": "Temperatura",
+    "tempDesc": "Kinokontrol ang randomness ng output.",
+    "tempMeans": "Gumamit ng mas mababang temperatura (hal., 0.2) para sa mga gawain na nangangailangan ng katumpakan at predicktable na resulta, tulad ng technical writing o code generation. Gumamit ng mas mataas na temperatura (hal., 1.5) para sa mas open-ended na mga gawain tulad ng creative writing o brainstorming.",
+    "probLabel": "Probabilidad",
+    "probDesc": "Tinutukoy ang diversity ng response.",
+    "probMeans": "Ang mas mababang mga halaga (hal., 0.3) ay nagreresulta sa mas nakatuon at predicktable na output sa pamamagitan ng paglilimita sa modelo sa mas maliit na subset ng pinakamalamang na mga token. Ang mas mataas na mga halaga (hal., 0.9) ay nagpapahintulot ng mas malawak na pagkakaiba-iba ng mga token, na lumilikha ng mas malikhain at hindi gaanong predicktable na mga response.",
+    "tokensLabel": "Maximum na Tokens",
+    "tokensDesc": "Itinatakda ang maximum na bilang ng tokens na gagawin ng modelo sa response.",
+    "tokensMeans": "Nililimitahan ang haba ng response. Gumamit ng mas mababang mga halaga para sa maikli at malinaw na mga sagot at mas mataas na mga halaga para sa detalyadong mga response.",
+    "systemLabel": "System Prompt",
+    "systemDesc": "Paunang tagubilin na nagtatakda ng konteksto o tungkulin para sa buong pag-uusap.",
+    "systemMeans": "Sa pamamagitan ng pagtatakda ng tungkulin o pokus ng modelo, tulad ng pagiging kapaki-pakinabang na assistant, teknikal na eksperto, o creative writer, iniaayon nito ang mga response ng modelo sa mga inaasahan ng user at sa nilayon na aplikasyon",
+    "stopLabel": "Mga Stop Sequence",
+    "stopDesc": "Magpasok ng maraming sequence na pinaghiwalay ng mga kuwit.",
+    "stopMeans": "Tukuyin kung saan dapat matapos ang response upang maiwasan ang masyadong mahaba o hindi kinakailangang output. (halimbawa: .,\\\\n, user:)",
+    "saveButton": "I-save",
+    "resetButton": "I-reset",
+    "defaultsButton": "Mga Default",
+    "cancelButton": "Kanselahin",
+    "exitButton": "Lumabas",
+    "unsavedChangesTitle": "Hindi na-save na mga pagbabago",
+    "unsavedChangesMessage": "May hindi ka pa na-save na mga pagbabago. Sigurado ka bang gusto mong lumabas?"
+  },
+  "appSettings": {
+    "title": "Mga Setting ng Aplikasyon",
+    "clearMessages": "Burahin ang mga mensahe kapag nagpalit ng Modelo",
+    "theme": "Tema",
+    "defaultProvider": "Default na provider",
+    "scrollDuration": "Tagal ng auto-scroll (ms)",
+    "windowWidth": "Default na lapad ng window",
+    "windowHeight": "Default na taas ng window",
+    "overridePath": "Palitan ang path ng data ng app (iwanang blangko para sa default ng system)",
+    "pickDirectory": "Pumili ng Direktoryo",
+    "buttons": {
+      "save": "I-save",
+      "cancel": "Kanselahin",
+      "exit": "Lumabas"
+    },
+    "unsavedChanges": {
+      "title": "Hindi na-save na mga Pagbabago",
+      "message": "Mayroon kang mga hindi na-save na pagbabago. Gusto mo bang i-save ang mga ito?"
+    }
+  }
+}

@@ -9,9 +9,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:confichat/ui_widgets.dart';
 import 'package:path_provider/path_provider.dart';
-
 import 'package:confichat/app_data.dart';
-
+import 'package:confichat/app_localizations.dart';
 
 class ChatGPTOptions extends StatefulWidget {
   final AppData appData;
@@ -125,6 +124,8 @@ class ChatGPTOptionsState extends State<ChatGPTOptions> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Dialog(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -137,13 +138,13 @@ class ChatGPTOptionsState extends State<ChatGPTOptions> {
             children: [
 
               // Window title
-              DialogTitle(title: '${AiProvider.openai.name} Options'),
+              DialogTitle(title: loc.translate('providerOptions.title').replaceAll('{provider}', AiProvider.openai.name)),
               const SizedBox(height: 24),
 
               TextField(
                 controller: _apiKeyController,
                 decoration: InputDecoration(
-                  labelText: 'API Key',
+                  labelText: loc.translate('providerOptions.fields.apiKey'),
                   labelStyle: Theme.of(context).textTheme.labelSmall,
                   border: const UnderlineInputBorder(),
                 ),
@@ -160,7 +161,7 @@ class ChatGPTOptionsState extends State<ChatGPTOptions> {
                       onPressed: () async {
                         await _saveSettings();
                       },
-                      child: const Text('Save'),
+                      child: Text(AppLocalizations.of(context).translate('providerOptions.buttons.save')),
                     ),
 
                     const SizedBox(width: 8),
@@ -169,7 +170,7 @@ class ChatGPTOptionsState extends State<ChatGPTOptions> {
                         Navigator.of(context).pop();
                       },
                       focusNode: _focusNode,
-                      child: const Text('Cancel'),
+                      child: Text(AppLocalizations.of(context).translate('providerOptions.buttons.cancel')),
                     ),
 
                   ],

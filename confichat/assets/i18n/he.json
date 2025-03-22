@@ -1,0 +1,249 @@
+{
+  "language": "שפה",
+  "warning": "אזהרה",
+  "unsavedMessagesWarning": "יש הודעות שלא נשמרו בחלון הצ'אט הנוכחי - הן יאבדו. להמשיך?",
+  "yes": "כן",
+  "cancel": "ביטול",
+  "ok": "אישור",
+  "settings": "הגדרות",
+  "clearMessagesOnSwitch": "נקה הודעות בעת החלפת מודל",
+  "filterHistoryByModel": "סנן היסטוריה לפי מודל",
+  "theme": "ערכת נושא",
+  "defaultProvider": "ספק ברירת מחדל",
+  "loading": "טוען...",
+  "unknown": "לא ידוע",
+  "modelConfigDialog": {
+    "title": "הגדרת מודל",
+    "fields": {
+      "name": "שם",
+      "parentModel": "מודל אב",
+      "rootModel": "מודל בסיס",
+      "createdOn": "נוצר ב",
+      "languages": "שפות",
+      "parameterSize": "גודל פרמטרים",
+      "quantizationLevel": "רמת כימות",
+      "systemPrompt": "הנחיית מערכת (בתוך המודל)"
+    },
+    "buttons": {
+      "delete": "מחק",
+      "close": "סגור"
+    },
+    "confirmDelete": {
+      "title": "אישור מחיקה",
+      "message": "האם אתה בטוח שברצונך למחוק את {modelName}?",
+      "buttons": {
+        "delete": "מחק",
+        "cancel": "ביטול"
+      }
+    }
+  },
+  "providerOptions": {
+    "title": "אפשרויות {provider}",
+    "fields": {
+      "scheme": "סכימה",
+      "host": "שרת",
+      "port": "פורט",
+      "path": "נתיב",
+      "apiKey": "מפתח API",
+      "confirmKey": "אימות מפתח"
+    },
+    "buttons": {
+      "save": "שמור",
+      "cancel": "ביטול"
+    }
+  },
+  "sidebar": {
+    "sections": {
+      "chatSessions": "שיחות צ'אט",
+      "settings": "הגדרות",
+      "legal": "משפטי"
+    },
+    "options": {
+      "update": "עדכן",
+      "rename": "שנה שם",
+      "delete": "מחק",
+      "applicationSettings": "הגדרות יישום"
+    },
+    "legal": {
+      "termsAndConditions": "תנאים והגבלות",
+      "thirdPartyLicenses": "רישיונות צד שלישי"
+    },
+    "confirmDelete": {
+      "title": "אישור מחיקה",
+      "message": "האם אתה בטוח שברצונך למחוק את {filename}?",
+      "buttons": {
+        "delete": "מחק",
+        "cancel": "ביטול"
+      }
+    },
+    "renameDialog": {
+      "title": "שינוי שם",
+      "fields": {
+        "name": "שם",
+        "newName": "שם חדש *"
+      },
+      "buttons": {
+        "rename": "שנה שם",
+        "cancel": "ביטול"
+      },
+      "validation": {
+        "required": "שם חדש הוא חובה",
+        "invalidFormat": "פורמט לא חוקי: השתמש רק בתווים אלפאנומריים. ניתן לכלול רווחים, קווים תחתונים, מקפים או נקודות, אבל לא נקודות רצופות."
+      }
+    }
+  },
+  "saveChatSession": {
+    "title": "שמור שיחת צ'אט",
+    "fields": {
+      "modelName": "שם מודל",
+      "sessionSubject": "נושא שיחה (שם קובץ) *",
+      "encrypt": "הצפן",
+      "encryptionKey": "מפתח הצפנה",
+      "confirmKey": "אימות מפתח"
+    },
+    "buttons": {
+      "save": "שמור",
+      "cancel": "ביטול"
+    },
+    "validation": {
+      "unknownModel": "מודל לא ידוע",
+      "nameRequired": "שם הוא חובה",
+      "keysMismatch": "מפתח ההצפנה והאימות אינם תואמים!",
+      "enterName": "אנא הכנס שם (ישמש גם כשם הקובץ)"
+    },
+    "resultDialog": {
+      "success": "הצלחה",
+      "fail": "כישלון",
+      "buttons": {
+        "close": "סגור"
+      }
+    }
+  },
+  "errorDialog": {
+    "buttons": {
+      "close": "סגור"
+    }
+  },
+  "codePreview": {
+    "copied": "הקוד הועתק ללוח"
+  },
+  "chatBubble": {
+    "actions": {
+      "removeRegenerate": "הסר/צור מחדש",
+      "delete": "מחק"
+    }
+  },
+  "canvass": {
+    "title": "בד",
+    "promptLabel": "בקשה",
+    "tuningLabel": "כוונון עדין",
+    "attachFilesTooltip": "צרף קבצים",
+    "sendPromptTooltip": "שלח בקשה",
+    "scrollToTopTooltip": "גלול למעלה",
+    "scrollToBottomTooltip": "גלול למטה",
+    "resetMessagesTooltip": "אפס/נקה הודעות",
+    "saveSessionTooltip": "שמור מושב",
+    "promptMessage":  "בקשה (ניתן לגרור ולשחרר קבצים למטה)",
+    "encryptedContentDialog": {
+      "title": "תוכן מוצפן",
+      "message": "צ'אט זה מכיל תוכן מוצפן. אנא ספק את המפתח לפענוח.",
+      "encryptionKeyLabel": "מפתח הצפנה",
+      "decryptButton": "פענח",
+      "cancelButton": "ביטול",
+      "errorDialog": {
+        "title": "שגיאה",
+        "message": "לא ניתן לפענח עם המפתח: {key}",
+        "closeButton": "סגור"
+      }
+    },
+    "warningDialog": {
+      "title": "אזהרה",
+      "message": "יש הודעות שלא נשמרו בחלון הצ'אט הנוכחי - הן יאבדו. להמשיך?",
+      "yesButton": "כן",
+      "cancelButton": "ביטול"
+    },
+    "confirmSessionResetDialog": {
+      "title": "אשר איפוס מושב",
+      "message": "האם אתה בטוח שברצונך לנקות את כל הודעות הצ'אט?",
+      "clearButton": "נקה",
+      "cancelButton": "ביטול"
+    },
+    "loadChatSessionDialog": {
+      "title": "טען מושב צ'אט",
+      "message": "האם אתה בטוח שברצונך לטעון מושב צ'אט: \n\n{sessionName}?\n\nזה ינקה את כל ההודעות הנוכחיות ואם לא נשמרו, יאבדו.",
+      "yesButton": "כן",
+      "cancelButton": "ביטול"
+    },
+    "updateChatSessionDialog": {
+      "title": "עדכן מושב צ'אט",
+      "message": "האם אתה בטוח שברצונך לעדכן מושב צ'אט: \n\n{sessionName}\n\nזה יחליף את ההודעות בדיסק עם ההודעות הנוכחיות על המסך, פעולה זו אינה ניתנת לשחזור.",
+      "yesButton": "כן",
+      "cancelButton": "ביטול",
+      "encryptionKeyLabel": "מפתח הצפנה",
+      "provideKey:" : "שיחת הצ'אט מוצפנת. עליך לספק את מפתח ההצפנה כדי לעדכן.",
+      "chatUpdateSuccess": "שיחת הצ'אט עודכנה.",
+      "chatUpdateFail" : "לא ניתן לשמור שיחת צ'אט מוצפנת: {sessionName}",
+      "incorrectKey" : "מפתח הצפנה שגוי. לא ניתן לעדכן את שיחת הצ'אט."
+    },
+    "chatStream": {
+      "errorCompletion": "שגיאה בבקשת השלמת הצ'אט: {errorMessage}",
+      "errorStream": "נמצאה שגיאה בזרם התגובה: {errorMessage}"
+    }
+  },
+  "termsAndConditions": {
+    "title": "תנאים והגבלות",
+    "errorFileLoad": "שגיאה בטעינת הקובץ",
+    "closeButton": "סגור"
+  },
+  "appBar": {
+    "provider": "ספק",
+    "currentModel": "מודל נוכחי",
+    "addModelLabel": "הוסף מודל חדש"
+  },
+  "advancedPrompt": {
+    "title": "אפשרויות מתקדמות לבקשה",
+    "scrollMessage": "גלול כדי לראות אפשרויות כוונון נוספות",
+    "tempLabel": "טמפרטורה",
+    "tempDesc": "שולט באקראיות של הפלט.",
+    "tempMeans": "השתמש בטמפרטורות נמוכות יותר (לדוגמה, 0.2) עבור משימות הדורשות דיוק ותוצאות צפויות, כגון כתיבה טכנית או יצירת קוד. השתמש בטמפרטורות גבוהות יותר (לדוגמה, 1.5) עבור משימות פתוחות יותר כמו כתיבה יצירתית או סיעור מוחות.",
+    "probLabel": "הסתברות",
+    "probDesc": "קובע את מגוון התגובה.",
+    "probMeans": "ערכים נמוכים יותר (לדוגמה, 0.3) מביאים לפלטים ממוקדים וצפויים יותר על ידי הגבלת המודל לתת-קבוצה קטנה יותר של האסימונים הסבירים ביותר. ערכים גבוהים יותר (לדוגמה, 0.9) מאפשרים מגוון רחב יותר של אסימונים, ומייצרים תגובות יצירתיות ופחות צפויות.",
+    "tokensLabel": "מספר מרבי של אסימונים",
+    "tokensDesc": "מגדיר את המספר המרבי של אסימונים שהמודל ייצור בתגובה.",
+    "tokensMeans": "מגביל את אורך התגובה. השתמש בערכים נמוכים יותר לתשובות תמציתיות ובערכים גבוהים יותר לתגובות מפורטות.",
+    "systemLabel": "בקשת מערכת",
+    "systemDesc": "הוראה ראשונית המגדירה את ההקשר או התפקיד לכל השיחה.",
+    "systemMeans": "על ידי הגדרת התפקיד או המיקוד של המודל, כגון משחק בתור עוזר מועיל, מומחה טכני או סופר יצירתי, הוא מיישר את תגובות המודל לציפיות המשתמש והיישום המיועד",
+    "stopLabel": "רצפי עצירה",
+    "stopDesc": "הזן מספר רצפים מופרדים בפסיקים.",
+    "stopMeans": "הגדר היכן התגובה צריכה להסתיים כדי למנוע פלטים ארוכים או מיותרים מדי. (דוגמה: .,\\\\n, משתמש:)",
+    "saveButton": "שמור",
+    "resetButton": "אפס",
+    "defaultsButton": "ברירות מחדל",
+    "cancelButton": "ביטול",
+    "exitButton": "יציאה",
+    "unsavedChangesTitle": "שינויים שלא נשמרו",
+    "unsavedChangesMessage": "יש לך שינויים שלא נשמרו. האם אתה בטוח שברצונך לצאת?"
+  },
+  "appSettings": {
+    "title": "הגדרות יישום",
+    "clearMessages": "נקה הודעות בעת החלפת מודל",
+    "theme": "ערכת נושא",
+    "defaultProvider": "ספק ברירת מחדל",
+    "scrollDuration": "משך גלילה אוטומטית (מילישניות)",
+    "windowWidth": "רוחב חלון ברירת מחדל",
+    "windowHeight": "גובה חלון ברירת מחדל",
+    "overridePath": "עקוף נתיב נתוני יישום (השאר ריק לברירת מחדל של המערכת)",
+    "pickDirectory": "בחר ספרייה",
+    "buttons": {
+      "save": "שמור",
+      "cancel": "ביטול",
+      "exit": "יציאה"
+    },
+    "unsavedChanges": {
+      "title": "שינויים שלא נשמרו",
+      "message": "יש לך שינויים שלא נשמרו. האם ברצונך לשמור אותם?"
+    }
+  }
+}

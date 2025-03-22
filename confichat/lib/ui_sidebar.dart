@@ -6,22 +6,19 @@
 
 import 'package:flutter/material.dart';
 import 'dart:io';
-
 import 'package:confichat/app_data.dart';
 import 'package:confichat/chat_notifiers.dart';
 import 'package:confichat/persistent_storage.dart';
 import 'package:confichat/ui_app_settings.dart';
-
 import 'package:confichat/ui_ollama_options.dart';
 import 'package:confichat/ui_llamacpp_options.dart';
 import 'package:confichat/ui_openai_options.dart';
 import 'package:confichat/ui_anthropic_options.dart';
 import 'package:confichat/ui_terms_and_conditions.dart';
-
 import 'package:confichat/ui_widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-
+import 'package:confichat/app_localizations.dart';
 
 class Sidebar extends StatefulWidget {
   final ChatSessionSelectedNotifier chatSessionSelectedNotifier;
@@ -68,6 +65,7 @@ class SidebarState extends State<Sidebar> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
 
     return Consumer<SelectedModelProvider>(
       builder: (context, selectedModelProvider, child) {
@@ -101,7 +99,7 @@ class SidebarState extends State<Sidebar> {
                 ExpansionTile(   
 
                   title: OutlinedText(
-                    textData: 'Chat Sessions', 
+                    textData: loc.translate('sidebar.sections.chatSessions'),
                     outlineWidth: 1,
                     textColor: Theme.of(context).colorScheme.onSurface,
                     outlineColor: Theme.of(context).colorScheme.surface,
@@ -139,19 +137,19 @@ class SidebarState extends State<Sidebar> {
 
                                   // Allow updates if there are unsaved messages
                                   if(widget.appData.haveUnsavedMessages )
-                                  const PopupMenuItem(
+                                  PopupMenuItem(
                                     value: 'update',
-                                    child: Text('Update'),
+                                    child: Text(loc.translate('sidebar.options.update')),
                                   ),
 
-                                  const PopupMenuItem(
+                                  PopupMenuItem(
                                     value: 'rename',
-                                    child: Text('Rename'),
+                                    child: Text(loc.translate('sidebar.options.rename')),
                                   ),
 
-                                  const PopupMenuItem(
+                                  PopupMenuItem(
                                     value: 'delete',
-                                    child: Text('Delete'),
+                                    child: Text(loc.translate('sidebar.options.delete')),
                                   ),
 
                                 ],
@@ -168,7 +166,7 @@ class SidebarState extends State<Sidebar> {
                 ExpansionTile(
 
                   title: OutlinedText(
-                    textData: 'Settings', 
+                    textData: loc.translate('sidebar.sections.settings'),
                     outlineWidth: 1,
                     textColor: Theme.of(context).colorScheme.onSurface,
                     outlineColor: Theme.of(context).colorScheme.surface,
@@ -244,7 +242,7 @@ class SidebarState extends State<Sidebar> {
 
                     // (2.2.5) App settings
                     ListTile(
-                      title: const Text('Application settings'),
+                      title: Text(loc.translate('sidebar.options.applicationSettings')),
                       onTap: () {
                         showDialog(
                           context: context,
@@ -263,7 +261,7 @@ class SidebarState extends State<Sidebar> {
                 ExpansionTile(
 
                   title: OutlinedText(
-                    textData: 'Legal', 
+                    textData: loc.translate('sidebar.sections.legal'),
                     outlineWidth: 1,
                     textColor: Theme.of(context).colorScheme.onSurface,
                     outlineColor: Theme.of(context).colorScheme.surface,
@@ -283,7 +281,7 @@ class SidebarState extends State<Sidebar> {
 
                     // (2.3.1) Terms and Conditions
                     ListTile(
-                      title: const Text('Terms and Conditions'),
+                      title: Text(loc.translate('sidebar.legal.termsAndConditions')),
                       onTap: () {
                         showDialog(
                           context: context,
@@ -297,7 +295,7 @@ class SidebarState extends State<Sidebar> {
 
                     // (2.3.2) Licenses
                     ListTile(
-                      title: const Text('Third-Party Licenses'),
+                      title: Text(loc.translate('sidebar.legal.thirdPartyLicenses')),
                       onTap: () {
                         showDialog(
                           context: context,
@@ -339,8 +337,8 @@ class SidebarState extends State<Sidebar> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const DialogTitle(title: 'Confirm Delete', isError: true),
-              content: Text('Are you sure you want to delete $filename?', style: Theme.of(context).textTheme.bodyLarge,),
+              title: DialogTitle(title: AppLocalizations.of(context).translate('sidebar.confirmDelete.title'), isError: true),
+              content: Text(AppLocalizations.of(context).translate('sidebar.confirmDelete.message').replaceAll('{filename}', filename), style: Theme.of(context).textTheme.bodyLarge,),
               actions: [
                 const SizedBox(height: 20),
                 ElevatedButton(
@@ -348,14 +346,14 @@ class SidebarState extends State<Sidebar> {
                     Navigator.of(context).pop(); 
                     _deleteChatSession(filename, model);
                   },
-                  child: const Text('Delete'),
+                  child: Text(AppLocalizations.of(context).translate('sidebar.confirmDelete.buttons.delete')),
                 ),
                 ElevatedButton(
                   autofocus: true,
                   onPressed: () {
                     Navigator.of(context).pop(); 
                   },
-                  child: const Text('Cancel'),
+                  child: Text(AppLocalizations.of(context).translate('sidebar.confirmDelete.buttons.cancel')),
                 ),
               ],
             );
@@ -385,7 +383,7 @@ class SidebarState extends State<Sidebar> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const DialogTitle(title: 'Rename'),
+          title: DialogTitle(title: AppLocalizations.of(context).translate('sidebar.renameDialog.title')),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -393,7 +391,7 @@ class SidebarState extends State<Sidebar> {
                 controller: TextEditingController(text: filename),
                 readOnly: true,
                 decoration: InputDecoration(
-                  labelText: 'Name',
+                  labelText: AppLocalizations.of(context).translate('sidebar.renameDialog.fields.name'),
                   labelStyle: Theme.of(context).textTheme.labelSmall,
                   border: const UnderlineInputBorder(),
                 ),
@@ -403,7 +401,7 @@ class SidebarState extends State<Sidebar> {
               TextFormField(
                 controller: newNameController,
                 decoration:  InputDecoration(
-                  labelText: 'New name *',
+                  labelText: AppLocalizations.of(context).translate('sidebar.renameDialog.fields.newName'),
                   labelStyle: Theme.of(context).textTheme.labelSmall,
                   border: const UnderlineInputBorder(),
                 ),
@@ -414,7 +412,7 @@ class SidebarState extends State<Sidebar> {
                   
                   if (!RegExp(r'^[a-zA-Z0-9]([a-zA-Z0-9 _\-]*(?!\.\.))*[a-zA-Z0-9]?$')
                       .hasMatch(value)) {
-                    return 'Invalid format: Use only alphanumeric characters. May include spaces, underscores, hyphens, or periods, but not consecutive periods.';
+                    return AppLocalizations.of(context).translate('sidebar.renameDialog.validation.invalidFormat');
                   }
 
                   return null;
@@ -432,11 +430,11 @@ class SidebarState extends State<Sidebar> {
                   _renameChatSession(filename, newName, model);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(backgroundColor: Theme.of(context).colorScheme.error, content: const Text('New name is required')),
+                    SnackBar(backgroundColor: Theme.of(context).colorScheme.error, content: Text(AppLocalizations.of(context).translate('sidebar.renameDialog.validation.required'))),
                   );
                 }
               },
-              child: const Text('Rename'),
+              child: Text(AppLocalizations.of(context).translate('sidebar.renameDialog.buttons.rename')),
             ),
             
             ElevatedButton(
@@ -444,7 +442,7 @@ class SidebarState extends State<Sidebar> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(context).translate('sidebar.renameDialog.buttons.cancel')),
             ),
           ],
         );
