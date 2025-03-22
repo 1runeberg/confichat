@@ -15,6 +15,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:confichat/app_localizations.dart';
 import 'package:confichat/locale_provider.dart';
+import 'package:confichat/language_config.dart';
 
 class AppSettings extends StatefulWidget {
   final AppData appData;
@@ -295,179 +296,64 @@ class AppSettingsState extends State<AppSettings> {
                     children: [
                       Text(AppLocalizations.of(context).translate('language'), style: const TextStyle(fontSize: 16)),
                       const SizedBox(width: 8),
-                      MenuAnchor(
-                        builder: (BuildContext context, MenuController controller, Widget? child) {
-                          return TextButton(
-                            onPressed: controller.open,
-                            child: Row(
-                              children: [
-                                Text(selectedLanguage == 'en' ? 'English' :
-                                selectedLanguage == 'ar' ? 'العربية' :
-                                selectedLanguage == 'de' ? 'Deutsch' :
-                                selectedLanguage == 'es' ? 'Español' :
-                                selectedLanguage == 'fil' ? 'Filipino' :
-                                selectedLanguage == 'fr' ? 'Français' :
-                                selectedLanguage == 'he' ? 'עברית' :
-                                selectedLanguage == 'it' ? 'Italiano' :
-                                selectedLanguage == 'th' ? 'ไทย' :
-                                selectedLanguage == 'zh' ? '中文' : 'English'),
-                                const Icon(Icons.arrow_drop_down),
-                              ],
-                            ),
+                      FutureBuilder<List<Map<String, dynamic>>>(
+                        future: LanguageConfig().getLanguageOptions(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          }
+
+                          if (!snapshot.hasData || snapshot.hasError) {
+                            return TextButton(
+                              onPressed: null,
+                              child: Row(children: [Text(selectedLanguage), const Icon(Icons.arrow_drop_down)]),
+                            );
+                          }
+
+                          final languages = snapshot.data!;
+
+                          return MenuAnchor(
+                            builder: (BuildContext context, MenuController controller, Widget? child) {
+                              return TextButton(
+                                onPressed: controller.open,
+                                child: Row(
+                                  children: [
+                                    FutureBuilder<String>(
+                                      future: LanguageConfig().getLanguageName(selectedLanguage),
+                                      builder: (context, snapshot) {
+                                        return Text(snapshot.data ?? selectedLanguage);
+                                      },
+                                    ),
+                                    const Icon(Icons.arrow_drop_down),
+                                  ],
+                                ),
+                              );
+                            },
+                            menuChildren: languages.map((lang) {
+                              final code = lang['code'] as String;
+                              final name = lang['name'] as String;
+                              final country = lang['country'] as String?;
+
+                              return MenuItemButton(
+                                onPressed: () {
+                                  setState(() {
+                                    selectedLanguage = code;
+                                    if (widget.appData.navigatorKey.currentContext != null) {
+                                      Provider.of<LocaleProvider>(
+                                          widget.appData.navigatorKey.currentContext!,
+                                          listen: false
+                                      ).setLocale(Locale(code, country ?? ''));
+                                    }
+                                  });
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                                  child: Text(name),
+                                ),
+                              );
+                            }).toList(),
                           );
                         },
-                        menuChildren: [
-                          MenuItemButton(
-                            onPressed: () {
-                              setState(() {
-                                selectedLanguage = 'en';
-                                if(widget.appData.navigatorKey.currentContext != null) {
-                                  Provider.of<LocaleProvider>(widget.appData.navigatorKey.currentContext!, listen: false)
-                                      .setLocale(const Locale('en', ''));
-                                }
-                              });
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                              child: Text('English'),
-                            ),
-                          ),
-                          MenuItemButton(
-                            onPressed: () {
-                              setState(() {
-                                selectedLanguage = 'ar';
-                                if(widget.appData.navigatorKey.currentContext != null) {
-                                  Provider.of<LocaleProvider>(widget.appData.navigatorKey.currentContext!, listen: false)
-                                      .setLocale(const Locale('ar', ''));
-                                }
-                              });
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                              child: Text('العربية'),
-                            ),
-                          ),
-                          MenuItemButton(
-                            onPressed: () {
-                              setState(() {
-                                selectedLanguage = 'de';
-                                if(widget.appData.navigatorKey.currentContext != null) {
-                                  Provider.of<LocaleProvider>(widget.appData.navigatorKey.currentContext!, listen: false)
-                                      .setLocale(const Locale('de', ''));
-                                }
-                              });
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                              child: Text('Deutsch'),
-                            ),
-                          ),
-                          MenuItemButton(
-                            onPressed: () {
-                              setState(() {
-                                selectedLanguage = 'es';
-                                if(widget.appData.navigatorKey.currentContext != null) {
-                                  Provider.of<LocaleProvider>(widget.appData.navigatorKey.currentContext!, listen: false)
-                                      .setLocale(const Locale('es', ''));
-                                }
-                              });
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                              child: Text('Español'),
-                            ),
-                          ),
-                          MenuItemButton(
-                            onPressed: () {
-                              setState(() {
-                                selectedLanguage = 'fil';
-                                if(widget.appData.navigatorKey.currentContext != null) {
-                                  Provider.of<LocaleProvider>(widget.appData.navigatorKey.currentContext!, listen: false)
-                                      .setLocale(const Locale('fil', ''));
-                                }
-                              });
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                              child: Text('Filipino'),
-                            ),
-                          ),
-                          MenuItemButton(
-                            onPressed: () {
-                              setState(() {
-                                selectedLanguage = 'fr';
-                                if(widget.appData.navigatorKey.currentContext != null) {
-                                  Provider.of<LocaleProvider>(widget.appData.navigatorKey.currentContext!, listen: false)
-                                      .setLocale(const Locale('fr', ''));
-                                }
-                              });
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                              child: Text('Français'),
-                            ),
-                          ),
-                          MenuItemButton(
-                            onPressed: () {
-                              setState(() {
-                                selectedLanguage = 'he';
-                                if(widget.appData.navigatorKey.currentContext != null) {
-                                  Provider.of<LocaleProvider>(widget.appData.navigatorKey.currentContext!, listen: false)
-                                      .setLocale(const Locale('he', ''));
-                                }
-                              });
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                              child: Text('עברית'),
-                            ),
-                          ),
-                          MenuItemButton(
-                            onPressed: () {
-                              setState(() {
-                                selectedLanguage = 'it';
-                                if(widget.appData.navigatorKey.currentContext != null) {
-                                  Provider.of<LocaleProvider>(widget.appData.navigatorKey.currentContext!, listen: false)
-                                      .setLocale(const Locale('it', ''));
-                                }
-                              });
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                              child: Text('Italiano'),
-                            ),
-                          ),
-                          MenuItemButton(
-                            onPressed: () {
-                              setState(() {
-                                selectedLanguage = 'th';
-                                if(widget.appData.navigatorKey.currentContext != null) {
-                                  Provider.of<LocaleProvider>(widget.appData.navigatorKey.currentContext!, listen: false)
-                                      .setLocale(const Locale('th', ''));
-                                }
-                              });
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                              child: Text('ไทย'),
-                            ),
-                          ),
-                          MenuItemButton(
-                            onPressed: () {
-                              setState(() {
-                                selectedLanguage = 'zh';
-                                if(widget.appData.navigatorKey.currentContext != null) {
-                                  Provider.of<LocaleProvider>(widget.appData.navigatorKey.currentContext!, listen: false)
-                                      .setLocale(const Locale('zh', 'CN'));
-                                }
-                              });
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                              child: Text('中文'),
-                            ),
-                          ),
-                        ],
                       ),
                     ],
                   ),

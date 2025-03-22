@@ -5,26 +5,24 @@
  */
 
 import 'dart:ui';
-
-import 'package:confichat/ui_widgets.dart';
+import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:confichat/themes.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:desktop_window/desktop_window.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'dart:io';
-import 'dart:convert';
-
+import 'package:confichat/ui_widgets.dart';
+import 'package:confichat/themes.dart';
 import 'package:confichat/app_data.dart';
 import 'package:confichat/chat_notifiers.dart';
 import 'package:confichat/ui_sidebar.dart';
 import 'package:confichat/ui_canvass.dart';
 import 'package:confichat/ui_app_bar.dart';
+import 'package:confichat/language_config.dart';
 import 'package:confichat/app_localizations.dart';
 import 'package:confichat/locale_provider.dart';
-
 
 void main() {
   runApp(
@@ -122,24 +120,13 @@ class ConfiChat extends StatelessWidget {
                 navigatorKey: AppData.instance.navigatorKey,
                 title: AppData.appTitle,
                 theme: themeProvider.currentTheme,
-                locale: localeProvider.locale,  // Use the locale from provider
-                localizationsDelegates: const [
+                locale: localeProvider.locale,
+                supportedLocales: LanguageConfig().getSupportedLocalesSync(),
+                localizationsDelegates: [
                   AppLocalizations.delegate,
                   GlobalMaterialLocalizations.delegate,
                   GlobalWidgetsLocalizations.delegate,
                   GlobalCupertinoLocalizations.delegate,
-                ],
-                supportedLocales: const [
-                  Locale('en', ''),
-                  Locale('ar', ''),
-                  Locale('de', ''),
-                  Locale('es', ''),
-                  Locale('fil', ''),
-                  Locale('fr', ''),
-                  Locale('he', ''),
-                  Locale('it', ''),
-                  Locale('th', ''),
-                  Locale('zh', 'CN')
                 ],
                 home: HomePage(appData: AppData.instance),
               );
@@ -149,24 +136,13 @@ class ConfiChat extends StatelessWidget {
         } else {
           // Display a loading screen with a logo and a progress indicator
           return MaterialApp(
-            localizationsDelegates: const [
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [
-              Locale('en', ''),
-              Locale('ar', ''),
-              Locale('de', ''),
-              Locale('es', ''),
-              Locale('fil', ''),
-              Locale('fr', ''),
-              Locale('he', ''),
-              Locale('it', ''),
-              Locale('th', ''),
-              Locale('zh', 'CN')
-            ],
+            supportedLocales: LanguageConfig().getSupportedLocalesSync(),
             home: Scaffold(
               body: Center(
                 child: Column(

@@ -1,26 +1,43 @@
+/*
+ * Copyright 2025 Rune Berg (http://runeberg.io | https://github.com/1runeberg)
+ * Licensed under Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:confichat/language_config.dart';
 
 class AppLocalizations {
   final Locale locale;
 
+  static final Map<String, Map<String, dynamic>> _cachedTranslations = {};
   AppLocalizations(this.locale);
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
+  static LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   late Map<String, dynamic> _localizedStrings;
 
-  // Load json files from disk
   Future<bool> load() async {
+    // Check if we already have this language cached
+    if (_cachedTranslations.containsKey(locale.languageCode)) {
+      _localizedStrings = _cachedTranslations[locale.languageCode]!;
+      return true;
+    }
+
+    // Otherwise load from disk and cache it
     String jsonString = await rootBundle.loadString('assets/i18n/${locale.languageCode}.json');
     Map<String, dynamic> jsonMap = json.decode(jsonString);
     _localizedStrings = jsonMap;
+
+    // Store in cache
+    _cachedTranslations[locale.languageCode] = jsonMap;
     return true;
   }
 
@@ -47,7 +64,6 @@ class AppLocalizations {
 
     return result;
   }
-
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
@@ -55,13 +71,24 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
 
   @override
   bool isSupported(Locale locale) {
-    return ['en', 'ar', 'de', 'es', 'fil', 'fr', 'he', 'it', 'th', 'zh'].contains(locale.languageCode);
+    // Use synchronous version
+    return LanguageConfig().isLanguageSupportedSync(locale.languageCode);
   }
 
-  // Load json files for the supported languages
   @override
   Future<AppLocalizations> load(Locale locale) async {
-    AppLocalizations localizations = AppLocalizations(locale);
+    // Make sure language config is initialized before loading translations
+    await LanguageConfig().ensureInitialized();
+
+    // Only proceed if the language is actually supported
+    if (await LanguageConfig().isLanguageSupported(locale.languageCode)) {
+      AppLocalizations localizations = AppLocalizations(locale);
+      await localizations.load();
+      return localizations;
+    }
+
+    // Fallback to English if not supported
+    AppLocalizations localizations = AppLocalizations(const Locale('en'));
     await localizations.load();
     return localizations;
   }
