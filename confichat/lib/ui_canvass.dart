@@ -1305,7 +1305,7 @@ class DecryptDialog {
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text(AppLocalizations.of(context).translate('canvass.encryptedContentDialog.decryptButton')),
+              child: Text(AppLocalizations.of(context).translate('canvass.encryptedContentDialog.cancelButton')),
             ),
           ],
         );

@@ -73,6 +73,8 @@ In a nutshell, ConfiChat caters to users who value transparent control over thei
 
 - **Lightweight Design**: Optimized for performance with minimal resource usage.
 
+- **Multi-language support**: ConfiChat supports multiple languages for both the user interface and model interactions. This allows users to chat in their preferred language, making it accessible to a global audience. Additionally, local models like LlamaCpp and online providers like OpenAI offer multilingual capabilities, enabling seamless communication in various languages. 
+
 <br/>
 
 ### 🛠️ 5. Compiling your own build

@@ -34,3 +34,8 @@ app.*.settings.local
 
 # vscode
 .vscode/*
+
+# MacOS / iOS specific files
+.DS_Store
+confichat/macos/Pods
+confichat/ios/Pods
