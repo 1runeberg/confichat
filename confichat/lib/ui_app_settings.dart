@@ -13,6 +13,9 @@ import 'package:confichat/themes.dart';
 import 'package:confichat/ui_widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:confichat/app_localizations.dart';
+import 'package:confichat/locale_provider.dart';
+import 'package:confichat/language_config.dart';
 
 class AppSettings extends StatefulWidget {
   final AppData appData;
@@ -39,6 +42,7 @@ class AppSettingsState extends State<AppSettings> {
   late String selectedTheme;
   late String selectedDefaultProvider;
   late String rootPath;
+  late String selectedLanguage;
 
   @override
   void initState() {
@@ -68,6 +72,7 @@ class AppSettingsState extends State<AppSettings> {
       windowWidth = 1024;
       windowHeight = 1024;
       selectedTheme = 'Onyx';
+      selectedLanguage = 'en';
       selectedDefaultProvider = 'Ollama';
       rootPath = '';
 
@@ -92,12 +97,20 @@ class AppSettingsState extends State<AppSettings> {
           scrollDuration = jsonContent['app']['appScrollDurationInms'] ?? widget.appData.appScrollDurationInms;
           windowWidth = jsonContent['app']['windowWidth'] ?? widget.appData.windowWidth;
           windowHeight = jsonContent['app']['windowHeight'] ?? widget.appData.windowHeight;
-          selectedTheme = jsonContent['app']['selectedTheme'] ?? 'Onyx'; 
+          selectedTheme = jsonContent['app']['selectedTheme'] ?? 'Onyx';
+          selectedLanguage = jsonContent['app']['selectedLanguage'] ?? 'en';
           selectedDefaultProvider = jsonContent['app']['selectedDefaultProvider'] ?? 'Ollama';
         });
 
+        // Set theme
         if(widget.appData.navigatorKey.currentContext != null){
           Provider.of<ThemeProvider>(widget.appData.navigatorKey.currentContext!, listen: false).setTheme(selectedTheme); 
+        }
+
+        // Set language
+        if(widget.appData.navigatorKey.currentContext != null){
+          Provider.of<LocaleProvider>(widget.appData.navigatorKey.currentContext!, listen: false)
+              .setLocale(Locale(selectedLanguage, ''));
         }
       }
     }
@@ -140,6 +153,7 @@ class AppSettingsState extends State<AppSettings> {
       'windowWidth': windowWidth,
       'windowHeight': windowHeight,
       'selectedTheme': selectedTheme,
+      'selectedLanguage': selectedLanguage,
       'selectedDefaultProvider': selectedDefaultProvider,
     };
 
@@ -165,7 +179,8 @@ class AppSettingsState extends State<AppSettings> {
           jsonContent['app']?['appScrollDurationInms'] != scrollDuration ||
           jsonContent['app']?['windowWidth'] != windowWidth ||
           jsonContent['app']?['windowHeight'] != windowHeight ||
-          jsonContent['app']?['selectedTheme'] != selectedTheme; // Check theme changes
+          jsonContent['app']?['selectedTheme'] != selectedTheme ||
+          jsonContent['app']?['selectedLanguage'] != selectedLanguage;
     }
 
     if (hasChanges) {
@@ -180,14 +195,14 @@ class AppSettingsState extends State<AppSettings> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const DialogTitle(title:'Unsaved Changes', isError: true),
-        content:  Text('You have unsaved changes. Do you want to save them?', style: Theme.of(context).textTheme.bodyLarge,),
+        title: DialogTitle(title: AppLocalizations.of(context).translate('appSettings.unsavedChanges.title'), isError: true),
+        content:  Text(AppLocalizations.of(context).translate('appSettings.unsavedChanges.message'), style: Theme.of(context).textTheme.bodyLarge,),
         actions: <Widget>[
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context).translate('appSettings.buttons.cancel')),
           ),
           ElevatedButton(
             focusNode: _focusNode,
@@ -195,7 +210,7 @@ class AppSettingsState extends State<AppSettings> {
               Navigator.of(context).pop();
               Navigator.of(context).pop();
             },
-            child: const Text('Exit'),
+            child: Text(AppLocalizations.of(context).translate('appSettings.buttons.exit')),
           ),
         ],
       ),
@@ -204,6 +219,7 @@ class AppSettingsState extends State<AppSettings> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     ThemeProvider themeProvider = Provider.of<ThemeProvider>(context);
 
     return Dialog(
@@ -217,7 +233,7 @@ class AppSettingsState extends State<AppSettings> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               // Window title
-              const DialogTitle(title: 'Application Settings'),
+              DialogTitle(title: loc.translate('appSettings.title')),
               const SizedBox(height: 18),
 
               SingleChildScrollView(
@@ -227,7 +243,7 @@ class AppSettingsState extends State<AppSettings> {
 
                   // Clear messages
                   SwitchListTile(
-                    title: const Text('Clear messages when switching Models'),
+                    title: Text(loc.translate('appSettings.clearMessages')),
                     activeColor: Theme.of(context).colorScheme.secondary,
                     contentPadding: EdgeInsets.zero,
                     value: clearMessages,
@@ -242,7 +258,7 @@ class AppSettingsState extends State<AppSettings> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Text('Theme', style: TextStyle(fontSize: 16)),
+                      Text(loc.translate('appSettings.theme'), style: TextStyle(fontSize: 16)),
                       const SizedBox(width: 8),
                       MenuAnchor(
                         builder: (BuildContext context, MenuController controller, Widget? child) {
@@ -274,11 +290,79 @@ class AppSettingsState extends State<AppSettings> {
                     ],
                   ),
 
+                  // Language switcher
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(AppLocalizations.of(context).translate('language'), style: const TextStyle(fontSize: 16)),
+                      const SizedBox(width: 8),
+                      FutureBuilder<List<Map<String, dynamic>>>(
+                        future: LanguageConfig().getLanguageOptions(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          }
+
+                          if (!snapshot.hasData || snapshot.hasError) {
+                            return TextButton(
+                              onPressed: null,
+                              child: Row(children: [Text(selectedLanguage), const Icon(Icons.arrow_drop_down)]),
+                            );
+                          }
+
+                          final languages = snapshot.data!;
+
+                          return MenuAnchor(
+                            builder: (BuildContext context, MenuController controller, Widget? child) {
+                              return TextButton(
+                                onPressed: controller.open,
+                                child: Row(
+                                  children: [
+                                    FutureBuilder<String>(
+                                      future: LanguageConfig().getLanguageName(selectedLanguage),
+                                      builder: (context, snapshot) {
+                                        return Text(snapshot.data ?? selectedLanguage);
+                                      },
+                                    ),
+                                    const Icon(Icons.arrow_drop_down),
+                                  ],
+                                ),
+                              );
+                            },
+                            menuChildren: languages.map((lang) {
+                              final code = lang['code'] as String;
+                              final name = lang['name'] as String;
+                              final country = lang['country'] as String?;
+
+                              return MenuItemButton(
+                                onPressed: () {
+                                  setState(() {
+                                    selectedLanguage = code;
+                                    if (widget.appData.navigatorKey.currentContext != null) {
+                                      Provider.of<LocaleProvider>(
+                                          widget.appData.navigatorKey.currentContext!,
+                                          listen: false
+                                      ).setLocale(Locale(code, country ?? ''));
+                                    }
+                                  });
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                                  child: Text(name),
+                                ),
+                              );
+                            }).toList(),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+
                   // Default AI Provider switcher
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Text('Default provider', style: TextStyle(fontSize: 16)),
+                      Text(loc.translate('appSettings.defaultProvider'), style: TextStyle(fontSize: 16)),
                       const SizedBox(width: 8),
                       MenuAnchor(
                         builder: (BuildContext context, MenuController controller, Widget? child) {
@@ -311,7 +395,7 @@ class AppSettingsState extends State<AppSettings> {
                   const SizedBox(height: 8),
                   TextField(
                     controller: _scrollDuration,
-                    decoration: InputDecoration(labelText: 'Auto-scroll duration (ms)', labelStyle: Theme.of(context).textTheme.labelSmall),
+                    decoration: InputDecoration(labelText: loc.translate('appSettings.scrollDuration'), labelStyle: Theme.of(context).textTheme.labelSmall),
                     keyboardType: TextInputType.number,
                     onChanged: (value) {
                       setState(() {
@@ -323,7 +407,7 @@ class AppSettingsState extends State<AppSettings> {
                   // Window width
                   TextField(
                     controller: _windowWidth,
-                    decoration: InputDecoration(labelText: 'Default window width', labelStyle: Theme.of(context).textTheme.labelSmall),
+                    decoration: InputDecoration(labelText: loc.translate('appSettings.windowWidth'), labelStyle: Theme.of(context).textTheme.labelSmall),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     onChanged: (value) {
                       setState(() {
@@ -335,7 +419,7 @@ class AppSettingsState extends State<AppSettings> {
                   // Window height
                   TextField(
                     controller: _windowHeight,
-                    decoration: InputDecoration(labelText: 'Default window height', labelStyle: Theme.of(context).textTheme.labelSmall),
+                    decoration: InputDecoration(labelText: loc.translate('appSettings.windowHeight'), labelStyle: Theme.of(context).textTheme.labelSmall),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     onChanged: (value) {
                       setState(() {
@@ -347,7 +431,7 @@ class AppSettingsState extends State<AppSettings> {
                   // Default app root path
                   TextField(
                       decoration: InputDecoration(
-                        labelText: 'Override app data path (leave blank for system default)',
+                        labelText: loc.translate('appSettings.overridePath'),
                         labelStyle: Theme.of(context).textTheme.labelSmall,
                       ),
                       readOnly: true,
@@ -359,7 +443,7 @@ class AppSettingsState extends State<AppSettings> {
                       children: [
                         TextButton(
                           onPressed: _pickDirectory,
-                          child: const Text('Pick Directory'),
+                          child: Text(loc.translate('appSettings.pickDirectory')),
                         ),
                       ]
                     ),
@@ -374,13 +458,13 @@ class AppSettingsState extends State<AppSettings> {
                 children: <Widget>[
                   ElevatedButton(
                     onPressed: _saveSettings,
-                    child: const Text('Save'),
+                    child: Text(loc.translate('appSettings.buttons.save')),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
                     focusNode: _focusNode,
                     onPressed: _checkForUnsavedChanges,
-                    child: const Text('Cancel'),
+                    child: Text(loc.translate('appSettings.buttons.cancel')),
                   ),
                 ],
               ),

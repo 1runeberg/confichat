@@ -1,0 +1,26 @@
+# ConfiChat supported languages
+# Language code (Set1) and endonym from ISO 639: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+# Country code from ISO 3166 (alpha2): https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
+
+languages:
+  - code: en
+    name: English
+  - code: ar
+    name: العربية
+  - code: de
+    name: Deutsch
+  - code: es
+    name: Español
+  - code: fil
+    name: Filipino
+  - code: fr
+    name: Français
+  - code: he
+    name: עברית
+  - code: it
+    name: Italiano
+  - code: th
+    name: ไทย
+  - code: zh
+    name: 中文
+    country: CN

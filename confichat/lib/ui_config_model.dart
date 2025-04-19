@@ -7,6 +7,7 @@
 import 'package:flutter/material.dart';
 import 'package:confichat/app_data.dart';
 import 'package:confichat/ui_widgets.dart';
+import 'package:confichat/app_localizations.dart';
 
 
 class ModelConfigDialog extends StatefulWidget {
@@ -34,12 +35,12 @@ class ModelConfigDialogState extends State<ModelConfigDialog> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.modelName);
-    _parentModelController = TextEditingController(text: 'Unknown');
-    _rootModelController = TextEditingController(text: 'Unknown');
-    _createdOnController = TextEditingController(text: 'Unknown');
-    _languagesController = TextEditingController(text: 'Unknown');
-    _parameterSizeController = TextEditingController(text: 'Unknown');
-    _quantizationLevelController = TextEditingController(text: 'Unknown');
+    _parentModelController = TextEditingController(text: '');
+    _rootModelController = TextEditingController(text: '');
+    _createdOnController = TextEditingController(text: '');
+    _languagesController = TextEditingController(text: '');
+    _parameterSizeController = TextEditingController(text: '');
+    _quantizationLevelController = TextEditingController(text: '');
     _systemPromptController = TextEditingController(text: '');
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -65,9 +66,11 @@ class ModelConfigDialogState extends State<ModelConfigDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return AlertDialog(
 
-      title:   const DialogTitle(title: 'Model Configuration'),  
+      title:   DialogTitle(title: loc.translate('modelConfigDialog.title')),
       content: SizedBox(
         width: 400,
         child: SingleChildScrollView(
@@ -75,15 +78,15 @@ class ModelConfigDialogState extends State<ModelConfigDialog> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildTextField('Name', _nameController),
-              _buildTextField('Parent Model', _parentModelController),
-              _buildTextField('Root Model', _rootModelController),
-              _buildTextField('Created On', _createdOnController),
-              _buildTextField('Languages', _languagesController),
-              _buildTextField('Parameter Size', _parameterSizeController),
-              _buildTextField('Quantization Level', _quantizationLevelController),
+              _buildTextField(loc.translate('modelConfigDialog.fields.name'), _nameController),
+              _buildTextField(loc.translate('modelConfigDialog.fields.parentModel'), _parentModelController),
+              _buildTextField(loc.translate('modelConfigDialog.fields.rootModel'), _rootModelController),
+              _buildTextField(loc.translate('modelConfigDialog.fields.createdOn'), _createdOnController),
+              _buildTextField(loc.translate('modelConfigDialog.fields.languages'), _languagesController),
+              _buildTextField(loc.translate('modelConfigDialog.fields.parameterSize'), _parameterSizeController),
+              _buildTextField(loc.translate('modelConfigDialog.fields.quantizationLevel'), _quantizationLevelController),
               const SizedBox(height: 8),
-              _buildMultilineField('System Prompt (in-model)', _systemPromptController),
+              _buildMultilineField(loc.translate('modelConfigDialog.fields.systemPrompt'), _systemPromptController),
             ],
           ),
         )
@@ -92,14 +95,14 @@ class ModelConfigDialogState extends State<ModelConfigDialog> {
       actions: [
         ElevatedButton(
           onPressed: () => _confirmDelete(context),
-          child: const Text('Delete'),
+          child: Text(loc.translate('modelConfigDialog.buttons.delete')),
         ),
         ElevatedButton(
           focusNode: _focusNodeButton,
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: const Text('Close'),
+          child: Text(loc.translate('modelConfigDialog.buttons.close')),
         ),
       ],
     );
@@ -148,8 +151,8 @@ class ModelConfigDialogState extends State<ModelConfigDialog> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Confirm Deletion'),
-          content: Text('Are you sure you want to delete ${_nameController.text}?'),
+          title: Text(AppLocalizations.of(context).translate('modelConfigDialog.confirmDelete.title')),
+          content: Text(AppLocalizations.of(context).translate('modelConfigDialog.confirmDelete.message').replaceAll('{modelName}', _nameController.text)),
           actions: [
             ElevatedButton(
               onPressed: () async {
@@ -157,13 +160,13 @@ class ModelConfigDialogState extends State<ModelConfigDialog> {
                 _deleteModel();
                 Navigator.of(context).pop(); // Close the config dialog
               },
-              child: const Text('Delete'),
+              child: Text(AppLocalizations.of(context).translate('modelConfigDialog.confirmDelete.buttons.delete')),
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the confirmation dialog
               },
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(context).translate('modelConfigDialog.confirmDelete.buttons.cancel')),
             ),
           ],
         );

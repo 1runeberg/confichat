@@ -5,7 +5,6 @@
  */
 
 import 'dart:math';
-
 import 'package:code_highlight_view/code_highlight_view.dart';
 import 'package:code_highlight_view/themes/github.dart';
 import 'package:confichat/persistent_storage.dart';
@@ -13,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:confichat/app_data.dart';
-
+import 'package:confichat/app_localizations.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'dart:convert';
 
@@ -318,7 +317,8 @@ class CodePreviewBuilder extends MarkdownElementBuilder {
             onPressed: () {
               Clipboard.setData(ClipboardData(text: element.textContent));
               ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(backgroundColor: Theme.of(context).colorScheme.primaryContainer, content: const Text('Code copied to clipboard')),
+              SnackBar(backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                  content: Text(AppLocalizations.of(context).translate('codePreview.copied'))),
               );
             },
             backgroundColor: const Color.fromARGB(80, 82, 172, 247),
@@ -531,13 +531,13 @@ class ChatBubble extends StatelessWidget {
                     right: 0, 
                     bottom: 0,
                     child: PopupMenuButton<String>(
-                      tooltip: 'Remove/Regen',
+                      tooltip: AppLocalizations.of(context).translate('chatBubble.actions.removeRegenerate'),
                       iconColor: const Color.fromARGB(127, 158, 158, 158),
                       onSelected: (value) => fnChatActionCallback(ChatActionPayload(index, ChatActionType.regenerate)),
                       itemBuilder: (context) => [
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'regenerate',
-                          child: Text('Remove/Regenerate'),
+                          child: Text(AppLocalizations.of(context).translate('chatBubble.actions.removeRegenerate')),
                         ),
                       ],
                     )  
@@ -549,13 +549,13 @@ class ChatBubble extends StatelessWidget {
                     right: 0, 
                     bottom: 0,
                     child: PopupMenuButton<String>(
-                      tooltip: 'Delete',
+                      tooltip: AppLocalizations.of(context).translate('chatBubble.actions.delete'),
                       iconColor: const Color.fromARGB(127, 158, 158, 158),
                       onSelected: (value) => fnChatActionCallback(ChatActionPayload(index, ChatActionType.delete)),
                       itemBuilder: (context) => [
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'delete',
-                          child: Text('Delete'),
+                          child: Text(AppLocalizations.of(context).translate('chatBubble.actions.delete')),
                         ),
                       ],
                     )  

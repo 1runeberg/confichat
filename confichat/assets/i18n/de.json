@@ -1,0 +1,249 @@
+{
+  "language": "Sprache",
+  "warning": "Warnung",
+  "unsavedMessagesWarning": "Es gibt ungespeicherte Nachrichten im aktuellen Chat-Fenster - sie gehen verloren. Fortfahren?",
+  "yes": "Ja",
+  "cancel": "Abbrechen",
+  "ok": "OK",
+  "settings": "Einstellungen",
+  "clearMessagesOnSwitch": "Nachrichten beim Modellwechsel löschen",
+  "filterHistoryByModel": "Verlauf nach Modell filtern",
+  "theme": "Thema",
+  "defaultProvider": "Standardanbieter",
+  "loading": "Lädt...",
+  "unknown": "Unbekannt",
+  "modelConfigDialog": {
+    "title": "Modellkonfiguration",
+    "fields": {
+      "name": "Name",
+      "parentModel": "Übergeordnetes Modell",
+      "rootModel": "Stammmodell",
+      "createdOn": "Erstellt am",
+      "languages": "Sprachen",
+      "parameterSize": "Parametergröße",
+      "quantizationLevel": "Quantisierungsstufe",
+      "systemPrompt": "System-Prompt (im Modell)"
+    },
+    "buttons": {
+      "delete": "Löschen",
+      "close": "Schließen"
+    },
+    "confirmDelete": {
+      "title": "Löschen bestätigen",
+      "message": "Sind Sie sicher, dass Sie {modelName} löschen möchten?",
+      "buttons": {
+        "delete": "Löschen",
+        "cancel": "Abbrechen"
+      }
+    }
+  },
+  "providerOptions": {
+    "title": "{provider} Optionen",
+    "fields": {
+      "scheme": "Schema",
+      "host": "Host",
+      "port": "Port",
+      "path": "Pfad",
+      "apiKey": "API-Schlüssel",
+      "confirmKey": "Schlüssel bestätigen"
+    },
+    "buttons": {
+      "save": "Speichern",
+      "cancel": "Abbrechen"
+    }
+  },
+  "sidebar": {
+    "sections": {
+      "chatSessions": "Chat-Sitzungen",
+      "settings": "Einstellungen",
+      "legal": "Rechtliches"
+    },
+    "options": {
+      "update": "Aktualisieren",
+      "rename": "Umbenennen",
+      "delete": "Löschen",
+      "applicationSettings": "Anwendungseinstellungen"
+    },
+    "legal": {
+      "termsAndConditions": "Allgemeine Geschäftsbedingungen",
+      "thirdPartyLicenses": "Drittanbieter-Lizenzen"
+    },
+    "confirmDelete": {
+      "title": "Löschen bestätigen",
+      "message": "Sind Sie sicher, dass Sie {filename} löschen möchten?",
+      "buttons": {
+        "delete": "Löschen",
+        "cancel": "Abbrechen"
+      }
+    },
+    "renameDialog": {
+      "title": "Umbenennen",
+      "fields": {
+        "name": "Name",
+        "newName": "Neuer Name *"
+      },
+      "buttons": {
+        "rename": "Umbenennen",
+        "cancel": "Abbrechen"
+      },
+      "validation": {
+        "required": "Neuer Name ist erforderlich",
+        "invalidFormat": "Ungültiges Format: Verwenden Sie nur alphanumerische Zeichen. Kann Leerzeichen, Unterstriche, Bindestriche oder Punkte enthalten, aber keine aufeinanderfolgenden Punkte."
+      }
+    }
+  },
+  "saveChatSession": {
+    "title": "Chat-Sitzung speichern",
+    "fields": {
+      "modelName": "Modellname",
+      "sessionSubject": "Sitzungsthema (Dateiname) *",
+      "encrypt": "Verschlüsseln",
+      "encryptionKey": "Verschlüsselungsschlüssel",
+      "confirmKey": "Schlüssel bestätigen"
+    },
+    "buttons": {
+      "save": "Speichern",
+      "cancel": "Abbrechen"
+    },
+    "validation": {
+      "unknownModel": "Unbekanntes Modell",
+      "nameRequired": "Name ist erforderlich",
+      "keysMismatch": "Verschlüsselungsschlüssel und Bestätigung stimmen nicht überein!",
+      "enterName": "Bitte geben Sie einen Namen ein (dieser wird auch als Dateiname verwendet)"
+    },
+    "resultDialog": {
+      "success": "Erfolg",
+      "fail": "Fehlgeschlagen",
+      "buttons": {
+        "close": "Schließen"
+      }
+    }
+  },
+  "errorDialog": {
+    "buttons": {
+      "close": "Schließen"
+    }
+  },
+  "codePreview": {
+    "copied": "Code in die Zwischenablage kopiert"
+  },
+  "chatBubble": {
+    "actions": {
+      "removeRegenerate": "Entfernen/Neu generieren",
+      "delete": "Löschen"
+    }
+  },
+  "canvass": {
+    "title": "Leinwand",
+    "promptLabel": "Aufforderung",
+    "tuningLabel": "Feinabstimmung",
+    "attachFilesTooltip": "Dateien anhängen",
+    "sendPromptTooltip": "Aufforderung senden",
+    "scrollToTopTooltip": "Nach oben scrollen",
+    "scrollToBottomTooltip": "Nach unten scrollen",
+    "resetMessagesTooltip": "Nachrichten zurücksetzen/löschen",
+    "saveSessionTooltip": "Sitzung speichern",
+    "promptMessage": "Eingabeaufforderung (Dateien können unten per Drag & Drop abgelegt werden)",
+    "encryptedContentDialog": {
+      "title": "Verschlüsselter Inhalt",
+      "message": "Dieser Chat enthält verschlüsselten Inhalt. Bitte geben Sie den Schlüssel zum Entschlüsseln ein.",
+      "encryptionKeyLabel": "Verschlüsselungsschlüssel",
+      "decryptButton": "Entschlüsseln",
+      "cancelButton": "Abbrechen",
+      "errorDialog": {
+        "title": "Fehler",
+        "message": "Entschlüsselung mit Schlüssel nicht möglich: {key}",
+        "closeButton": "Schließen"
+      }
+    },
+    "warningDialog": {
+      "title": "Warnung",
+      "message": "Es gibt ungespeicherte Nachrichten im aktuellen Chat-Fenster - sie gehen verloren. Fortfahren?",
+      "yesButton": "Ja",
+      "cancelButton": "Abbrechen"
+    },
+    "confirmSessionResetDialog": {
+      "title": "Sitzungszurücksetzung bestätigen",
+      "message": "Sind Sie sicher, dass Sie alle Chat-Nachrichten löschen möchten?",
+      "clearButton": "Löschen",
+      "cancelButton": "Abbrechen"
+    },
+    "loadChatSessionDialog": {
+      "title": "Chat-Sitzung laden",
+      "message": "Sind Sie sicher, dass Sie die Chat-Sitzung laden möchten: \n\n{sessionName}?\n\nDies wird alle aktuellen Nachrichten löschen und wenn nicht gespeichert, gehen sie verloren.",
+      "yesButton": "Ja",
+      "cancelButton": "Abbrechen"
+    },
+    "updateChatSessionDialog": {
+      "title": "Chat-Sitzung aktualisieren",
+      "message": "Sind Sie sicher, dass Sie die Chat-Sitzung aktualisieren möchten: \n\n{sessionName}\n\nDies wird die Nachrichten auf der Festplatte mit den aktuellen Nachrichten auf dem Bildschirm überschreiben, dieser Vorgang ist nicht wiederherstellbar.",
+      "yesButton": "Ja",
+      "cancelButton": "Abbrechen",
+      "encryptionKeyLabel": "Verschlüsselungsschlüssel",
+      "provideKey:" : "Die Chat-Sitzung ist verschlüsselt. Sie müssen den Verschlüsselungsschlüssel angeben, um sie zu aktualisieren.",
+      "chatUpdateSuccess": "Chat-Sitzung aktualisiert.",
+      "chatUpdateFail" : "Verschlüsselte Chat-Sitzung konnte nicht gespeichert werden: {sessionName}",
+      "incorrectKey" : "Falscher Verschlüsselungsschlüssel. Chat-Sitzung konnte nicht aktualisiert werden."
+    },
+    "chatStream": {
+      "errorCompletion": "Fehler beim Anfordern der Chat-Vervollständigung: {errorMessage}",
+      "errorStream": "Fehler im Antwort-Stream gefunden: {errorMessage}"
+    }
+  },
+  "termsAndConditions": {
+    "title": "Nutzungsbedingungen",
+    "errorFileLoad": "Fehler beim Laden der Datei",
+    "closeButton": "Schließen"
+  },
+  "appBar": {
+    "provider" : "Anbieter",
+    "currentModel" : "Aktuelles Modell",
+    "addModelLabel" : "NEUES MODELL HINZUFÜGEN"
+  },
+  "advancedPrompt": {
+    "title": "Erweiterte Prompt Optionen",
+    "scrollMessage": "Scrollen Sie, um weitere Tuning-Optionen zu sehen",
+    "tempLabel": "Temperatur",
+    "tempDesc": "Steuert die Zufälligkeit der Ausgabe.",
+    "tempMeans": "Verwenden Sie niedrigere Temperaturen (z.B. 0.2) für Aufgaben, die Präzision und vorhersehbare Ergebnisse erfordern, wie z.B. technisches Schreiben oder Code-Generierung. Verwenden Sie höhere Temperaturen (z.B. 1.5) für offenere Aufgaben wie kreatives Schreiben oder Brainstorming.",
+    "probLabel": "Wahrscheinlichkeit",
+    "probDesc": "Bestimmt die Vielfalt der Antwort.",
+    "probMeans": "Niedrigere Werte (z.B. 0.3) führen zu fokussierteren und vorhersehbareren Ausgaben, indem das Modell auf eine kleinere Teilmenge der wahrscheinlichsten Token beschränkt wird. Höhere Werte (z.B. 0.9) ermöglichen eine größere Vielfalt an Token und erzeugen kreativere und weniger vorhersehbare Antworten.",
+    "tokensLabel": "Max. Token",
+    "tokensDesc": "Legt die maximale Anzahl von Token fest, die das Modell in der Antwort generiert.",
+    "tokensMeans": "Begrenzt die Antwortlänge. Verwenden Sie niedrigere Werte für prägnante Antworten und höhere Werte für detaillierte Antworten.",
+    "systemLabel": "System Prompt",
+    "systemDesc": "Anfangsanweisung, die den Kontext oder die Rolle für die gesamte Konversation festlegt.",
+    "systemMeans": "Indem die Rolle oder der Fokus des Modells festgelegt wird, z. B. als hilfreicher Assistent, technischer Experte oder kreativer Autor, werden die Antworten des Modells an die Erwartungen der Benutzer und die beabsichtigte Anwendung angepasst.",
+    "stopLabel": "Stopsequenzen",
+    "stopDesc": "Geben Sie mehrere Sequenzen durch Kommas getrennt ein.",
+    "stopMeans": "Definieren Sie, wo die Antwort enden soll, um übermäßig lange oder unnötige Ausgaben zu vermeiden. (Beispiel: .,\\\\n, user:)",
+    "saveButton": "Speichern",
+    "resetButton": "Zurücksetzen",
+    "defaultsButton": "Standardwerte",
+    "cancelButton": "Abbrechen",
+    "exitButton": "Verlassen",
+    "unsavedChangesTitle": "Ungespeicherte Änderungen",
+    "unsavedChangesMessage": "Sie haben ungespeicherte Änderungen. Möchten Sie wirklich verlassen?"
+  },
+  "appSettings": {
+    "title": "Anwendungseinstellungen",
+    "clearMessages": "Nachrichten beim Modellwechsel löschen",
+    "theme": "Thema",
+    "defaultProvider": "Standardanbieter",
+    "scrollDuration": "Auto-Scroll-Dauer (ms)",
+    "windowWidth": "Standardfensterbreite",
+    "windowHeight": "Standardfensterhöhe",
+    "overridePath": "App-Datenpfad überschreiben (leer lassen für Systemstandard)",
+    "pickDirectory": "Verzeichnis auswählen",
+    "buttons": {
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "exit": "Verlassen"
+    },
+    "unsavedChanges": {
+      "title": "Ungespeicherte Änderungen",
+      "message": "Sie haben ungespeicherte Änderungen. Möchten Sie diese speichern?"
+    }
+  }
+}

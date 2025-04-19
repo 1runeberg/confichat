@@ -7,14 +7,15 @@ environment:
   sdk: '>=3.4.4 <4.0.0'
 
 dependencies:
-  desktop_drop: ^0.4.4
+  yaml: ^3.1.2
+  desktop_drop: ^0.5.0
   desktop_window: ^0.4.0
-  file_picker: ^8.0.0+1
+  file_picker: ^9.2.1
   flutter:
     sdk: flutter
   flutter_markdown: ^0.7.3+1
   http: ^1.2.2
-  intl: ^0.19.0
+  intl: any
   markdown: ^7.2.2
   path_provider: ^2.1.4
   provider: ^6.1.2
@@ -23,12 +24,14 @@ dependencies:
   encrypt: ^5.0.3
   crypto: ^3.0.3
   code_highlight_view: ^0.1.1
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
-  flutter_oss_licenses: ^2.0.1
+  flutter_lints: ^5.0.0
+  flutter_oss_licenses: ^3.0.4
 
 flutter:
   uses-material-design: true
@@ -37,3 +40,14 @@ flutter:
     - assets/confichat_logo_text_outline.png
     - assets/TERMS_AND_CONDITIONS.md
     - assets/licenses/
+    - assets/i18n/languages.yaml
+    - assets/i18n/en.json
+    - assets/i18n/ar.json
+    - assets/i18n/de.json
+    - assets/i18n/es.json
+    - assets/i18n/fil.json
+    - assets/i18n/fr.json
+    - assets/i18n/he.json
+    - assets/i18n/it.json
+    - assets/i18n/th.json
+    - assets/i18n/zh.json

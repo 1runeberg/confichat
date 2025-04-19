@@ -1,0 +1,249 @@
+{
+  "language": "اللغة",
+  "warning": "تحذير",
+  "unsavedMessagesWarning": "توجد رسائل غير محفوظة في نافذة المحادثة الحالية - سيتم فقدانها. هل تريد المتابعة؟",
+  "yes": "نعم",
+  "cancel": "إلغاء",
+  "ok": "موافق",
+  "settings": "الإعدادات",
+  "clearMessagesOnSwitch": "مسح الرسائل عند تبديل النموذج",
+  "filterHistoryByModel": "تصفية السجل حسب النموذج",
+  "theme": "السمة",
+  "defaultProvider": "المزود الافتراضي",
+  "loading": "جارِ التحميل...",
+  "unknown": "غير معروف",
+  "modelConfigDialog": {
+    "title": "إعدادات النموذج",
+    "fields": {
+      "name": "الاسم",
+      "parentModel": "النموذج الأصل",
+      "rootModel": "النموذج الجذر",
+      "createdOn": "تاريخ الإنشاء",
+      "languages": "اللغات",
+      "parameterSize": "حجم المعلمات",
+      "quantizationLevel": "مستوى التكميم",
+      "systemPrompt": "توجيه النظام (داخل النموذج)"
+    },
+    "buttons": {
+      "delete": "حذف",
+      "close": "إغلاق"
+    },
+    "confirmDelete": {
+      "title": "تأكيد الحذف",
+      "message": "هل أنت متأكد من رغبتك في حذف {modelName}؟",
+      "buttons": {
+        "delete": "حذف",
+        "cancel": "إلغاء"
+      }
+    }
+  },
+  "providerOptions": {
+    "title": "خيارات {provider}",
+    "fields": {
+      "scheme": "المخطط",
+      "host": "المضيف",
+      "port": "المنفذ",
+      "path": "المسار",
+      "apiKey": "مفتاح API",
+      "confirmKey": "تأكيد المفتاح"
+    },
+    "buttons": {
+      "save": "حفظ",
+      "cancel": "إلغاء"
+    }
+  },
+  "sidebar": {
+    "sections": {
+      "chatSessions": "جلسات الدردشة",
+      "settings": "الإعدادات",
+      "legal": "قانوني"
+    },
+    "options": {
+      "update": "تحديث",
+      "rename": "إعادة تسمية",
+      "delete": "حذف",
+      "applicationSettings": "إعدادات التطبيق"
+    },
+    "legal": {
+      "termsAndConditions": "الشروط والأحكام",
+      "thirdPartyLicenses": "تراخيص الطرف الثالث"
+    },
+    "confirmDelete": {
+      "title": "تأكيد الحذف",
+      "message": "هل أنت متأكد من رغبتك في حذف {filename}؟",
+      "buttons": {
+        "delete": "حذف",
+        "cancel": "إلغاء"
+      }
+    },
+    "renameDialog": {
+      "title": "إعادة تسمية",
+      "fields": {
+        "name": "الاسم",
+        "newName": "الاسم الجديد *"
+      },
+      "buttons": {
+        "rename": "إعادة تسمية",
+        "cancel": "إلغاء"
+      },
+      "validation": {
+        "required": "الاسم الجديد مطلوب",
+        "invalidFormat": "تنسيق غير صالح: استخدم الأحرف الأبجدية والأرقام فقط. يمكن أن تتضمن المسافات أو الشرطات السفلية أو الشرطات أو النقاط، ولكن ليس نقاط متتالية."
+      }
+    }
+  },
+  "saveChatSession": {
+    "title": "حفظ جلسة الدردشة",
+    "fields": {
+      "modelName": "اسم النموذج",
+      "sessionSubject": "موضوع الجلسة (اسم الملف) *",
+      "encrypt": "تشفير",
+      "encryptionKey": "مفتاح التشفير",
+      "confirmKey": "تأكيد المفتاح"
+    },
+    "buttons": {
+      "save": "حفظ",
+      "cancel": "إلغاء"
+    },
+    "validation": {
+      "unknownModel": "نموذج غير معروف",
+      "nameRequired": "الاسم مطلوب",
+      "keysMismatch": "مفتاح التشفير والتأكيد غير متطابقين!",
+      "enterName": "الرجاء إدخال اسم (سيتم استخدامه أيضًا كاسم للملف)"
+    },
+    "resultDialog": {
+      "success": "نجاح",
+      "fail": "فشل",
+      "buttons": {
+        "close": "إغلاق"
+      }
+    }
+  },
+  "errorDialog": {
+    "buttons": {
+      "close": "إغلاق"
+    }
+  },
+  "codePreview": {
+    "copied": "تم نسخ الكود إلى الحافظة"
+  },
+  "chatBubble": {
+    "actions": {
+      "removeRegenerate": "إزالة/إعادة إنشاء",
+      "delete": "حذف"
+    }
+  },
+  "canvass": {
+    "title": "لوحة المحادثة",
+    "promptLabel": "موجه",
+    "tuningLabel": "ضبط",
+    "attachFilesTooltip": "إرفاق ملفات",
+    "sendPromptTooltip": "إرسال الموجه",
+    "scrollToTopTooltip": "التمرير للأعلى",
+    "scrollToBottomTooltip": "التمرير للأسفل",
+    "resetMessagesTooltip": "إعادة ضبط/مسح الرسائل",
+    "saveSessionTooltip": "حفظ الجلسة",
+    "promptMessage": "الموجه (يمكنك سحب وإفلات الملفات أدناه)",
+    "encryptedContentDialog": {
+      "title": "محتوى مشفر",
+      "message": "تحتوي هذه المحادثة على محتوى مشفر. يرجى تقديم المفتاح لفك التشفير.",
+      "encryptionKeyLabel": "مفتاح التشفير",
+      "decryptButton": "فك التشفير",
+      "cancelButton": "إلغاء",
+      "errorDialog": {
+        "title": "خطأ",
+        "message": "تعذر فك التشفير باستخدام المفتاح: {key}",
+        "closeButton": "إغلاق"
+      }
+    },
+    "warningDialog": {
+      "title": "تحذير",
+      "message": "توجد رسائل غير محفوظة في نافذة المحادثة الحالية - سيتم فقدانها. هل تريد المتابعة؟",
+      "yesButton": "نعم",
+      "cancelButton": "إلغاء"
+    },
+    "confirmSessionResetDialog": {
+      "title": "تأكيد إعادة ضبط الجلسة",
+      "message": "هل أنت متأكد من رغبتك في مسح جميع رسائل المحادثة؟",
+      "clearButton": "مسح",
+      "cancelButton": "إلغاء"
+    },
+    "loadChatSessionDialog": {
+      "title": "تحميل جلسة محادثة",
+      "message": "هل أنت متأكد من رغبتك في تحميل جلسة المحادثة: \n\n{sessionName}؟\n\nسيؤدي هذا إلى مسح جميع الرسائل الحالية وإذا لم يتم حفظها، سيتم فقدانها.",
+      "yesButton": "نعم",
+      "cancelButton": "إلغاء"
+    },
+    "updateChatSessionDialog": {
+      "title": "تحديث جلسة المحادثة",
+      "message": "هل أنت متأكد من رغبتك في تحديث جلسة المحادثة: \n\n{sessionName}\n\nسيؤدي هذا إلى استبدال الرسائل على القرص بالرسائل الحالية على الشاشة، هذه العملية لا يمكن التراجع عنها.",
+      "yesButton": "نعم",
+      "cancelButton": "إلغاء",
+      "encryptionKeyLabel": "مفتاح التشفير",
+      "provideKey:": "جلسة المحادثة مشفرة. يجب تقديم مفتاح التشفير للتحديث.",
+      "chatUpdateSuccess": "تم تحديث جلسة المحادثة.",
+      "chatUpdateFail": "تعذر حفظ جلسة المحادثة المشفرة: {sessionName}",
+      "incorrectKey": "مفتاح التشفير غير صحيح. تعذر تحديث جلسة المحادثة."
+    },
+    "chatStream": {
+      "errorCompletion": "خطأ في طلب إكمال المحادثة: {errorMessage}",
+      "errorStream": "حدث خطأ في تدفق الاستجابة: {errorMessage}"
+    }
+  },
+  "termsAndConditions": {
+    "title": "الشروط والأحكام",
+    "errorFileLoad": "خطأ في تحميل الملف",
+    "closeButton": "إغلاق"
+  },
+  "appBar": {
+    "provider": "المزود",
+    "currentModel": "النموذج الحالي",
+    "addModelLabel": "إضافة نموذج جديد"
+  },
+  "advancedPrompt": {
+    "title": "خيارات الموجه المتقدمة",
+    "scrollMessage": "مرر لرؤية المزيد من خيارات الضبط",
+    "tempLabel": "درجة الحرارة",
+    "tempDesc": "تتحكم في عشوائية المخرجات.",
+    "tempMeans": "استخدم درجات حرارة منخفضة (مثل 0.2) للمهام التي تتطلب الدقة والنتائج المتوقعة، مثل الكتابة التقنية أو إنشاء الكود. استخدم درجات حرارة أعلى (مثل 1.5) للمهام المفتوحة مثل الكتابة الإبداعية أو العصف الذهني.",
+    "probLabel": "الاحتمالية",
+    "probDesc": "تحدد تنوع الاستجابة.",
+    "probMeans": "القيم المنخفضة (مثل 0.3) تؤدي إلى مخرجات أكثر تركيزًا وقابلة للتنبؤ من خلال تقييد النموذج إلى مجموعة فرعية أصغر من الرموز الأكثر احتمالًا. تسمح القيم الأعلى (مثل 0.9) بمجموعة أوسع من الرموز، مما ينتج استجابات أكثر إبداعًا وأقل قابلية للتنبؤ.",
+    "tokensLabel": "الحد الأقصى للرموز",
+    "tokensDesc": "يحدد الحد الأقصى لعدد الرموز التي سينشئها النموذج في الاستجابة.",
+    "tokensMeans": "يحد من طول الاستجابة. استخدم قيمًا منخفضة للإجابات الموجزة وقيمًا أعلى للردود المفصلة.",
+    "systemLabel": "موجه النظام",
+    "systemDesc": "تعليمات أولية تحدد السياق أو الدور للمحادثة بأكملها.",
+    "systemMeans": "من خلال تحديد دور النموذج أو تركيزه، مثل التصرف كمساعد مفيد، أو خبير تقني، أو كاتب إبداعي، يتم مواءمة استجابات النموذج مع توقعات المستخدم والتطبيق المقصود",
+    "stopLabel": "تسلسلات التوقف",
+    "stopDesc": "أدخل تسلسلات متعددة مفصولة بفواصل.",
+    "stopMeans": "حدد مكان انتهاء الاستجابة لمنع المخرجات المطولة أو غير الضرورية. (مثال: .,\\\\n, user:)",
+    "saveButton": "حفظ",
+    "resetButton": "إعادة ضبط",
+    "defaultsButton": "الإعدادات الافتراضية",
+    "cancelButton": "إلغاء",
+    "exitButton": "خروج",
+    "unsavedChangesTitle": "تغييرات غير محفوظة",
+    "unsavedChangesMessage": "لديك تغييرات غير محفوظة. هل أنت متأكد من رغبتك في الخروج؟"
+  },
+  "appSettings": {
+    "title": "إعدادات التطبيق",
+    "clearMessages": "مسح الرسائل عند تبديل النماذج",
+    "theme": "السمة",
+    "defaultProvider": "المزود الافتراضي",
+    "scrollDuration": "مدة التمرير التلقائي (مللي ثانية)",
+    "windowWidth": "العرض الافتراضي للنافذة",
+    "windowHeight": "الارتفاع الافتراضي للنافذة",
+    "overridePath": "تجاوز مسار بيانات التطبيق (اتركه فارغًا للإعداد الافتراضي للنظام)",
+    "pickDirectory": "اختيار المجلد",
+    "buttons": {
+      "save": "حفظ",
+      "cancel": "إلغاء",
+      "exit": "خروج"
+    },
+    "unsavedChanges": {
+      "title": "تغييرات غير محفوظة",
+      "message": "لديك تغييرات غير محفوظة. هل تريد حفظها؟"
+    }
+  }
+}

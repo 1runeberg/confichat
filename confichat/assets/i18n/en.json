@@ -1,0 +1,249 @@
+{
+  "language": "Language",
+  "warning": "Warning",
+  "unsavedMessagesWarning": "There are unsaved messages in the current chat window - they will be lost. Proceed?",
+  "yes": "Yes",
+  "cancel": "Cancel",
+  "ok": "OK",
+  "settings": "Settings",
+  "clearMessagesOnSwitch": "Clear messages on model switch",
+  "filterHistoryByModel": "Filter history by model",
+  "theme": "Theme",
+  "defaultProvider": "Default Provider",
+  "loading": "Loading...",
+  "unknown": "Unknown",
+  "modelConfigDialog": {
+    "title": "Model Configuration",
+    "fields": {
+      "name": "Name",
+      "parentModel": "Parent Model",
+      "rootModel": "Root Model",
+      "createdOn": "Created On",
+      "languages": "Languages",
+      "parameterSize": "Parameter Size",
+      "quantizationLevel": "Quantization Level",
+      "systemPrompt": "System Prompt (in-model)"
+    },
+    "buttons": {
+      "delete": "Delete",
+      "close": "Close"
+    },
+    "confirmDelete": {
+      "title": "Confirm Deletion",
+      "message": "Are you sure you want to delete {modelName}?",
+      "buttons": {
+        "delete": "Delete",
+        "cancel": "Cancel"
+      }
+    }
+  },
+  "providerOptions": {
+    "title": "{provider} Options",
+    "fields": {
+      "scheme": "Scheme",
+      "host": "Host",
+      "port": "Port",
+      "path": "Path",
+      "apiKey": "API Key",
+      "confirmKey": "Confirm Key"
+    },
+    "buttons": {
+      "save": "Save",
+      "cancel": "Cancel"
+    }
+  },
+  "sidebar": {
+    "sections": {
+      "chatSessions": "Chat Sessions",
+      "settings": "Settings",
+      "legal": "Legal"
+    },
+    "options": {
+      "update": "Update",
+      "rename": "Rename",
+      "delete": "Delete",
+      "applicationSettings": "Application settings"
+    },
+    "legal": {
+      "termsAndConditions": "Terms and Conditions",
+      "thirdPartyLicenses": "Third-Party Licenses"
+    },
+    "confirmDelete": {
+      "title": "Confirm Delete",
+      "message": "Are you sure you want to delete {filename}?",
+      "buttons": {
+        "delete": "Delete",
+        "cancel": "Cancel"
+      }
+    },
+    "renameDialog": {
+      "title": "Rename",
+      "fields": {
+        "name": "Name",
+        "newName": "New name *"
+      },
+      "buttons": {
+        "rename": "Rename",
+        "cancel": "Cancel"
+      },
+      "validation": {
+        "required": "New name is required",
+        "invalidFormat": "Invalid format: Use only alphanumeric characters. May include spaces, underscores, hyphens, or periods, but not consecutive periods."
+      }
+    }
+  },
+  "saveChatSession": {
+    "title": "Save Chat Session",
+    "fields": {
+      "modelName": "Model Name",
+      "sessionSubject": "Session subject (filename) *",
+      "encrypt": "Encrypt",
+      "encryptionKey": "Encryption Key",
+      "confirmKey": "Confirm Key"
+    },
+    "buttons": {
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "validation": {
+      "unknownModel": "Unknown model",
+      "nameRequired": "Name is required",
+      "keysMismatch": "Encryption key and confirmation does not match!",
+      "enterName": "Please enter a name (this will also be used as the filename)"
+    },
+    "resultDialog": {
+      "success": "Success",
+      "fail": "Fail",
+      "buttons": {
+        "close": "Close"
+      }
+    }
+  },
+  "errorDialog": {
+    "buttons": {
+      "close": "Close"
+    }
+  },
+  "codePreview": {
+    "copied": "Code copied to clipboard"
+  },
+  "chatBubble": {
+    "actions": {
+      "removeRegenerate": "Remove/Regenerate",
+      "delete": "Delete"
+    }
+  },
+  "canvass": {
+    "title": "Canvass",
+    "promptLabel": "Prompt",
+    "tuningLabel": "Tuning",
+    "attachFilesTooltip": "Attach files",
+    "sendPromptTooltip": "Send prompt",
+    "scrollToTopTooltip": "Scroll to top",
+    "scrollToBottomTooltip": "Scroll to bottom",
+    "resetMessagesTooltip": "Reset/Clear messages",
+    "saveSessionTooltip": "Save session",
+    "promptMessage": "Prompt (you can drag-and-drop files below)",
+    "encryptedContentDialog": {
+      "title": "Encrypted Content",
+      "message": "This chat contains encrypted content. Please provide the key to decrypt.",
+      "encryptionKeyLabel": "Encryption key",
+      "decryptButton": "Decrypt",
+      "cancelButton": "Cancel",
+      "errorDialog": {
+        "title": "Error",
+        "message": "Unable to decrypt with key: {key}",
+        "closeButton": "Close"
+      }
+    },
+    "warningDialog": {
+      "title": "Warning",
+      "message": "There are unsaved messages in the current chat window - they will be lost. Proceed?",
+      "yesButton": "Yes",
+      "cancelButton": "Cancel"
+    },
+    "confirmSessionResetDialog": {
+      "title": "Confirm Session Reset",
+      "message": "Are you sure you want to clear all chat messages?",
+      "clearButton": "Clear",
+      "cancelButton": "Cancel"
+    },
+    "loadChatSessionDialog": {
+      "title": "Load Chat Session",
+      "message": "Are you sure you want to load chat session: \n\n{sessionName}?\n\nThis will clear all current messages and if unsaved, will be lost.",
+      "yesButton": "Yes",
+      "cancelButton": "Cancel"
+    },
+    "updateChatSessionDialog": {
+      "title": "Update Chat Session",
+      "message": "Are you sure you want to update chat session: \n\n{sessionName}\n\nThis will OVERWRITE the messages on disk with the current messages on screen, this operation is unrecoverable.",
+      "yesButton": "Yes",
+      "cancelButton": "Cancel",
+      "encryptionKeyLabel": "Encryption Key",
+      "provideKey:" : "Chat session is encrypted. You must provide the encryption key to update.",
+      "chatUpdateSuccess": "Chat session updated.",
+      "chatUpdateFail" : "Unable to save encrypted chat session: {sessionName}",
+      "incorrectKey" : "Incorrect encryption key. Unable to update chat session."
+    },
+    "chatStream": {
+      "errorCompletion" : "Error requesting chat completion: {errorMessage}",
+      "errorStream" : "Error encountered in response stream: {errorMessage}"
+      }
+  },
+  "termsAndConditions": {
+    "title": "Terms and Conditions",
+    "errorFileLoad": "Error loading file",
+    "closeButton": "Close"
+  },
+  "appBar": {
+    "provider" : "Provider",
+    "currentModel" : "Current Model",
+    "addModelLabel" : "ADD NEW MODEL"
+  },
+  "advancedPrompt": {
+    "title": "Advanced Prompt Options",
+    "scrollMessage": "Scroll to see more tuning options",
+    "tempLabel": "Temperature",
+    "tempDesc": "Controls the randomness of the output.",
+    "tempMeans": "Use lower temperatures (e.g., 0.2) for tasks that require precision and predictable outcomes, such as technical writing or code generation. Use higher temperatures (e.g., 1.5) for more open-ended tasks like creative writing or brainstorming.",
+    "probLabel": "Probability",
+    "probDesc": "Determines the diversity of the response.",
+    "probMeans": "Lower values (e.g., 0.3) result in more focused and predictable outputs by limiting the model to a smaller subset of the most probable tokens. Higher values (e.g., 0.9) allow for a wider variety of tokens, producing more creative and less predictable responses.",
+    "tokensLabel": "Max Tokens",
+    "tokensDesc": "Sets the maximum number of tokens that the model will generate in the response.",
+    "tokensMeans": "Limits response length. Use lower values for concise answers and higher values for detailed responses.",
+    "systemLabel": "System Prompt",
+    "systemDesc": "Initial instruction that sets the context or role for the entire conversation.",
+    "systemMeans": "By setting the model\\'s role or focus, such as acting as a helpful assistant, technical expert, or creative writer, it aligns the model\\'s responses to user expectations and the intended application",
+    "stopLabel": "Stop Sequences",
+    "stopDesc": "Enter multiple sequences separated by commas.",
+    "stopMeans": "Define where the response should end to prevent overly lengthy or unnecessary outputs. (example: .,\\\\n, user:)",
+    "saveButton": "Save",
+    "resetButton": "Reset",
+    "defaultsButton": "Defaults",
+    "cancelButton": "Cancel",
+    "exitButton": "Exit",
+    "unsavedChangesTitle": "Unsaved changes",
+    "unsavedChangesMessage": "You have unsaved changes. Are you sure you want to exit?"
+  },
+  "appSettings": {
+    "title": "Application Settings",
+    "clearMessages": "Clear messages when switching Models",
+    "theme": "Theme",
+    "defaultProvider": "Default provider",
+    "scrollDuration": "Auto-scroll duration (ms)",
+    "windowWidth": "Default window width",
+    "windowHeight": "Default window height",
+    "overridePath": "Override app data path (leave blank for system default)",
+    "pickDirectory": "Pick Directory",
+    "buttons": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "exit": "Exit"
+    },
+    "unsavedChanges": {
+      "title": "Unsaved Changes",
+      "message": "You have unsaved changes. Do you want to save them?"
+    }
+  }
+}

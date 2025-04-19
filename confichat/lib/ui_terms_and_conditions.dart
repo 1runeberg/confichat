@@ -7,6 +7,7 @@
 import 'package:confichat/ui_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:confichat/app_localizations.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 class TermsAndConditions extends StatelessWidget {
@@ -18,6 +19,8 @@ class TermsAndConditions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Dialog(
       child: Container(
         padding: const EdgeInsets.all(16.0),
@@ -27,12 +30,12 @@ class TermsAndConditions extends StatelessWidget {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              return const Center(child: Text('Error loading file'));
+              return Center(child: Text(loc.translate('termsAndConditions.errorFileLoad')));
             } else {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                   const DialogTitle(title: 'Terms and Conditions'),  
+                   DialogTitle(title: loc.translate('termsAndConditions.title')),
                   const SizedBox(height: 16.0),
                   Expanded(
                     child: Markdown(
@@ -47,7 +50,7 @@ class TermsAndConditions extends StatelessWidget {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: const Text('Close'),
+                      child: Text(loc.translate('termsAndConditions.closeButton')),
                     ),
                   ),
                 ],

@@ -5,7 +5,6 @@
  */
 
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:confichat/file_parser.dart';
@@ -14,16 +13,15 @@ import 'package:confichat/ui_advanced_options.dart';
 import 'package:confichat/ui_save_session.dart';
 import 'package:confichat/ui_widgets.dart';
 import 'package:flutter/services.dart';
-
 import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'dart:convert';
-
 import 'package:confichat/chat_notifiers.dart';
 import 'package:confichat/persistent_storage.dart';
 import 'package:confichat/app_data.dart';
+import 'package:confichat/app_localizations.dart';
 
 
 class Canvass extends StatefulWidget {
@@ -124,6 +122,7 @@ class CanvassState extends State<Canvass> {
     // Get selected model
     final selectedModelProvider = Provider.of<SelectedModelProvider>(context, listen: false);
     final selectedModel = selectedModelProvider.selectedModel;
+    final loc = AppLocalizations.of(context);
 
     return ValueListenableBuilder<String>(
       valueListenable: widget.chatSessionSelectedNotifier,
@@ -270,8 +269,8 @@ class CanvassState extends State<Canvass> {
                       TextFormField(
                           controller: _promptController,
                           focusNode: _focusNodePrompt,
-                          decoration: const InputDecoration(
-                            labelText: 'Prompt',
+                          decoration: InputDecoration(
+                            labelText: loc.translate('canvass.promptLabel'),
                             alignLabelWithHint: true,
                           ),
                           minLines: 1,
@@ -300,7 +299,7 @@ class CanvassState extends State<Canvass> {
                                 },
                               );
                             },
-                            child: const Text('Tuning'),
+                            child:  Text(loc.translate('canvass.tuningLabel')),
                           ),),
                         
                         // Add spacer if there's enough space (not on phones)
@@ -423,11 +422,11 @@ class CanvassState extends State<Canvass> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const DialogTitle(title: 'Confirm Session Reset', isError: true),  
-          content: Text('Are you sure you want to clear all chat messages?', style: Theme.of(context).textTheme.bodyLarge,),
+          title: DialogTitle(title: AppLocalizations.of(context).translate('canvass.confirmSessionResetDialog.title'), isError: true),
+          content: Text( AppLocalizations.of(context).translate('canvass.confirmSessionResetDialog.message'), style: Theme.of(context).textTheme.bodyLarge,),
           actions: <Widget>[
             ElevatedButton(
-              child: const Text('Clear'),
+              child: Text( AppLocalizations.of(context).translate('canvass.confirmSessionResetDialog.clearButton')),
               onPressed: () {
                 Navigator.of(context).pop(); 
                 _resetHistory(true);
@@ -437,7 +436,7 @@ class CanvassState extends State<Canvass> {
               },
             ),
             ElevatedButton(
-              child: const Text('Cancel'),
+              child: Text( AppLocalizations.of(context).translate('canvass.confirmSessionResetDialog.cancelButton')),
               onPressed: () {
                 Navigator.of(context).pop(); 
               },
@@ -476,15 +475,15 @@ class CanvassState extends State<Canvass> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const DialogTitle(title: 'Warning', isError: true),
+              title: DialogTitle(title: AppLocalizations.of(context).translate('canvass.warningDialog.title'), isError: true),
               content: Text(
-                      'There are unsaved messages in the current chat window - they will be lost. Proceed?',
+                      AppLocalizations.of(context).translate('canvass.warningDialog.message'),
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
               actions: <Widget>[
 
                 ElevatedButton(
-                  child: const Text('Yes'),
+                  child: Text(AppLocalizations.of(context).translate('canvass.warningDialog.yesButton')),
                   onPressed: () {
                     shouldCancel = false;
                     Navigator.of(context).pop();
@@ -492,7 +491,7 @@ class CanvassState extends State<Canvass> {
                 ),
 
                 ElevatedButton(
-                  child: const Text('Cancel'),
+                  child: Text(AppLocalizations.of(context).translate('canvass.warningDialog.cancelButton')),
                   onPressed: () {
                     shouldCancel = true;
                     Navigator.of(context).pop();
@@ -536,7 +535,7 @@ class CanvassState extends State<Canvass> {
 
   void _loadChatSession(BuildContext context, String selectedChatSession) {
     final selectedModelProvider = Provider.of<SelectedModelProvider>(context, listen: false);
-    final selectedModelName = selectedModelProvider.selectedModel?.name ?? 'Unknown Model';
+    final selectedModelName = selectedModelProvider.selectedModel?.name ?? AppLocalizations.of(context).translate('canvass.saveChatSession.validation.unknownModel');
 
     showDialog(
       context: context,
@@ -556,20 +555,19 @@ class CanvassState extends State<Canvass> {
                     )
                 ),
                 
-                child: const DialogTitle(
-                      title: 'Load Chat Session', 
+                child: DialogTitle(
+                      title: AppLocalizations.of(context).translate('canvass.loadChatSessionDialog.title'),
                       isError: true,
                       ) 
               ),
 
           content: Text(
-            'Are you sure you want to load chat session: \n\n$selectedChatSession?\n\n'
-            'This will clear all current messages and if unsaved, will be lost.',
+             AppLocalizations.of(context).translate('canvass.loadChatSessionDialog.message').replaceAll('{sessionName}', selectedChatSession),
              style: Theme.of(context).textTheme.bodyMedium,
           ),
           actions: <Widget>[
             ElevatedButton(
-              child: const Text('Yes'),
+              child: Text(AppLocalizations.of(context).translate('canvass.loadChatSessionDialog.yesButton')),
               onPressed: () async {
                 Navigator.of(context).pop(); // remove confirmation dialog
                 Navigator.of(context).pop(); // remove sidebar
@@ -648,7 +646,7 @@ class CanvassState extends State<Canvass> {
             ),
 
             ElevatedButton(
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(context).translate('canvass.loadChatSessionDialog.cancelButton')),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -682,8 +680,8 @@ class CanvassState extends State<Canvass> {
                     )
                 ),
                 
-                child: const DialogTitle(
-                      title: 'Update Chat Session', 
+                child: DialogTitle(
+                      title: AppLocalizations.of(context).translate('canvass.updateChatSessionDialog.title'),
                       isError: true,
                       ) 
               ),
@@ -698,8 +696,7 @@ class CanvassState extends State<Canvass> {
 
                 // Warning message
                 Text(
-                  'Are you sure you want to update chat session: \n\n$filename\n\n'
-                  'This will OVERWRITE the messages on disk with the current messages on screen, this operation is unrecoverable.',
+                  AppLocalizations.of(context).translate('canvass.updateChatSessionDialog.message').replaceAll('{sessionName}', filename),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
 
@@ -708,8 +705,8 @@ class CanvassState extends State<Canvass> {
                 if(isEncrypted) 
                   TextFormField(
                     controller: encryptionKeyController,
-                    decoration: const InputDecoration(
-                      labelText: 'Encryption Key',
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context).translate('canvass.updateChatSessionDialog.encryptionKeyLabel'),
                     ),
                     obscureText: true,
                   ),
@@ -718,7 +715,7 @@ class CanvassState extends State<Canvass> {
 
           actions: <Widget>[
             ElevatedButton(
-              child: const Text('Yes'),
+              child: Text(AppLocalizations.of(context).translate('canvass.updateChatSessionDialog.yesButton')),
               onPressed: () async {
 
                 // Check encryption key
@@ -726,7 +723,8 @@ class CanvassState extends State<Canvass> {
 
                   if(encryptionKeyController.text.isEmpty){
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(backgroundColor: Theme.of(context).colorScheme.error, content: const Text('Chat session is encrypted. You must provide the encryption key to update.')),
+                      SnackBar(backgroundColor: Theme.of(context).colorScheme.error,
+                          content: Text(AppLocalizations.of(context).translate('canvass.updateChatSessionDialog.provideKey')))
                     );
                   } else {
 
@@ -752,11 +750,13 @@ class CanvassState extends State<Canvass> {
 
                         // Inform user of status
                         // ignore: use_build_context_synchronously
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Theme.of(context).colorScheme.primaryContainer, content: const Text('Chat session updated.')));
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                            content:  Text(AppLocalizations.of(context).translate('canvass.updateChatSessionDialog.chatUpdateSuccess'))));
 
                       } catch(e) {
                         // ignore: use_build_context_synchronously
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Theme.of(context).colorScheme.error, content: Text('Unable to save encrypted chat session: ${e.toString()}')));
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Theme.of(context).colorScheme.error,
+                            content: Text(AppLocalizations.of(context).translate('canvass.updateChatSessionDialog.chatUpdateFail').replaceAll( "{sessionName}", e.toString()))));
                       } finally{
                         // ignore: use_build_context_synchronously
                         Navigator.of(context).pop(); 
@@ -764,7 +764,8 @@ class CanvassState extends State<Canvass> {
 
                     } else{
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(backgroundColor: Theme.of(context).colorScheme.error, content: const Text('Incorrect encryption key. Unable to update chat session.')),
+                        SnackBar(backgroundColor: Theme.of(context).colorScheme.error,
+                            content: Text(AppLocalizations.of(context).translate('canvass.updateChatSessionDialog.incorrectKey')))
                       );
                     }
 
@@ -777,7 +778,8 @@ class CanvassState extends State<Canvass> {
 
                   // Inform user of status
                   // ignore: use_build_context_synchronously
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Theme.of(context).colorScheme.primaryContainer, content: const Text('Chat session updated.')));
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                      content: Text(AppLocalizations.of(context).translate('canvass.updateChatSessionDialog.chatUpdateSuccess'))));
 
                   // ignore: use_build_context_synchronously
                   Navigator.of(context).pop(); 
@@ -786,7 +788,7 @@ class CanvassState extends State<Canvass> {
               }
             ),
             ElevatedButton(
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(context).translate('canvass.updateChatSessionDialog.cancelButton')),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -914,7 +916,7 @@ class CanvassState extends State<Canvass> {
     if (!mounted) return;
 
     final selectedModelProvider = Provider.of<SelectedModelProvider>(context, listen: false);
-    final selectedModelName = selectedModelProvider.selectedModel?.name ?? 'Unknown Model';
+    final selectedModelName = selectedModelProvider.selectedModel?.name ?? AppLocalizations.of(context).translate('canvass.saveChatSession.validation.unknownModel');
 
     widget.appData.api.sendPrompt(
       modelId: selectedModelName,
@@ -947,7 +949,7 @@ class CanvassState extends State<Canvass> {
 
   Future<void> _loadModelToMemory() async {
     final selectedModelProvider = Provider.of<SelectedModelProvider>(context, listen: false);
-    final selectedModelName = selectedModelProvider.selectedModel?.name ?? 'Unknown Model';
+    final selectedModelName = selectedModelProvider.selectedModel?.name ?? AppLocalizations.of(context).translate('canvass.saveChatSession.validation.unknownModel');
 
     FocusScope.of(context).requestFocus(_focusNodePrompt);
 
@@ -978,14 +980,16 @@ class CanvassState extends State<Canvass> {
 
     final String errorMessage = error.toString();
     ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(backgroundColor: Theme.of(context).colorScheme.error, content: Text('Error requesting chat completion: $errorMessage')),
+                    SnackBar(backgroundColor: Theme.of(context).colorScheme.error,
+                        content: Text(AppLocalizations.of(context).translate('canvass.chatStream.errorCompletion').replaceAll("{errorMessage}", errorMessage))),
                   );
   }
 
   dynamic _onChatStreamError( int index, dynamic error ){
     _onChatStreamComplete(index);
     ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(backgroundColor: Theme.of(context).colorScheme.error, content: Text('Error encountered in response stream: $error')),
+                    SnackBar(backgroundColor: Theme.of(context).colorScheme.error,
+                        content: Text(AppLocalizations.of(context).translate('canvass.chatStream.errorStream').replaceAll("{errorMessage}", error))),
                   );
   }
 
@@ -1165,7 +1169,7 @@ class CanvassState extends State<Canvass> {
         hoverColor: Theme.of(context).colorScheme.primary,
         elevation: 3.0,
         hoverElevation: 3.0,
-        tooltip: 'Scroll to top',
+        tooltip: AppLocalizations.of(context).translate('canvass.scrollToTopTooltip'),
         onPressed: () => _scrollToTop(scrollDurationInms: widget.appData.appScrollDurationInms),
         child: const Icon(Icons.vertical_align_top),
       ),
@@ -1176,7 +1180,7 @@ class CanvassState extends State<Canvass> {
         hoverColor: Theme.of(context).colorScheme.primary,
         elevation: 3.0,
         hoverElevation: 3.0,
-        tooltip: 'Scroll to bottom',
+        tooltip: AppLocalizations.of(context).translate('canvass.scrollToBottomTooltip'),
         onPressed: () => _scrollToBottom(scrollDurationInms: widget.appData.appScrollDurationInms),
         child: const Icon(Icons.vertical_align_bottom),
       ),
@@ -1187,7 +1191,7 @@ class CanvassState extends State<Canvass> {
         hoverColor: Theme.of(context).colorScheme.primary,
         elevation: 3.0,
         hoverElevation: 3.0,
-        tooltip: 'Reset/Clear messages',
+        tooltip:  AppLocalizations.of(context).translate('canvass.resetMessagesTooltip'),
         onPressed: _clearMessages,
         child: const Icon(Icons.restart_alt),
       ),
@@ -1200,7 +1204,7 @@ class CanvassState extends State<Canvass> {
         hoverColor: Theme.of(context).colorScheme.primary,
         elevation: 3.0,
         hoverElevation: 3.0,
-        tooltip: 'Save session',
+        tooltip: AppLocalizations.of(context).translate('canvass.saveSessionTooltip'),
         onPressed: chatData.isEmpty ? null : () {
           showDialog(
             context: context,
@@ -1223,7 +1227,7 @@ class CanvassState extends State<Canvass> {
         hoverColor: Theme.of(context).colorScheme.primary,
         elevation: 3.0,
         hoverElevation: 3.0,
-        tooltip: 'Attach files',
+        tooltip: AppLocalizations.of(context).translate('canvass.attachFilesTooltip'),
         onPressed: (selectedModel !=null  && selectedModel.supportsImages) ? _attachFiles : null,
         child: const Icon(Icons.attach_file),
       ),
@@ -1234,7 +1238,7 @@ class CanvassState extends State<Canvass> {
         hoverColor: Theme.of(context).colorScheme.primary,
         elevation: 3.0,
         hoverElevation: 3.0,
-        tooltip: 'Send prompt',
+        tooltip: AppLocalizations.of(context).translate('canvass.sendPromptTooltip'),
         onPressed: () => _sendPrompt(_promptController.text, null),
         child: const Icon(Icons.send_sharp),
       ),
@@ -1267,15 +1271,15 @@ class DecryptDialog {
       builder: (BuildContext context) {
 
         return AlertDialog(
-          title: const DialogTitle(title: 'Encrypted Content'),
+          title: DialogTitle(title: AppLocalizations.of(context).translate('canvass.encryptedContentDialog.title')),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('This chat contains encrypted content. Please provide the key to decrypt.', style: Theme.of(context).textTheme.bodyLarge,),
+              Text(AppLocalizations.of(context).translate('canvass.encryptedContentDialog.message'), style: Theme.of(context).textTheme.bodyLarge,),
               TextField(
                 controller: keyController,
-                decoration: const InputDecoration(
-                  labelText: 'Encryption key',
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context).translate('canvass.encryptedContentDialog.encryptionKeyLabel'),
                 ),
                 obscureText: true,
               ),
@@ -1295,13 +1299,13 @@ class DecryptDialog {
                   _showErrorDialog(context, key);
                 }
               },
-              child: const Text('Decrypt'),
+              child: Text(AppLocalizations.of(context).translate('canvass.encryptedContentDialog.decryptButton')),
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(context).translate('canvass.encryptedContentDialog.decryptButton')),
             ),
           ],
         );
@@ -1314,14 +1318,14 @@ class DecryptDialog {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Error'),
-          content: Text('Unable to decrypt with key: $key'),
+          title: Text(AppLocalizations.of(context).translate('canvass.encryptedContentDialog.errorDialog.title')),
+          content: Text(AppLocalizations.of(context).translate('canvass.encryptedContentDialog.errorDialog.message').replaceAll("{key}", key)),
           actions: <Widget>[
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the error dialog
               },
-              child: const Text('Close'),
+              child: Text(AppLocalizations.of(context).translate('canvass.encryptedContentDialog.errorDialog.closeButton')),
             ),
           ],
         );
@@ -1369,8 +1373,8 @@ class ShiftEnterTextFormFieldState extends State<ShiftEnterTextFormField> {
     child: TextFormField(
           controller: widget.promptController,
           focusNode: widget.focusNode,
-          decoration: const InputDecoration(
-            labelText: 'Prompt (you can drag-and-drop files below)',
+          decoration: InputDecoration(
+            labelText: AppLocalizations.of(context).translate('canvass.promptMessage'),
             alignLabelWithHint: true,
           ),
           maxLines: 5,

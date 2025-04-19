@@ -5,16 +5,14 @@
  */
 
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
-
 import 'package:confichat/app_data.dart';
 import 'package:confichat/interfaces.dart';
 import 'package:confichat/persistent_storage.dart';
 import 'package:confichat/ui_widgets.dart';
-
+import 'package:confichat/app_localizations.dart';
 
 class SaveChatSession extends StatefulWidget {
   final List<Map<String, dynamic>> chatData;
@@ -65,11 +63,14 @@ class SaveChatSessionState extends State<SaveChatSession>  {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: DialogTitle(title: success ? 'Success' : 'Fail', isError: !success,),
+          title: DialogTitle(title:
+            success ? AppLocalizations.of(context).translate('saveChatSession.resultDialog.success') :
+            AppLocalizations.of(context).translate('saveChatSession.resultDialog.fail'),
+            isError: !success,),
           content: SelectableText(message),
           actions: <Widget>[
             ElevatedButton(
-              child: const Text('Close'),
+              child: Text(AppLocalizations.of(context).translate('saveChatSession.resultDialog.buttons.close')),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the result dialog
                 Navigator.of(context).pop(); // Close the save dialog
@@ -89,14 +90,14 @@ class SaveChatSessionState extends State<SaveChatSession>  {
   }
 
   Future<void> _saveChatSession(BuildContext context) async {
-    final selectedModelName = widget.selectedModelProvider.selectedModel?.name ?? 'Unknown Model';
+    final selectedModelName = widget.selectedModelProvider.selectedModel?.name ?? AppLocalizations.of(context).translate('saveChatSession.validation.unknownModel');
 
     // Check for valid name
     if (_sessionNameController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          content: const Text('Name is required'),
+          content: Text(AppLocalizations.of(context).translate('saveChatSession.validation.nameRequired')),
         ),
       );
     }
@@ -118,7 +119,7 @@ class SaveChatSessionState extends State<SaveChatSession>  {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Theme.of(context).colorScheme.error,
-          content: const Text('Encyption key and confirmation does not match!'),
+          content: Text(AppLocalizations.of(context).translate('saveChatSession.validation.keysMismatch')),
         ),
       );
 
@@ -172,7 +173,7 @@ class SaveChatSessionState extends State<SaveChatSession>  {
         // ignore: use_build_context_synchronously
         context,
         success: true,
-        message: 'Saved to: \n${widget.chatSessionsDir.path}/$folder/${AppData.appFilenameBookend}$fileName${AppData.appFilenameBookend}.json',
+        message: 'File: \n${widget.chatSessionsDir.path}/$folder/${AppData.appFilenameBookend}$fileName${AppData.appFilenameBookend}.json',
       );
 
 
@@ -184,17 +185,18 @@ class SaveChatSessionState extends State<SaveChatSession>  {
         // ignore: use_build_context_synchronously
         context,
         success: false,
-        message: 'Failed to save: $e\nFile: ${widget.chatSessionsDir.path}/$folder/${AppData.appFilenameBookend}$fileName${AppData.appFilenameBookend}.json',
+
+        message: 'Failed: ${widget.chatSessionsDir.path}/$folder/${AppData.appFilenameBookend}$fileName${AppData.appFilenameBookend}.json',
       );
       if (kDebugMode) {
-        print('Failed to save: $e\nFile: ${widget.chatSessionsDir.path}/$folder/${AppData.appFilenameBookend}$fileName${AppData.appFilenameBookend}.json');
+        print('Failed: ${widget.chatSessionsDir.path}/$folder/${AppData.appFilenameBookend}$fileName${AppData.appFilenameBookend}.json');
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final selectedModelName = widget.selectedModelProvider.selectedModel?.name ?? 'Unknown Model';
+    final selectedModelName = widget.selectedModelProvider.selectedModel?.name ?? AppLocalizations.of(context).translate('saveChatSession.validation.unknownModel');
 
     if(!_suggested) {
       AppData.instance.api.sendPrompt(
@@ -208,7 +210,7 @@ class SaveChatSessionState extends State<SaveChatSession>  {
     }
 
     return AlertDialog(
-      title: const DialogTitle(title: 'Save Chat Session'), 
+      title: DialogTitle(title: AppLocalizations.of(context).translate('saveChatSession.title')),
       content: SingleChildScrollView(
       scrollDirection: Axis.vertical, 
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,      
@@ -226,8 +228,8 @@ class SaveChatSessionState extends State<SaveChatSession>  {
           TextField(
             controller: TextEditingController(text: selectedModelName),
             readOnly: true,
-            decoration: const InputDecoration(
-              labelText: 'Model Name',
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context).translate('saveChatSession.fields.model'),
             ),
           ),
 
@@ -235,7 +237,7 @@ class SaveChatSessionState extends State<SaveChatSession>  {
           TextFormField(
             controller: _sessionNameController,
             decoration: InputDecoration(
-              labelText: 'Session subject (filename) *',
+              labelText: AppLocalizations.of(context).translate('saveChatSession.fields.sessionSubject'),
                suffixIcon: _sessionNameController.text.isNotEmpty
                 ? IconButton(
                     icon: const Icon(Icons.clear),
@@ -249,7 +251,7 @@ class SaveChatSessionState extends State<SaveChatSession>  {
             maxLength: 150,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter a name (this will also be used as the filename)';
+                return AppLocalizations.of(context).translate('saveChatSession.validation.enterName');
               }
               return null;
             },
@@ -260,7 +262,7 @@ class SaveChatSessionState extends State<SaveChatSession>  {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
 
-              const Text('Encrypt', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(AppLocalizations.of(context).translate('saveChatSession.fields.encrypt'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               Switch(
                 value: _encrypt,
                 onChanged: (bool value) {
@@ -275,8 +277,8 @@ class SaveChatSessionState extends State<SaveChatSession>  {
           // Encryption key
           TextFormField(
             controller: _encryptionKeyController,
-            decoration: const InputDecoration(
-              labelText: 'Encryption Key',
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context).translate('saveChatSession.fields.encryptionKey'),
             ),
             obscureText: true,
             enabled: _encrypt,
@@ -285,8 +287,8 @@ class SaveChatSessionState extends State<SaveChatSession>  {
           // Confirm encryption key
           TextFormField(
             controller: _confirmKeyController,
-            decoration: const InputDecoration(
-              labelText: 'Confirm Key',
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context).translate('saveChatSession.fields.confirmKey'),
             ),
             obscureText: true,
             enabled: _encrypt,
@@ -299,13 +301,13 @@ class SaveChatSessionState extends State<SaveChatSession>  {
 
         // Save button
         ElevatedButton(
-          child: const Text('Save'),
+          child: Text(AppLocalizations.of(context).translate('saveChatSession.buttons.save')),
           onPressed: () => _saveChatSession(context),
         ),
 
         // Cancel button
         ElevatedButton(
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context).translate('saveChatSession.buttons.cancel')),
           onPressed: () {
             Navigator.of(context).pop(); // Close the save dialog
           },

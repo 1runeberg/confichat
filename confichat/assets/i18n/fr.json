@@ -1,0 +1,249 @@
+{
+  "language": "Langue",
+  "warning": "Avertissement",
+  "unsavedMessagesWarning": "Il y a des messages non sauvegardés dans la fenêtre de discussion actuelle - ils seront perdus. Continuer ?",
+  "yes": "Oui",
+  "cancel": "Annuler",
+  "ok": "OK",
+  "settings": "Paramètres",
+  "clearMessagesOnSwitch": "Effacer les messages lors du changement de modèle",
+  "filterHistoryByModel": "Filtrer l'historique par modèle",
+  "theme": "Thème",
+  "defaultProvider": "Fournisseur par défaut",
+  "loading": "Chargement...",
+  "unknown": "Inconnu",
+  "modelConfigDialog": {
+    "title": "Configuration du modèle",
+    "fields": {
+      "name": "Nom",
+      "parentModel": "Modèle parent",
+      "rootModel": "Modèle racine",
+      "createdOn": "Créé le",
+      "languages": "Langues",
+      "parameterSize": "Taille des paramètres",
+      "quantizationLevel": "Niveau de quantification",
+      "systemPrompt": "Invite système (dans le modèle)"
+    },
+    "buttons": {
+      "delete": "Supprimer",
+      "close": "Fermer"
+    },
+    "confirmDelete": {
+      "title": "Confirmer la suppression",
+      "message": "Êtes-vous sûr de vouloir supprimer {modelName} ?",
+      "buttons": {
+        "delete": "Supprimer",
+        "cancel": "Annuler"
+      }
+    }
+  },
+  "providerOptions": {
+    "title": "Options de {provider}",
+    "fields": {
+      "scheme": "Schéma",
+      "host": "Hôte",
+      "port": "Port",
+      "path": "Chemin",
+      "apiKey": "Clé API",
+      "confirmKey": "Confirmer la clé"
+    },
+    "buttons": {
+      "save": "Enregistrer",
+      "cancel": "Annuler"
+    }
+  },
+  "sidebar": {
+    "sections": {
+      "chatSessions": "Sessions de discussion",
+      "settings": "Paramètres",
+      "legal": "Mentions légales"
+    },
+    "options": {
+      "update": "Mettre à jour",
+      "rename": "Renommer",
+      "delete": "Supprimer",
+      "applicationSettings": "Paramètres de l'application"
+    },
+    "legal": {
+      "termsAndConditions": "Conditions générales",
+      "thirdPartyLicenses": "Licences tierces"
+    },
+    "confirmDelete": {
+      "title": "Confirmer la suppression",
+      "message": "Êtes-vous sûr de vouloir supprimer {filename} ?",
+      "buttons": {
+        "delete": "Supprimer",
+        "cancel": "Annuler"
+      }
+    },
+    "renameDialog": {
+      "title": "Renommer",
+      "fields": {
+        "name": "Nom",
+        "newName": "Nouveau nom *"
+      },
+      "buttons": {
+        "rename": "Renommer",
+        "cancel": "Annuler"
+      },
+      "validation": {
+        "required": "Le nouveau nom est obligatoire",
+        "invalidFormat": "Format invalide: Utilisez uniquement des caractères alphanumériques. Peut inclure des espaces, des underscores, des traits d'union ou des points, mais pas des points consécutifs."
+      }
+    }
+  },
+  "saveChatSession": {
+    "title": "Enregistrer la session de discussion",
+    "fields": {
+      "modelName": "Nom du modèle",
+      "sessionSubject": "Sujet de la session (nom du fichier) *",
+      "encrypt": "Chiffrer",
+      "encryptionKey": "Clé de chiffrement",
+      "confirmKey": "Confirmer la clé"
+    },
+    "buttons": {
+      "save": "Enregistrer",
+      "cancel": "Annuler"
+    },
+    "validation": {
+      "unknownModel": "Modèle inconnu",
+      "nameRequired": "Le nom est obligatoire",
+      "keysMismatch": "La clé de chiffrement et la confirmation ne correspondent pas !",
+      "enterName": "Veuillez entrer un nom (il sera également utilisé comme nom de fichier)"
+    },
+    "resultDialog": {
+      "success": "Succès",
+      "fail": "Échec",
+      "buttons": {
+        "close": "Fermer"
+      }
+    }
+  },
+  "errorDialog": {
+    "buttons": {
+      "close": "Fermer"
+    }
+  },
+  "codePreview": {
+    "copied": "Code copié dans le presse-papiers"
+  },
+  "chatBubble": {
+    "actions": {
+      "removeRegenerate": "Supprimer/Régénérer",
+      "delete": "Supprimer"
+    }
+  },
+  "canvass": {
+    "title": "Canevas",
+    "promptLabel": "Invite",
+    "tuningLabel": "Réglage",
+    "attachFilesTooltip": "Joindre des fichiers",
+    "sendPromptTooltip": "Envoyer l'invite",
+    "scrollToTopTooltip": "Faire défiler vers le haut",
+    "scrollToBottomTooltip": "Faire défiler vers le bas",
+    "resetMessagesTooltip": "Réinitialiser/Effacer les messages",
+    "saveSessionTooltip": "Enregistrer la session",
+    "promptMessage": "Invite (vous pouvez glisser-déposer des fichiers ci-dessous)",
+    "encryptedContentDialog": {
+      "title": "Contenu chiffré",
+      "message": "Cette discussion contient du contenu chiffré. Veuillez fournir la clé pour déchiffrer.",
+      "encryptionKeyLabel": "Clé de chiffrement",
+      "decryptButton": "Déchiffrer",
+      "cancelButton": "Annuler",
+      "errorDialog": {
+        "title": "Erreur",
+        "message": "Impossible de déchiffrer avec la clé : {key}",
+        "closeButton": "Fermer"
+      }
+    },
+    "warningDialog": {
+      "title": "Avertissement",
+      "message": "Il y a des messages non sauvegardés dans la fenêtre de discussion actuelle - ils seront perdus. Continuer ?",
+      "yesButton": "Oui",
+      "cancelButton": "Annuler"
+    },
+    "confirmSessionResetDialog": {
+      "title": "Confirmer la réinitialisation de la session",
+      "message": "Êtes-vous sûr de vouloir effacer tous les messages de discussion ?",
+      "clearButton": "Effacer",
+      "cancelButton": "Annuler"
+    },
+    "loadChatSessionDialog": {
+      "title": "Charger une session de discussion",
+      "message": "Êtes-vous sûr de vouloir charger la session de discussion : \n\n{sessionName} ?\n\nCela effacera tous les messages actuels et s'ils ne sont pas sauvegardés, ils seront perdus.",
+      "yesButton": "Oui",
+      "cancelButton": "Annuler"
+    },
+    "updateChatSessionDialog": {
+      "title": "Mettre à jour la session de discussion",
+      "message": "Êtes-vous sûr de vouloir mettre à jour la session de discussion : \n\n{sessionName}\n\nCela REMPLACERA les messages sur le disque par les messages actuels à l'écran, cette opération est irréversible.",
+      "yesButton": "Oui",
+      "cancelButton": "Annuler",
+      "encryptionKeyLabel": "Clé de chiffrement",
+      "provideKey:": "La session de discussion est chiffrée. Vous devez fournir la clé de chiffrement pour mettre à jour.",
+      "chatUpdateSuccess": "Session de discussion mise à jour.",
+      "chatUpdateFail": "Impossible d'enregistrer la session de discussion chiffrée : {sessionName}",
+      "incorrectKey": "Clé de chiffrement incorrecte. Impossible de mettre à jour la session de discussion."
+    },
+    "chatStream": {
+      "errorCompletion": "Erreur lors de la demande de complétion de chat : {errorMessage}",
+      "errorStream": "Erreur rencontrée dans le flux de réponse : {errorMessage}"
+    }
+  },
+  "termsAndConditions": {
+    "title": "Conditions générales",
+    "errorFileLoad": "Erreur lors du chargement du fichier",
+    "closeButton": "Fermer"
+  },
+  "appBar": {
+    "provider": "Fournisseur",
+    "currentModel": "Modèle actuel",
+    "addModelLabel": "AJOUTER UN NOUVEAU MODÈLE"
+  },
+  "advancedPrompt": {
+    "title": "Options d'invite avancées",
+    "scrollMessage": "Faites défiler pour voir plus d'options de réglage",
+    "tempLabel": "Température",
+    "tempDesc": "Contrôle l'aléatoire de la sortie.",
+    "tempMeans": "Utilisez des températures plus basses (par exemple, 0.2) pour des tâches qui nécessitent précision et prévisibilité, comme la rédaction technique ou la génération de code. Utilisez des températures plus élevées (par exemple, 1.5) pour des tâches plus ouvertes comme l'écriture créative ou le brainstorming.",
+    "probLabel": "Probabilité",
+    "probDesc": "Détermine la diversité de la réponse.",
+    "probMeans": "Les valeurs plus basses (par exemple, 0.3) produisent des résultats plus ciblés et prévisibles en limitant le modèle à un sous-ensemble plus petit des jetons les plus probables. Des valeurs plus élevées (par exemple, 0.9) permettent une plus grande variété de jetons, produisant des réponses plus créatives et moins prévisibles.",
+    "tokensLabel": "Jetons maximum",
+    "tokensDesc": "Définit le nombre maximum de jetons que le modèle générera dans la réponse.",
+    "tokensMeans": "Limite la longueur de la réponse. Utilisez des valeurs plus basses pour des réponses concises et des valeurs plus élevées pour des réponses détaillées.",
+    "systemLabel": "Invite système",
+    "systemDesc": "Instruction initiale qui définit le contexte ou le rôle pour l'ensemble de la conversation.",
+    "systemMeans": "En définissant le rôle ou l'orientation du modèle, comme agir en tant qu'assistant utile, expert technique ou écrivain créatif, cela aligne les réponses du modèle aux attentes des utilisateurs et à l'application prévue",
+    "stopLabel": "Séquences d'arrêt",
+    "stopDesc": "Entrez plusieurs séquences séparées par des virgules.",
+    "stopMeans": "Définissez où la réponse doit se terminer pour éviter les sorties trop longues ou inutiles. (exemple : .,\\\\n, user:)",
+    "saveButton": "Enregistrer",
+    "resetButton": "Réinitialiser",
+    "defaultsButton": "Par défaut",
+    "cancelButton": "Annuler",
+    "exitButton": "Quitter",
+    "unsavedChangesTitle": "Modifications non enregistrées",
+    "unsavedChangesMessage": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?"
+  },
+  "appSettings": {
+    "title": "Paramètres de l'application",
+    "clearMessages": "Effacer les messages lors du changement de modèle",
+    "theme": "Thème",
+    "defaultProvider": "Fournisseur par défaut",
+    "scrollDuration": "Durée de défilement automatique (ms)",
+    "windowWidth": "Largeur de fenêtre par défaut",
+    "windowHeight": "Hauteur de fenêtre par défaut",
+    "overridePath": "Remplacer le chemin des données de l'application (laisser vide pour le chemin par défaut du système)",
+    "pickDirectory": "Choisir un répertoire",
+    "buttons": {
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "exit": "Quitter"
+    },
+    "unsavedChanges": {
+      "title": "Modifications non enregistrées",
+      "message": "Vous avez des modifications non enregistrées. Voulez-vous les enregistrer ?"
+    }
+  }
+}

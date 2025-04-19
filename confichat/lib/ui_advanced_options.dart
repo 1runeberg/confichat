@@ -8,7 +8,7 @@ import 'package:confichat/app_data.dart';
 import 'package:flutter/material.dart';
 import 'package:confichat/interfaces.dart';
 import 'package:confichat/ui_widgets.dart';
-
+import 'package:confichat/app_localizations.dart';
 
 class AdvancedOptions extends StatefulWidget {
   final LlmApi api;
@@ -76,20 +76,23 @@ class AdvancedOptionsState extends State<AdvancedOptions> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
 
     UserDeviceType deviceType = AppData.instance.getUserDeviceType(context);
 
     return Dialog(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ConstrainedBox( constraints: const BoxConstraints(maxWidth: 400), child: Column(
+        child: ConstrainedBox( constraints:
+            BoxConstraints(maxWidth: AppData.instance.getUserDeviceType(context) == UserDeviceType.phone ? double.infinity : 800),
+          child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             
             // Window title
-            const DialogTitle(title: 'Advanced Prompt Options'),
+            DialogTitle(title: loc.translate('advancedPrompt.title')),
             const SizedBox(height: 24),
 
           ConstrainedBox(
@@ -101,60 +104,60 @@ class AdvancedOptionsState extends State<AdvancedOptions> {
               child: Column( 
                 children: [
 
-                  const Text('Scroll to see more tuning options', style: TextStyle(fontStyle: FontStyle.italic)),
+                  Text(loc.translate('advancedPrompt.scrollMessage'), style: TextStyle(fontStyle: FontStyle.italic)),
                   const SizedBox(height: 16),
 
                   _buildSliderWithTooltip(
-                    label: 'Temperature',
+                    label: loc.translate('advancedPrompt.tempLabel'),
                     value: temperature,
                     min: 0.0,
                     max: 2.0,
                     divisions: 20,
                     onChanged: (value) => setState(() => temperature = value),
-                    description: 'Controls the randomness of the output.',
-                    whatItMeans: 'Use lower temperatures (e.g., 0.2) for tasks that require precision and predictable outcomes, such as technical writing or code generation. Use higher temperatures (e.g., 1.5) for more open-ended tasks like creative writing or brainstorming.',
+                    description:  loc.translate('advancedPrompt.tempDesc'),
+                    whatItMeans:  loc.translate('advancedPrompt.tempMeans'),
                   ),
                   const SizedBox(height: 8),
 
                   _buildSliderWithTooltip(
-                      label: 'Probability',
+                      label: loc.translate('advancedPrompt.probLabel'),
                       value: probability,
                       min: 0.0,
                       max: 1.0,
                       divisions: 10,
                       onChanged: (value) => setState(() => probability = value),
-                      description: 'Determines the diversity of the response.',
-                      whatItMeans: 'Lower values (e.g., 0.3) result in more focused and predictable outputs by limiting the model to a smaller subset of the most probable tokens. Higher values (e.g., 0.9) allow for a wider variety of tokens, producing more creative and less predictable responses.',
+                      description:  loc.translate('advancedPrompt.probDesc'),
+                      whatItMeans:  loc.translate('advancedPrompt.probMeans'),
                     ),
 
                     _buildTextInputWithTooltip(
-                      label: 'Max Tokens',
+                      label: loc.translate('advancedPrompt.tokensLabel'),
                       controller: maxTokensController,
                       onChanged: (value) => setState(() => maxTokens = int.tryParse(value) ?? maxTokens),
-                      description: 'Sets the maximum number of tokens that the model will generate in the response.',
-                      whatItMeans: 'Limits response length. Use lower values for concise answers and higher values for detailed responses.',
+                      description:  loc.translate('advancedPrompt.tokensDesc'),
+                      whatItMeans:  loc.translate('advancedPrompt.tokensMeans'),
                     ),
 
                     _buildTextInputWithTooltip(
-                      label: 'System Prompt',
+                      label: loc.translate('advancedPrompt.systemLabel'),
                       controller: systemPromptController,
                       isEnabled: widget.enableSystemPrompt,
                       maxLines: 5,
                       onChanged: (value) { setState(() {widget.api.systemPrompt = value;}); }, 
-                      description: 'Initial instruction that sets the context or role for the entire conversation.',
-                      whatItMeans: 'By setting the model\'s role or focus, such as acting as a helpful assistant, technical expert, or creative writer, it aligns the model\'s responses to user expectations and the intended application',
+                      description: loc.translate('advancedPrompt.systemDesc'),
+                      whatItMeans: loc.translate('advancedPrompt.systemMeans'),
                     ),
 
                     _buildTextInputWithTooltip(
-                      label: 'Stop Sequences',
+                      label: loc.translate('advancedPrompt.stopLabel'),
                       controller: stopSequenceController,
                       onChanged: (value) { setState(() { 
                         widget.api.stopSequences = value.split(',').map((s) => s.trim()).toList();}); }, 
-                      description: 'Enter multiple sequences separated by commas.',
-                      whatItMeans: 'Define where the response should end to prevent overly lengthy or unnecessary outputs. (example: .,\\n, user:)',
+                      description: loc.translate('advancedPrompt.stopDesc'),
+                      whatItMeans: loc.translate('advancedPrompt.stopMeans'),
                     ),
 
-                ] )           
+                ] )
               ),
             ),
 
@@ -167,19 +170,19 @@ class AdvancedOptionsState extends State<AdvancedOptions> {
                     _saveChanges();
                     Navigator.of(context).pop(true);
                   },
-                  child: const Text('Save'),
+                  child: Text(loc.translate('advancedPrompt.saveButton')),
                 ),
          
                 const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: () => _resetValues(false),
-                  child: const Text('Reset'),
+                  child:  Text(loc.translate('advancedPrompt.resetButton')),
                 ),
 
                 if( deviceType != UserDeviceType.phone ) const SizedBox(width: 8),
                 if( deviceType != UserDeviceType.phone ) ElevatedButton(
                   onPressed: () => _resetValues(true),
-                  child: const Text('Defaults'),
+                  child: Text(loc.translate('advancedPrompt.defaultsButton')),
                 ),
 
                 const SizedBox(width: 8),
@@ -192,7 +195,7 @@ class AdvancedOptionsState extends State<AdvancedOptions> {
                       Navigator.of(context).pop(false); // Exit if no unsaved changes
                     }
                   },
-                  child: const Text('Cancel'),
+                  child: Text(loc.translate('advancedPrompt.cancelButton')),
                 ),
               ],
             ),
@@ -260,7 +263,7 @@ class AdvancedOptionsState extends State<AdvancedOptions> {
               labelStyle: Theme.of(context).textTheme.labelMedium,
               contentPadding: const EdgeInsets.symmetric(vertical: 10.0),
             ),
-            keyboardType: label == 'Max Tokens'
+            keyboardType: label == AppLocalizations.of(context).translate('advancedPrompt.tokensLabel')
               ? TextInputType.number
               : (maxLines > 1
                   ? TextInputType.multiline 
@@ -281,8 +284,8 @@ class AdvancedOptionsState extends State<AdvancedOptions> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const DialogTitle(title: 'Unsaved changes', isError: true),
-          content: Text('You have unsaved changes to the advanced options. Are you sure you want to exit?', style: Theme.of(context).textTheme.bodyLarge,),
+          title: DialogTitle(title: AppLocalizations.of(context).translate('advancedPrompt.unsavedChangesTitle'), isError: true),
+          content: Text(AppLocalizations.of(context).translate('advancedPrompt.unsavedChangesMessage'), style: Theme.of(context).textTheme.bodyLarge,),
           actions: [
             ElevatedButton(
               onPressed: () {
@@ -291,20 +294,20 @@ class AdvancedOptionsState extends State<AdvancedOptions> {
                 Navigator.of(context).pop(); // Close confirmation dialog
                 Navigator.of(context).pop(true); // Close AdvancedOptions dialog
               },
-              child: const Text('Save'),
+              child: Text(AppLocalizations.of(context).translate('advancedPrompt.saveButton')),
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close confirmation dialog
                 Navigator.of(context).pop(false); // Close AdvancedOptions dialog without saving
               },
-              child: const Text('Exit'),
+              child: Text(AppLocalizations.of(context).translate('advancedPrompt.exitButton')),
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close confirmation dialog
               },
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(context).translate('advancedPrompt.cancelButton')),
             ),
           ],
         );
