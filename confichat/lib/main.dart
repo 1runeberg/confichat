@@ -128,6 +128,7 @@ class ConfiChat extends StatelessWidget {
                   GlobalWidgetsLocalizations.delegate,
                   GlobalCupertinoLocalizations.delegate,
                 ],
+                debugShowCheckedModeBanner: false,
                 home: HomePage(appData: AppData.instance),
               );
             },
@@ -143,6 +144,7 @@ class ConfiChat extends StatelessWidget {
               GlobalCupertinoLocalizations.delegate,
             ],
             supportedLocales: LanguageConfig().getSupportedLocalesSync(),
+            debugShowCheckedModeBanner: false,
             home: Scaffold(
               body: Center(
                 child: Column(
