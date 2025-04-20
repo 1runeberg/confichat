@@ -76,7 +76,7 @@ class OllamaOptionsState extends State<OllamaOptions> {
 
   void _useDefaultSettings() {
     _schemeController.text = 'http';
-    _hostController.text = 'localhost';
+    _hostController.text = '127.0.0.1';
     _portController.text = '11434';
     _pathController.text = '/api';
 
