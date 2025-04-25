@@ -75,8 +75,23 @@ class ConfiChat extends StatelessWidget {
         // Set language
         if (context.mounted) {
           final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
-          final selectedLanguage = jsonContent['app']['selectedLanguage'] ?? 'en';
-          localeProvider.setLocale(Locale(selectedLanguage, ''));
+          final languageConfig = LanguageConfig();
+          
+          if (jsonContent['app'].containsKey('selectedLanguage')) {
+            // Use saved language preference from settings
+            final selectedLanguage = jsonContent['app']['selectedLanguage'];
+            localeProvider.setLocale(Locale(selectedLanguage, ''));
+          } else {
+            // Use system language if available and supported
+            final systemLocale = PlatformDispatcher.instance.locale.languageCode;
+            if (languageConfig.isLanguageSupportedSync(systemLocale)) {
+              localeProvider.setLocale(Locale(systemLocale, ''));
+            } else {
+              // Default to English if system language not supported
+              localeProvider.setLocale(const Locale('en', ''));
+            }
+          }
+
         }
 
         // Set default provider
