@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import 'dart:async';
 import 'package:confichat/app_data.dart';
 import 'package:confichat/chat_notifiers.dart';
 import 'package:confichat/ui_add_model.dart';
@@ -36,6 +37,7 @@ class CCAppBar extends StatefulWidget implements PreferredSizeWidget {
 class CCAppBarState extends State<CCAppBar> {
   AiProvider? selectedProvider;
   ModelItem? selectedModel;
+  Timer? _providerCheckTimer;
 
   @override
   void initState() {
@@ -44,7 +46,23 @@ class CCAppBarState extends State<CCAppBar> {
     _populateModelList(true); 
 
     widget.appData.callbackSwitchProvider = _switchProvider;
+    _startProviderAvailabilityCheck();
   }
+
+  void _startProviderAvailabilityCheck() {
+      // Check every second for provider availability
+      _providerCheckTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+        if (selectedProvider != null && mounted) {
+          final modelProvider = Provider.of<ModelProvider>(context, listen: false);
+          
+          // Only check if models list is empty and selected provider matches the app's current provider
+          if (modelProvider.models.isEmpty && selectedProvider == widget.appData.api.aiProvider) {
+            // Try to populate the models list
+            await _populateModelList(true);
+          }
+        }
+      });
+    }
 
   @override
   Widget build(BuildContext context) {
