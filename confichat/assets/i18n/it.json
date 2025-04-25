@@ -245,5 +245,12 @@
       "title": "Modifiche non salvate",
       "message": "Hai modifiche non salvate. Vuoi salvarle?"
     }
+  },
+  "providerSetup": {
+    "title": "Configurazione provider AI/LLM richiesta",
+    "message": "ConfiChat necessita di un provider AI configurato per funzionare. Si prega di configurare uno dei seguenti provider:",
+    "offlineOptions": "Modelli locali (Offline):",
+    "onlineOptions": "Provider Cloud (Online):",
+    "openSettings": "Apri Impostazioni"
   }
 }

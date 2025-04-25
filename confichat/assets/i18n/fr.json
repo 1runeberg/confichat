@@ -245,5 +245,12 @@
       "title": "Modifications non enregistrées",
       "message": "Vous avez des modifications non enregistrées. Voulez-vous les enregistrer ?"
     }
+  },
+  "providerSetup": {
+    "title": "Configuration du fournisseur IA/LLM requise",
+    "message": "ConfiChat nécessite un fournisseur d'IA configuré pour fonctionner. Veuillez configurer l'un des fournisseurs suivants :",
+    "offlineOptions": "Modèles locaux (hors ligne) :",
+    "onlineOptions": "Fournisseurs Cloud (en ligne) :",
+    "openSettings": "Ouvrir les paramètres"
   }
 }

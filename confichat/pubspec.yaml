@@ -1,7 +1,7 @@
 name: confichat
 description: "Lightweight, multi-platform, and privacy focused LLM chat interface with optional encryption"
 publish_to: 'none'
-version: 0.1.0
+version: 1.1.0+1
 
 environment:
   sdk: '>=3.4.4 <4.0.0'
@@ -26,6 +26,7 @@ dependencies:
   code_highlight_view: ^0.1.1
   flutter_localizations:
     sdk: flutter
+  url_launcher: ^6.2.1
 
 dev_dependencies:
   flutter_test:
