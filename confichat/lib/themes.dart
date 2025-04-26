@@ -114,7 +114,7 @@ const ColorScheme onyxColorScheme = ColorScheme(
   tertiaryFixedDim: Color.fromARGB(80, 82, 172, 247),
   surface: Color.fromARGB(255, 255, 255, 255),           
   surfaceBright: Color.fromARGB(255, 0, 0, 0), 
-  surfaceDim: Color.fromARGB(255,158, 158, 158), 
+  surfaceDim: Color.fromARGB(255, 226, 225, 225), 
   error: Color.fromARGB(255, 176, 0, 32),             
   onPrimary: Color.fromARGB(255, 255, 255, 255),        
   onSecondary: Color.fromARGB(255, 0, 0, 0),           

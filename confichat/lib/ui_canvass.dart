@@ -831,6 +831,38 @@ class CanvassState extends State<Canvass> {
 
   Future<void> _sendPrompt(String? s, FocusNode? f) async {
 
+    // Get selected model
+    final selectedModelProvider = Provider.of<SelectedModelProvider>(context, listen: false);
+    final selectedModel = selectedModelProvider.selectedModel;
+
+    // Check if valid model is selected
+    if (selectedModel == null || selectedModel.name.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: DialogTitle(
+              title: AppLocalizations.of(context).translate('providerSetup.noModelSelected'), 
+              isError: true),
+            content: Text(
+              AppLocalizations.of(context).translate('providerSetup.noModelSelectedMessage'),
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(AppLocalizations.of(context).translate('providerSetup.okButton')),
+              ),
+            ],
+          );
+        },
+      );
+
+      return;
+    }
+
     // Set prompt text
     String promptText = _promptController.text.trim();
     if(s!= null && s.isNotEmpty) { promptText = s.trim(); }
@@ -1165,8 +1197,12 @@ class CanvassState extends State<Canvass> {
       const SizedBox(width: 8),
       FloatingActionButton.small(
         shape: const CircleBorder(),
-        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-        hoverColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: chatData.length < 3
+          ? Theme.of(context).colorScheme.surfaceDim
+          : Theme.of(context).colorScheme.secondaryContainer,
+        hoverColor: chatData.length < 3
+          ? Theme.of(context).colorScheme.surfaceDim
+          : Theme.of(context).colorScheme.secondaryContainer,
         elevation: 3.0,
         hoverElevation: 3.0,
         tooltip: AppLocalizations.of(context).translate('canvass.scrollToTopTooltip'),
@@ -1176,8 +1212,12 @@ class CanvassState extends State<Canvass> {
       const SizedBox(width: 8),
       FloatingActionButton.small(
         shape: const CircleBorder(),
-        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-        hoverColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: chatData.length < 3
+          ? Theme.of(context).colorScheme.surfaceDim
+          : Theme.of(context).colorScheme.secondaryContainer,
+        hoverColor: chatData.length < 3
+          ? Theme.of(context).colorScheme.surfaceDim
+          : Theme.of(context).colorScheme.secondaryContainer,
         elevation: 3.0,
         hoverElevation: 3.0,
         tooltip: AppLocalizations.of(context).translate('canvass.scrollToBottomTooltip'),
@@ -1187,12 +1227,16 @@ class CanvassState extends State<Canvass> {
       const SizedBox(width: 16),
       FloatingActionButton.small(
         shape: const CircleBorder(),
-        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-        hoverColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: chatData.isEmpty
+          ? Theme.of(context).colorScheme.surfaceDim
+          : Theme.of(context).colorScheme.secondaryContainer,
+        hoverColor: chatData.isEmpty
+          ? Theme.of(context).colorScheme.surfaceDim
+          : Theme.of(context).colorScheme.secondaryContainer,
         elevation: 3.0,
         hoverElevation: 3.0,
         tooltip:  AppLocalizations.of(context).translate('canvass.resetMessagesTooltip'),
-        onPressed: _clearMessages,
+        onPressed: chatData.isEmpty ? null : _clearMessages,
         child: const Icon(Icons.restart_alt),
       ),
       const SizedBox(width: 8),
@@ -1201,7 +1245,9 @@ class CanvassState extends State<Canvass> {
         backgroundColor: chatData.isEmpty
             ? Theme.of(context).colorScheme.surfaceDim
             : Theme.of(context).colorScheme.secondaryContainer,
-        hoverColor: Theme.of(context).colorScheme.primary,
+        hoverColor: chatData.isEmpty
+            ? Theme.of(context).colorScheme.surfaceDim
+            : Theme.of(context).colorScheme.secondaryContainer,
         elevation: 3.0,
         hoverElevation: 3.0,
         tooltip: AppLocalizations.of(context).translate('canvass.saveSessionTooltip'),
@@ -1223,8 +1269,12 @@ class CanvassState extends State<Canvass> {
       SizedBox(width: deviceType != UserDeviceType.phone ? 32 : 18),
       FloatingActionButton.small(
         shape: const CircleBorder(),
-        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-        hoverColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: (selectedModel !=null  && selectedModel.supportsImages)
+          ? Theme.of(context).colorScheme.secondaryContainer
+          : Theme.of(context).colorScheme.surfaceDim,
+        hoverColor: (selectedModel !=null  && selectedModel.supportsImages)
+          ? Theme.of(context).colorScheme.secondaryContainer
+          : Theme.of(context).colorScheme.surfaceDim,
         elevation: 3.0,
         hoverElevation: 3.0,
         tooltip: AppLocalizations.of(context).translate('canvass.attachFilesTooltip'),
