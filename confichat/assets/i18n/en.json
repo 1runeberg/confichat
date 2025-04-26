@@ -245,5 +245,15 @@
       "title": "Unsaved Changes",
       "message": "You have unsaved changes. Do you want to save them?"
     }
+  },
+  "providerSetup": {
+    "title": "AI/LLM Provider Required",
+    "message": "ConfiChat needs a configured AI provider to function. Please set up one of the following providers:",
+    "offlineOptions": "Local Models (Offline):",
+    "onlineOptions": "Cloud Providers (Online):",
+    "openSettings": "Open Settings",
+    "noModelSelected": "No model selected",
+    "noModelSelectedMessage": "Select a model from your configured AI provider to continue. If no models appear in the top bar, verify your provider settings.",
+    "okButton": "OK"
   }
 }

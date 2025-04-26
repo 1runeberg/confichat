@@ -245,5 +245,15 @@
       "title": "未保存的更改",
       "message": "您有未保存的更改。您想保存它们吗？"
     }
+  },
+  "providerSetup": {
+    "title": "需要配置AI/LLM提供商",
+    "message": "ConfiChat 需要配置好的 AI 提供商才能运行。请设置以下提供商之一：",
+    "offlineOptions": "本地模型（离线）：",
+    "onlineOptions": "云提供商（在线）：",
+    "openSettings": "打开设置",
+    "noModelSelected": "未选择模型",
+    "noModelSelectedMessage": "请从已配置的 AI 提供商中选择一个模型以继续。如果顶部栏中未显示任何模型，请检查您的提供商设置。",
+    "okButton": "确定"
   }
 }
