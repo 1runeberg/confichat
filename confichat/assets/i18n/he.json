@@ -247,7 +247,7 @@
     }
   },
   "providerSetup": {
-    "title": "נדרשת הגדרת ספק AI/LLM",
+    "title": "נדרש ספק AI/LLM",
     "message": "ConfiChat זקוק לספק AI מוגדר כדי לפעול. אנא הגדר אחד מהספקים הבאים:",
     "offlineOptions": "מודלים מקומיים (לא מקוון):",
     "onlineOptions": "ספקי ענן (מקוון):",

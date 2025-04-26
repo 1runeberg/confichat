@@ -247,7 +247,7 @@
     }
   },
   "providerSetup": {
-    "title": "Configurazione provider AI/LLM richiesta",
+    "title": "Provider AI/LLM richiesto",
     "message": "ConfiChat necessita di un provider AI configurato per funzionare. Si prega di configurare uno dei seguenti provider:",
     "offlineOptions": "Modelli locali (Offline):",
     "onlineOptions": "Provider Cloud (Online):",
