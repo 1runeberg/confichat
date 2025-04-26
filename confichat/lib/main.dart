@@ -23,6 +23,8 @@ import 'package:confichat/ui_app_bar.dart';
 import 'package:confichat/language_config.dart';
 import 'package:confichat/app_localizations.dart';
 import 'package:confichat/locale_provider.dart';
+import 'package:confichat/provider_validator.dart';
+import 'package:confichat/ui_provider_setup.dart';
 
 void main() {
   runApp(
@@ -41,7 +43,7 @@ void main() {
 class ConfiChat extends StatelessWidget {
   const ConfiChat({super.key});
 
-  Future<void> _loadAppSettings(BuildContext context) async {
+  Future<bool> _loadAppSettings(BuildContext context) async {
     final directory = AppData.instance.rootPath.isEmpty ? await getApplicationDocumentsDirectory() : Directory(AppData.instance.rootPath);
     final filePath =
         '${directory.path}/${AppData.appStoragePath}/${AppData.appSettingsFile}';
@@ -105,6 +107,14 @@ class ConfiChat extends StatelessWidget {
 
       }
     }
+
+    // Validate AI provider availability - implemented in the requirements
+    if (context.mounted) {
+      return await ProviderValidator.validateLocalProviders(AppData.instance) != null ||
+             await ProviderValidator.checkApiKeyConfigured(AppData.instance) != null;
+    }
+    
+    return false;
   }
 
   @override
@@ -113,7 +123,7 @@ class ConfiChat extends StatelessWidget {
       future: _loadAppSettings(context),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          // In the ConfiChat build method, update the MaterialApp to use the LocaleProvider
+          // Update Theme and Locale providers
           return Consumer2<ThemeProvider, LocaleProvider>(
             builder: (context, themeProvider, localeProvider, child) {
               return MaterialApp(
@@ -128,7 +138,7 @@ class ConfiChat extends StatelessWidget {
                   GlobalWidgetsLocalizations.delegate,
                   GlobalCupertinoLocalizations.delegate,
                 ],
-                home: HomePage(appData: AppData.instance),
+                home: HomePage(appData: AppData.instance, providerValid: snapshot.data ?? false),
               );
             },
           );
@@ -164,7 +174,8 @@ class ConfiChat extends StatelessWidget {
 
 class HomePage extends StatefulWidget {
   final AppData appData;
-  const HomePage({super.key, required this.appData});
+  final bool providerValid; 
+  const HomePage({super.key, required this.appData, required this.providerValid});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -181,9 +192,14 @@ class _HomePageState extends State<HomePage>  {
   late final AppLifecycleListener _lifecycleListener;
   late AppLifecycleState? _lifecycleState;
 
+  bool _validProvider = false;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   void initState() {
     super.initState();
+
+    _validProvider = widget.providerValid;
 
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
       DesktopWindow.setWindowSize(Size(widget.appData.windowWidth, widget.appData.windowHeight));
@@ -193,6 +209,42 @@ class _HomePageState extends State<HomePage>  {
     _lifecycleListener = AppLifecycleListener(
       onExitRequested:  _checkForUnsavedChat
     );
+
+    // Check for valid provider after UI is ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkProviderValidity();
+    });
+
+  }
+
+  Future<void> _checkProviderValidity() async {
+    if (!_validProvider && mounted) {
+      bool isValid = await ProviderSetupManager.validateAndSetupProvider(
+        context, 
+        widget.appData,
+        _scaffoldKey
+      );
+      
+      if (mounted) {
+        setState(() {
+          _validProvider = isValid;
+        });
+        
+        if (!isValid) {
+          _showProviderSetup();
+        }
+      }
+    }
+  }
+
+  void _showProviderSetup() {
+    if (mounted) {
+      ProviderSetupManager.showProviderSetupDialog(
+        context, 
+        widget.appData,
+        _scaffoldKey  // Pass the scaffoldKey
+      );
+    }
   }
 
    Future<AppExitResponse> _checkForUnsavedChat() async {
@@ -245,12 +297,20 @@ class _HomePageState extends State<HomePage>  {
   Widget build(BuildContext context) {
 
     return Scaffold( 
-      
+      key: _scaffoldKey,
+
       // (1) App bar
       appBar: CCAppBar(appData: widget.appData, chatSessionSelectedNotifier: chatSessionSelectedNotifier, providerController: providerController, providerModel: providerModel),
       
       // (2) Drawer
-      drawer: Sidebar( appData: widget.appData, chatSessionSelectedNotifier: chatSessionSelectedNotifier),
+      drawer: Sidebar(appData: widget.appData, chatSessionSelectedNotifier: chatSessionSelectedNotifier),
+
+      onDrawerChanged: (isOpen) {
+          if (!isOpen) {
+            // Re-validate ai/llm provider when drawer is closed
+            _checkProviderValidity();
+          }
+      },
 
       // (3) Chat canvass
       body: Column( children: [ Expanded(

@@ -245,5 +245,12 @@
       "title": "Hindi na-save na mga Pagbabago",
       "message": "Mayroon kang mga hindi na-save na pagbabago. Gusto mo bang i-save ang mga ito?"
     }
+  },
+  "providerSetup": {
+    "title": "Kinakailangan ang Pag-setup ng AI/LLM Provider",
+    "message": "Kailangan ng ConfiChat ng naka-configure na AI provider para gumana. Paki-set up ang isa sa mga sumusunod na provider:",
+    "offlineOptions": "Mga Lokal na Modelo (Offline):",
+    "onlineOptions": "Mga Cloud Provider (Online):",
+    "openSettings": "Buksan ang Mga Setting"
   }
 }

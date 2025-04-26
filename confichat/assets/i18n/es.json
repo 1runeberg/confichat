@@ -245,5 +245,12 @@
       "title": "Cambios sin Guardar",
       "message": "Tienes cambios sin guardar. ¿Quieres guardarlos?"
     }
+  },
+  "providerSetup": {
+    "title": "Se requiere configuración del proveedor de IA/LLM",
+    "message": "ConfiChat necesita un proveedor de IA configurado para funcionar. Configure uno de los siguientes proveedores:",
+    "offlineOptions": "Modelos locales (sin conexión):",
+    "onlineOptions": "Proveedores en la nube (en línea):",
+    "openSettings": "Abrir configuración"
   }
 }

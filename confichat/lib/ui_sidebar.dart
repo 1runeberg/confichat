@@ -30,8 +30,22 @@ class Sidebar extends StatefulWidget {
 }
 
 class SidebarState extends State<Sidebar> {
+  bool _expandChatSessions = false;
+  bool _expandAiModelOptions = true; // Set to true initially
+  bool _expandSettings = false;
+  bool _expandLegal = false;
+
   String _modelName = '';
   List<String> _chatSessionFiles = [];
+
+  // Expand AI/LLM provider options
+  void expandAiModelOptions() {
+    setState(() {
+      _expandChatSessions = false;
+      _expandAiModelOptions = true;
+      _expandLegal = false;
+    });
+  }
 
   // Data notifier to canvass of selected chat session
   void _onChatSessionSelect(String value) {
@@ -113,7 +127,12 @@ class SidebarState extends State<Sidebar> {
                     outlineWidth: 1.0,
                   ),
 
-                  initiallyExpanded: true,
+                  initiallyExpanded: _expandChatSessions,
+                  onExpansionChanged: (expanded) {
+                    setState(() {
+                      _expandChatSessions = expanded;
+                    });
+                  },
                   maintainState: true,
                   children:  [
                     ConstrainedBox(
@@ -180,7 +199,12 @@ class SidebarState extends State<Sidebar> {
                     outlineWidth: 1.0,
                   ),
 
-                  initiallyExpanded: true,
+                  initiallyExpanded: _expandAiModelOptions,
+                  onExpansionChanged: (expanded) {
+                    setState(() {
+                      _expandAiModelOptions = expanded;
+                    });
+                  },
                   maintainState: true,
                   children: <Widget>[
 
@@ -275,7 +299,12 @@ class SidebarState extends State<Sidebar> {
                     outlineWidth: 1.0,
                   ),
 
-                  initiallyExpanded: false,
+                  initiallyExpanded: _expandLegal,
+                  onExpansionChanged: (expanded) {
+                    setState(() {
+                      _expandLegal = expanded;
+                    });
+                  },
                   maintainState: true,
                   children: <Widget>[
 

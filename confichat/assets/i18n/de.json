@@ -245,5 +245,12 @@
       "title": "Ungespeicherte Änderungen",
       "message": "Sie haben ungespeicherte Änderungen. Möchten Sie diese speichern?"
     }
+  },
+  "providerSetup": {
+    "title": "Einrichtung des KI/LLM-Anbieters erforderlich",
+    "message": "ConfiChat benötigt einen konfigurierten KI-Anbieter, um zu funktionieren. Bitte richten Sie einen der folgenden Anbieter ein:",
+    "offlineOptions": "Lokale Modelle (Offline):",
+    "onlineOptions": "Cloud-Anbieter (Online):",
+    "openSettings": "Einstellungen öffnen"
   }
 }
