@@ -247,10 +247,13 @@
     }
   },
   "providerSetup": {
-    "title": "Configuration du fournisseur IA/LLM requise",
+    "title": "Fournisseur AI/LLM requis",
     "message": "ConfiChat nécessite un fournisseur d'IA configuré pour fonctionner. Veuillez configurer l'un des fournisseurs suivants :",
     "offlineOptions": "Modèles locaux (hors ligne) :",
     "onlineOptions": "Fournisseurs Cloud (en ligne) :",
-    "openSettings": "Ouvrir les paramètres"
+    "openSettings": "Ouvrir les paramètres",
+    "noModelSelected": "Aucun modèle sélectionné",
+    "noModelSelectedMessage": "Sélectionnez un modèle de votre fournisseur d'IA configuré pour continuer. Si aucun modèle n'apparaît dans la barre supérieure, vérifiez vos paramètres de fournisseur.",
+    "okButton": "OK"
   }
 }

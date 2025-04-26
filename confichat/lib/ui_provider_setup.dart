@@ -211,6 +211,9 @@ class ProviderSetupManager {
     // Start opening drawer
     scaffoldKey.currentState?.openDrawer();
 
+    // Explicitly dismiss keyboard before opening drawer
+    FocusManager.instance.primaryFocus?.unfocus();
+    
     // Short delay to ensure animation is complete 
     Future.delayed(const Duration(milliseconds: 500), () {
       _isDialogShowing = false;

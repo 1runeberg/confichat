@@ -247,10 +247,13 @@
     }
   },
   "providerSetup": {
-    "title": "נדרשת הגדרת ספק AI/LLM",
+    "title": "נדרש ספק AI/LLM",
     "message": "ConfiChat זקוק לספק AI מוגדר כדי לפעול. אנא הגדר אחד מהספקים הבאים:",
     "offlineOptions": "מודלים מקומיים (לא מקוון):",
     "onlineOptions": "ספקי ענן (מקוון):",
-    "openSettings": "פתח הגדרות"
+    "openSettings": "פתח הגדרות",
+    "noModelSelected": "לא נבחר מודל",
+    "noModelSelectedMessage": "בחר מודל מספק הבינה המלאכותית המוגדר שלך כדי להמשיך. אם לא מופיעים מודלים בסרגל העליון, בדוק את הגדרות הספק שלך.",
+    "okButton": "אישור"
   }
 }

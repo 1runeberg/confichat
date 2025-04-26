@@ -32,7 +32,6 @@ class Sidebar extends StatefulWidget {
 class SidebarState extends State<Sidebar> {
   bool _expandChatSessions = false;
   bool _expandAiModelOptions = true; // Set to true initially
-  bool _expandSettings = false;
   bool _expandLegal = false;
 
   String _modelName = '';

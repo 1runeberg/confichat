@@ -247,10 +247,13 @@
     }
   },
   "providerSetup": {
-    "title": "Einrichtung des KI/LLM-Anbieters erforderlich",
+    "title": "KI/LLM-Anbieter benötigt",
     "message": "ConfiChat benötigt einen konfigurierten KI-Anbieter, um zu funktionieren. Bitte richten Sie einen der folgenden Anbieter ein:",
     "offlineOptions": "Lokale Modelle (Offline):",
     "onlineOptions": "Cloud-Anbieter (Online):",
-    "openSettings": "Einstellungen öffnen"
+    "openSettings": "Einstellungen öffnen",
+    "noModelSelected": "Kein Modell ausgewählt",
+    "noModelSelectedMessage": "Wählen Sie ein Modell von Ihrem konfigurierten KI-Anbieter aus, um fortzufahren. Wenn keine Modelle in der oberen Leiste angezeigt werden, überprüfen Sie Ihre Anbietereinstellungen.",
+    "okButton": "OK"
   }
 }

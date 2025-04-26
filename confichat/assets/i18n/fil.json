@@ -247,10 +247,13 @@
     }
   },
   "providerSetup": {
-    "title": "Kinakailangan ang Pag-setup ng AI/LLM Provider",
+    "title": "Kailangang AI/LLM Provider",
     "message": "Kailangan ng ConfiChat ng naka-configure na AI provider para gumana. Paki-set up ang isa sa mga sumusunod na provider:",
     "offlineOptions": "Mga Lokal na Modelo (Offline):",
     "onlineOptions": "Mga Cloud Provider (Online):",
-    "openSettings": "Buksan ang Mga Setting"
+    "openSettings": "Buksan ang Mga Setting",
+    "noModelSelected": "Walang napiling modelo",
+    "noModelSelectedMessage": "Pumili ng modelo mula sa iyong naka-configure na AI provider para magpatuloy. Kung walang mga modelo ang lumitaw sa itaas na bar, i-verify ang mga setting ng iyong provider.",
+    "okButton": "OK"
   }
 }
