@@ -153,7 +153,6 @@ class ConfiChat extends StatelessWidget {
                   GlobalWidgetsLocalizations.delegate,
                   GlobalCupertinoLocalizations.delegate,
                 ],
-                debugShowCheckedModeBanner: false,
                 home: HomePage(appData: AppData.instance, providerValid: snapshot.data ?? false),
               );
             },
