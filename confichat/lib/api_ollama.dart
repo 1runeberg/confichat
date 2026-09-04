@@ -26,10 +26,15 @@ class ApiOllama extends LlmApi{
     return _instance;
   }
 
-  ApiOllama._internal() : super(AiProvider.ollama) {
+  ApiOllama._internal() : this.forProvider(AiProvider.ollama, 11434);
+
+  // Shared by providers that speak the Ollama API on a different port (e.g. llmman)
+  final int defaultPort;
+
+  ApiOllama.forProvider(super.aiProvider, this.defaultPort) {
       scheme = 'http';
       host = 'localhost';
-      port = 11434; 
+      port = defaultPort; 
       path = '/api';
 
       defaultTemperature = 1.0;
@@ -53,13 +58,13 @@ class ApiOllama extends LlmApi{
       final fileContent = await File(filePath).readAsString();
       final Map<String, dynamic> settings = json.decode(fileContent);
 
-      if (settings.containsKey(AiProvider.ollama.name)) {
+      if (settings.containsKey(aiProvider.name)) {
 
         // Override values in memory from disk
-        scheme = settings[AiProvider.ollama.name]['scheme'] ?? 'http';
-        host = settings[AiProvider.ollama.name]['host'] ?? 'localhost';
-        port = settings[AiProvider.ollama.name]['port'] ?? 11434;
-        path = settings[AiProvider.ollama.name]['path'] ?? '/api';
+        scheme = settings[aiProvider.name]['scheme'] ?? 'http';
+        host = settings[aiProvider.name]['host'] ?? 'localhost';
+        port = settings[aiProvider.name]['port'] ?? defaultPort;
+        path = settings[aiProvider.name]['path'] ?? '/api';
 
       }
     } 
@@ -332,7 +337,7 @@ class ApiOllama extends LlmApi{
 
       } catch (e) {
         final String errorMessage = 'Unable to get chat response: $e\n $responseData';
-        ShowErrorDialog(title: '${AiProvider.ollama.name}: Fatal error' , content: errorMessage);
+        ShowErrorDialog(title: '${aiProvider.name}: Fatal error' , content: errorMessage);
       } 
 
   }

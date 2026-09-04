@@ -73,6 +73,9 @@ class AppData {
       case AiProvider.gemini:
         api = LlmApiFactory.create(AiProvider.gemini.name);
         break;
+      case AiProvider.llmman:
+        api = LlmApiFactory.create(AiProvider.llmman.name);
+        break;
     }
   }
 
@@ -99,7 +102,8 @@ enum AiProvider {
   llamacpp('LlamaCpp', 1),
   openai('OpenAI', 2),
   anthropic('Anthropic', 3),
-  gemini('Gemini', 4);
+  gemini('Gemini', 4),
+  llmman('llmman', 5);
 
   final String name;
   final int id;
