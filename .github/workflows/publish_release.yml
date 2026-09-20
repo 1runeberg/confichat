@@ -13,6 +13,9 @@ on:
         description: 'Release Notes'
         required: true
 
+permissions:
+  contents: write
+
 jobs:
   build-and-release:
     name: Build and Release
@@ -27,21 +30,23 @@ jobs:
 
 
         ${{ github.event.inputs.release_notes }}
-        
+
     steps:
     - uses: actions/checkout@v4.1.7
-    
+      with:
+        ref: ${{ github.event.inputs.release_tag }}
+
     - name: Set up Java
       uses: actions/setup-java@v4.2.2
       with:
         distribution: 'zulu'
         java-version: '17'
-    
+
     - name: Set up Flutter
       uses: subosito/flutter-action@v2.16.0
       with:
         channel: 'stable'
-    
+
     - name: Install dependencies
       run: cd confichat && flutter pub get
 
@@ -86,7 +91,7 @@ jobs:
         body: ${{ env.RELEASE_NOTES }}
         files: confichat/build/windows/x64/runner/Release/windows-release.zip
       env:
-        GITHUB_TOKEN: ${{ secrets.CONFICHAT_SECRET }}
+        GITHUB_TOKEN: ${{ github.token }}
 
     - name: Create Release (Linux)
       if: matrix.os == 'ubuntu-latest'
@@ -97,8 +102,8 @@ jobs:
         body: ${{ env.RELEASE_NOTES }}
         files: confichat/build/linux/x64/release/bundle/linux-release.tgz
       env:
-        GITHUB_TOKEN: ${{ secrets.CONFICHAT_SECRET }}
-    
+        GITHUB_TOKEN: ${{ github.token }}
+
     - name: Create Release (Android)
       if: matrix.os == 'ubuntu-latest'
       uses: softprops/action-gh-release@v2.0.8
@@ -108,4 +113,4 @@ jobs:
         body: ${{ env.RELEASE_NOTES }}
         files: confichat/build/app/outputs/flutter-apk/app-release.apk
       env:
-        GITHUB_TOKEN: ${{ secrets.CONFICHAT_SECRET }}
+        GITHUB_TOKEN: ${{ github.token }}
