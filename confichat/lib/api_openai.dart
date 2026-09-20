@@ -26,12 +26,14 @@ class ApiChatGPT extends LlmApi{
     return _instance;
   }
 
-  ApiChatGPT._internal() : super(AiProvider.openai) {
+  ApiChatGPT._internal() : this.forProvider(AiProvider.openai, 'api.openai.com', '/v1');
+
+  ApiChatGPT.forProvider(super.aiProvider, String apiHost, String apiPath) {
 
       scheme = 'https';
-      host = 'api.openai.com';
+      host = apiHost;
       port = 443; 
-      path = '/v1';
+      path = apiPath;
 
       defaultTemperature = 1.0;
       defaultProbability = 1.0;
@@ -54,10 +56,10 @@ class ApiChatGPT extends LlmApi{
       final fileContent = await File(filePath).readAsString();
       final Map<String, dynamic> settings = json.decode(fileContent);
 
-      if (settings.containsKey(AiProvider.openai.name)) {
+      if (settings.containsKey(aiProvider.name)) {
 
         // Override values in memory from disk
-        apiKey = settings[AiProvider.openai.name]['apikey'] ?? '';
+        apiKey = settings[aiProvider.name]['apikey'] ?? '';
       }
     } 
   }
@@ -336,4 +338,4 @@ class SseTransformer extends StreamTransformerBase<String, String> {
     return controller.stream;
   }
 
-} 
+}

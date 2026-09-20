@@ -115,6 +115,9 @@ class ConfiChat extends StatelessWidget {
             case 'anthropic':
               selectedProvider = AiProvider.anthropic;
               break;
+            case 'gemini':
+              selectedProvider = AiProvider.gemini;
+              break;
             default:
               selectedProvider = AiProvider.ollama; // Fallback to Ollama if the string doesn't match
               break;

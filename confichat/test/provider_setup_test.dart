@@ -48,6 +48,7 @@ void main() {
     expect(RegionUtil.canShowProviderLinks, isTrue);
     expect(find.text('OpenAI'), findsOneWidget);
     expect(find.text('Anthropic'), findsOneWidget);
+    expect(find.text('Gemini'), findsOneWidget);
     await tester.tap(find.text('Open Settings'));
     expect(settingsOpened, isTrue);
   });
@@ -60,7 +61,8 @@ void main() {
     expect(RegionUtil.canShowProviderLinks, isFalse);
     expect(find.text('OpenAI'), findsNothing);
     expect(find.text('Anthropic'), findsNothing);
-    expect(find.textContaining('Already have an OpenAI or Anthropic API key'), findsOneWidget);
+    expect(find.text('Gemini'), findsNothing);
+    expect(find.textContaining('Already have a provider API key'), findsOneWidget);
     await tester.tap(find.text('Open Settings'));
     expect(settingsOpened, isTrue);
   });

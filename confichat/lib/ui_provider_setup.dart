@@ -115,6 +115,12 @@ class ProviderSetupDialog extends StatelessWidget {
                         'https://console.anthropic.com/settings/keys',
                         Icons.cloud_queue,
                       ),
+                      _buildProviderButton(
+                        context,
+                        'Gemini',
+                        'https://aistudio.google.com/api-keys',
+                        Icons.auto_awesome,
+                      ),
                     ],
                   ),
                 ] else ...[
@@ -122,7 +128,7 @@ class ProviderSetupDialog extends StatelessWidget {
                   Text(
                     loc.translate(
                       'providerSetup.existingApiKey',
-                      fallback: 'Already have an OpenAI or Anthropic API key? Add it in Settings.',
+                      fallback: 'Already have a provider API key? Add it in Settings.',
                     ),
                     textAlign: TextAlign.center,
                   ),
