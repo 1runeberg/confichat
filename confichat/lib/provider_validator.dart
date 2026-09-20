@@ -38,7 +38,7 @@ class ProviderValidator {
     return null;
   }
   
-  /// Check if online provider has an API key configured
+  /// Check if an online provider has an API key configured
   static Future<AiProvider?> checkApiKeyConfigured(AppData appData) async {
     try {
       // Check OpenAI
@@ -53,6 +53,13 @@ class ProviderValidator {
       await appData.api.loadSettings();
       if (appData.api.apiKey.isNotEmpty) {
         return AiProvider.anthropic;
+      }
+
+      // Check Gemini
+      appData.setProvider(AiProvider.gemini);
+      await appData.api.loadSettings();
+      if (appData.api.apiKey.isNotEmpty) {
+        return AiProvider.gemini;
       }
     } catch (e) {
       if (kDebugMode) {

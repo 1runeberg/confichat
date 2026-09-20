@@ -14,8 +14,9 @@ import 'package:confichat/app_localizations.dart';
 
 class ChatGPTOptions extends StatefulWidget {
   final AppData appData;
+  final AiProvider provider;
 
-  const ChatGPTOptions({super.key, required this.appData});
+  const ChatGPTOptions({super.key, required this.appData, this.provider = AiProvider.openai});
 
   @override
   ChatGPTOptionsState createState() => ChatGPTOptionsState();
@@ -49,12 +50,12 @@ class ChatGPTOptionsState extends State<ChatGPTOptions> {
       final fileContent = await File(filePath).readAsString();
       final Map<String, dynamic> settings = json.decode(fileContent);
 
-      if (settings.containsKey(AiProvider.openai.name)) {
+      if (settings.containsKey(widget.provider.name)) {
 
         // Set the form text
-        _apiKeyController.text = settings[AiProvider.openai.name]['apikey'] ?? '';
+        _apiKeyController.text = settings[widget.provider.name]['apikey'] ?? '';
 
-        if(widget.appData.api.aiProvider.name == AiProvider.openai.name){ _applyValues(); }
+        if(widget.appData.api.aiProvider == widget.provider){ _applyValues(); }
 
       } else {
         _useDefaultSettings();
@@ -70,7 +71,7 @@ class ChatGPTOptionsState extends State<ChatGPTOptions> {
   }
 
   void _applyValues() {
-    if(widget.appData.api.aiProvider.name == AiProvider.openai.name) { 
+    if(widget.appData.api.aiProvider == widget.provider) {
       AppData.instance.api.apiKey = _apiKeyController.text; }
   }
 
@@ -94,13 +95,9 @@ class ChatGPTOptionsState extends State<ChatGPTOptions> {
       settings = json.decode(content) as Map<String, dynamic>;
 
       // Check if the object name exists, and update it
-      if (settings.containsKey(AiProvider.openai.name)) {
-        settings[AiProvider.openai.name] = newSetting;
-      } else {
-        settings[AiProvider.openai.name] = newSetting;
-      }
+      settings[widget.provider.name] = newSetting;
     } else {
-      settings = { AiProvider.openai.name: newSetting };
+      settings = { widget.provider.name: newSetting };
     }
 
     // Update in-memory values
@@ -111,8 +108,8 @@ class ChatGPTOptionsState extends State<ChatGPTOptions> {
     await file.writeAsString(const JsonEncoder.withIndent(' ').convert(settings));
 
     // Reset model values
-    if(widget.appData.api.aiProvider.name == AiProvider.openai.name) {
-      AppData.instance.callbackSwitchProvider(AiProvider.openai);
+    if(widget.appData.api.aiProvider == widget.provider) {
+      AppData.instance.callbackSwitchProvider(widget.provider);
     }
 
     // Close window
@@ -138,7 +135,7 @@ class ChatGPTOptionsState extends State<ChatGPTOptions> {
             children: [
 
               // Window title
-              DialogTitle(title: loc.translate('providerOptions.title').replaceAll('{provider}', AiProvider.openai.name)),
+              DialogTitle(title: loc.translate('providerOptions.title').replaceAll('{provider}', widget.provider.name)),
               const SizedBox(height: 24),
 
               TextField(

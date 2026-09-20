@@ -265,6 +265,20 @@ class SidebarState extends State<Sidebar> {
 
                     // (2.2.5) App settings
                     ListTile(
+                      title: Text(AiProvider.gemini.name),
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return ChatGPTOptions(appData: widget.appData, provider: AiProvider.gemini);
+                          },
+                        );
+                      },
+                    ),
+
+                    // App settings
+                    ListTile(
                       title: Text(loc.translate('sidebar.options.applicationSettings')),
                       onTap: () {
                         showDialog(

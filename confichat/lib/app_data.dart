@@ -7,7 +7,6 @@
 import 'dart:io';
 
 import 'package:confichat/ui_widgets.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:confichat/interfaces.dart';
@@ -71,8 +70,9 @@ class AppData {
       case AiProvider.anthropic:
         api = LlmApiFactory.create(AiProvider.anthropic.name);
         break;
-      default:
-        if (kDebugMode) { print('Unknown AI provider.');  }
+      case AiProvider.gemini:
+        api = LlmApiFactory.create(AiProvider.gemini.name);
+        break;
     }
   }
 
@@ -98,7 +98,8 @@ enum AiProvider {
   ollama('Ollama', 0),
   llamacpp('LlamaCpp', 1),
   openai('OpenAI', 2),
-  anthropic('Anthropic', 3);
+  anthropic('Anthropic', 3),
+  gemini('Gemini', 4);
 
   final String name;
   final int id;

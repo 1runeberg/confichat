@@ -11,6 +11,7 @@ import 'package:confichat/api_ollama.dart';
 import 'package:confichat/api_llamacpp.dart';
 import 'package:confichat/api_openai.dart';
 import 'package:confichat/api_anthropic.dart';
+import 'package:confichat/api_gemini.dart';
 
 
 class LlmApiFactory {
@@ -24,6 +25,8 @@ class LlmApiFactory {
         return ApiChatGPT();
       case 'anthropic':
         return ApiAnthropic();
+      case 'gemini':
+        return ApiGemini();
       default:
         throw Exception('Unsupported API provider: $apiProvider');
     }
