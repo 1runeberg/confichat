@@ -25,8 +25,11 @@ import 'package:confichat/app_localizations.dart';
 import 'package:confichat/locale_provider.dart';
 import 'package:confichat/provider_validator.dart';
 import 'package:confichat/ui_provider_setup.dart';
+import 'package:confichat/region_util.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await RegionUtil.refreshStorefront();
   runApp(
     MultiProvider(
       providers: [

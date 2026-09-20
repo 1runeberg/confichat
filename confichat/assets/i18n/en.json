@@ -247,6 +247,7 @@
     }
   },
   "providerSetup": {
+    "existingApiKey": "Already have an OpenAI or Anthropic API key? Add it in Settings.",
     "title": "AI/LLM Provider Required",
     "message": "ConfiChat needs a configured AI provider to function. Please set up one of the following providers:",
     "offlineOptions": "Local Models (Offline):",

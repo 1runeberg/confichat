@@ -10,6 +10,7 @@ import 'package:confichat/provider_validator.dart';
 import 'package:confichat/ui_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:confichat/region_util.dart';
 
 class ProviderSetupDialog extends StatelessWidget {
   final AppData appData;
@@ -85,35 +86,48 @@ class ProviderSetupDialog extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      loc.translate('providerSetup.onlineOptions'),
-                      style: Theme.of(context).textTheme.titleSmall,
+
+                if (RegionUtil.canShowProviderLinks) ...[
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        loc.translate('providerSetup.onlineOptions'),
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 16,
+                    children: [
+                      _buildProviderButton(
+                        context,
+                        'OpenAI',
+                        'https://platform.openai.com/api-keys',
+                        Icons.cloud,
+                      ),
+                      _buildProviderButton(
+                        context,
+                        'Anthropic',
+                        'https://console.anthropic.com/settings/keys',
+                        Icons.cloud_queue,
+                      ),
+                    ],
+                  ),
+                ] else ...[
+                  const SizedBox(height: 16),
+                  Text(
+                    loc.translate(
+                      'providerSetup.existingApiKey',
+                      fallback: 'Already have an OpenAI or Anthropic API key? Add it in Settings.',
                     ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  alignment: WrapAlignment.center,
-                  spacing: 16,
-                  children: [
-                    _buildProviderButton(
-                      context,
-                      'OpenAI',
-                      'https://platform.openai.com/api-keys',
-                      Icons.cloud,
-                    ),
-                    _buildProviderButton(
-                      context,
-                      'Anthropic',
-                      'https://console.anthropic.com/settings/keys',
-                      Icons.cloud_queue,
-                    ),
-                  ],
-                ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: onOpenSettings,
@@ -193,6 +207,12 @@ class ProviderSetupManager {
     }
     
     _isDialogShowing = true;
+
+    await RegionUtil.refreshStorefront();
+    if (!context.mounted) {
+      _isDialogShowing = false;
+      return;
+    }
 
     await showDialog(
       context: context,

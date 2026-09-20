@@ -14,6 +14,30 @@ doc/api/
 # dotenv environment variables file
 .env*
 
+# Local agent context; never commit or publish
+AGENTS.md
+
+# Apple signing and App Store Connect credentials
+*.p8
+*.p12
+*.mobileprovision
+*.provisionprofile
+*.cer
+*.cert
+*.keychain
+*.keychain-db
+AuthKey_*
+**/fastlane/.env*
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/test_output/
+**/fastlane/readme.md
+**/private_keys/
+**/signing/
+**/credentials.json
+**/appstore-connect*.json
+**/app_store_connect*.json
+
 # local user api settings
 app.*.settings.local
 

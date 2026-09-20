@@ -28,6 +28,8 @@
 	<string>public.app-category.productivity</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>ConfiChat uses the camera if you choose to take a photo to attach to a chat.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>ConfiChat requires access to your photo library so you can use them in chats.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

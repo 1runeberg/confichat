@@ -147,7 +147,7 @@ class FileParser {
     for (int i = 0; i < pdf.pages.length; i++) {
       final page = pdf.pages[i];
       final text = await page.loadText();
-      final String content = text.fullText;
+      final String content = text?.fullText ?? '';
       docContent += content;
     }
 
