@@ -74,6 +74,21 @@ Thank you for your interest in contributing to **ConfiChat**! We welcome contrib
 - **Keep Commits Small and Focused**: Break down large changes into smaller, focused commits for easier review.
 - **Test Your Changes**: Make sure your changes don’t break any existing functionality. Write tests if applicable.
 
+### AI-assisted contributions
+
+You may use AI tools to help write code, tests, or documentation. A human contributor must review the resulting changes, understand how they work, and take responsibility for what they submit.
+
+- Check generated code against the project’s behavior, style, privacy, and security requirements. Remove code you cannot explain or verify.
+- Run the relevant tests and describe any checks you could not perform. Review diffs for secrets, private data, and unrelated changes before opening a pull request.
+- In the pull request description, say if AI tools materially helped create the change and briefly explain which parts they helped with. This is context for reviewers, not a substitute for your own review.
+- A human maintainer reviews and decides whether to merge each pull request. Passing CI or receiving an AI review does not replace that decision.
+
+### License for contributions
+
+ConfiChat is licensed under the [Apache License 2.0](../LICENSE). Under Section 5, contributions intentionally submitted for inclusion are submitted under that license unless you explicitly state otherwise. We can only merge contributions that we have the right to distribute under Apache 2.0.
+
+By opening a pull request, please confirm that you have the right to submit all of its code, tests, documentation, and assets under Apache 2.0. This includes permission from an employer or other copyright owner when needed. Do not include third-party material with incompatible terms or material copied from a source whose license you cannot verify. If any part needs different terms or attribution, describe it in the pull request before it is merged.
+
 ## IV. Submitting a Pull Request
 
 1. **Push Your Changes**
