@@ -71,6 +71,9 @@ class AppData {
       case AiProvider.anthropic:
         api = LlmApiFactory.create(AiProvider.anthropic.name);
         break;
+      case AiProvider.llmman:
+        api = LlmApiFactory.create(AiProvider.llmman.name);
+        break;
       default:
         if (kDebugMode) { print('Unknown AI provider.');  }
     }
@@ -98,7 +101,8 @@ enum AiProvider {
   ollama('Ollama', 0),
   llamacpp('LlamaCpp', 1),
   openai('OpenAI', 2),
-  anthropic('Anthropic', 3);
+  anthropic('Anthropic', 3),
+  llmman('llmman', 4);
 
   final String name;
   final int id;

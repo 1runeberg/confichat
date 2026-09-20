@@ -15,7 +15,11 @@ import 'package:confichat/app_localizations.dart';
 class OllamaOptions extends StatefulWidget {
   final AppData appData;
 
-  const OllamaOptions({super.key, required this.appData});
+  // Reused by providers that speak the Ollama API on a different port (e.g. llmman)
+  final AiProvider provider;
+  final int defaultPort;
+
+  const OllamaOptions({super.key, required this.appData, this.provider = AiProvider.ollama, this.defaultPort = 11434});
 
   @override
   OllamaOptionsState createState() => OllamaOptionsState();
@@ -57,13 +61,13 @@ class OllamaOptionsState extends State<OllamaOptions> {
       final fileContent = await File(filePath).readAsString();
       final Map<String, dynamic> settings = json.decode(fileContent);
 
-      if (settings.containsKey(AiProvider.ollama.name) && AppData.instance.api.aiProvider.name ==  AiProvider.ollama.name) {
+      if (settings.containsKey(widget.provider.name) && AppData.instance.api.aiProvider.name ==  widget.provider.name) {
 
         // Set the form text
-        _schemeController.text = settings[AiProvider.ollama.name]['scheme'] ?? 'http';
-        _hostController.text = settings[AiProvider.ollama.name]['host'] ?? 'localhost';
-        _portController.text = settings[AiProvider.ollama.name]['port']?.toString() ?? '11434';
-        _pathController.text = settings[AiProvider.ollama.name]['path'] ?? '/api';
+        _schemeController.text = settings[widget.provider.name]['scheme'] ?? 'http';
+        _hostController.text = settings[widget.provider.name]['host'] ?? 'localhost';
+        _portController.text = settings[widget.provider.name]['port']?.toString() ?? widget.defaultPort.toString();
+        _pathController.text = settings[widget.provider.name]['path'] ?? '/api';
         _applySettings();
 
       } else {
@@ -77,17 +81,17 @@ class OllamaOptionsState extends State<OllamaOptions> {
   void _useDefaultSettings() {
     _schemeController.text = 'http';
     _hostController.text = '127.0.0.1';
-    _portController.text = '11434';
+    _portController.text = widget.defaultPort.toString();
     _pathController.text = '/api';
 
     _applySettings();
   }
 
   void _applySettings() {
-    if(widget.appData.api.aiProvider.name == AiProvider.ollama.name) { 
+    if(widget.appData.api.aiProvider.name == widget.provider.name) { 
       AppData.instance.api.scheme = _schemeController.text;
       AppData.instance.api.host = _hostController.text;
-      AppData.instance.api.port = int.tryParse(_portController.text) ?? 11434;
+      AppData.instance.api.port = int.tryParse(_portController.text) ?? widget.defaultPort;
       AppData.instance.api.path = _pathController.text;
     }
   }
@@ -99,7 +103,7 @@ class OllamaOptionsState extends State<OllamaOptions> {
     final newSetting = {
       'scheme': _schemeController.text,
       'host': _hostController.text,
-      'port': int.tryParse(_portController.text) ?? 11434,
+      'port': int.tryParse(_portController.text) ?? widget.defaultPort,
       'path': _pathController.text,
     };
 
@@ -110,13 +114,13 @@ class OllamaOptionsState extends State<OllamaOptions> {
       final content = await file.readAsString();
       settings = json.decode(content) as Map<String, dynamic>;
 
-      if (settings.containsKey(AiProvider.ollama.name)) {
-        settings[AiProvider.ollama.name] = newSetting;
+      if (settings.containsKey(widget.provider.name)) {
+        settings[widget.provider.name] = newSetting;
       } else {
-        settings[AiProvider.ollama.name] = newSetting;
+        settings[widget.provider.name] = newSetting;
       }
     } else {
-      settings = { AiProvider.ollama.name: newSetting };
+      settings = { widget.provider.name: newSetting };
     }
 
     // Set in-memory values
@@ -127,8 +131,8 @@ class OllamaOptionsState extends State<OllamaOptions> {
     await file.writeAsString(const JsonEncoder.withIndent(' ').convert(settings));
 
     // Reset model values
-     if(widget.appData.api.aiProvider.name == AiProvider.ollama.name) {
-      AppData.instance.callbackSwitchProvider(AiProvider.ollama);
+     if(widget.appData.api.aiProvider.name == widget.provider.name) {
+      AppData.instance.callbackSwitchProvider(widget.provider);
      }
 
     // Close window
@@ -153,7 +157,7 @@ class OllamaOptionsState extends State<OllamaOptions> {
             children: [
 
               // Window title
-              DialogTitle(title: loc.translate('providerOptions.title').replaceAll('{provider}', AiProvider.ollama.name)),
+              DialogTitle(title: loc.translate('providerOptions.title').replaceAll('{provider}', widget.provider.name)),
               const SizedBox(height: 24),
 
                 ConstrainedBox( constraints:  

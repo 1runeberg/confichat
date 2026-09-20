@@ -84,6 +84,12 @@ class ProviderSetupDialog extends StatelessWidget {
                       'https://github.com/ggerganov/llama.cpp',
                       Icons.terminal,
                     ),
+                    _buildProviderButton(
+                      context,
+                      'llmman',
+                      'https://github.com/llmmanorg/llmman',
+                      Icons.memory,
+                    ),
                   ],
                 ),
 
@@ -174,7 +180,7 @@ class ProviderSetupManager {
     AppData appData,
     GlobalKey<ScaffoldState> scaffoldKey,  // Add scaffoldKey parameter
   ) async {
-    // (1) Check if Ollama or LlamaCPP can retrieve models
+    // (1) Check if Ollama, LlamaCPP or llmman can retrieve models
     AiProvider? localProvider = await ProviderValidator.validateLocalProviders(appData);
     if (localProvider != null) {
       return true;

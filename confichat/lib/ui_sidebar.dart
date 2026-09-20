@@ -263,7 +263,21 @@ class SidebarState extends State<Sidebar> {
                       },
                     ),
 
-                    // (2.2.5) App settings
+                    // (2.2.5) llmman options (Ollama-compatible API on port 17434)
+                    ListTile(
+                      title: Text(AiProvider.llmman.name),
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return OllamaOptions(appData: widget.appData, provider: AiProvider.llmman, defaultPort: 17434);
+                          },
+                        );
+                      },
+                    ),
+
+                    // (2.2.6) App settings
                     ListTile(
                       title: Text(loc.translate('sidebar.options.applicationSettings')),
                       onTap: () {

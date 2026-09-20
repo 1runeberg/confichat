@@ -8,7 +8,7 @@ import 'package:confichat/app_data.dart';
 import 'package:flutter/foundation.dart';
 
 class ProviderValidator {
-  /// Checks if local providers (Ollama or LlamaCPP) are available
+  /// Checks if local providers (Ollama, LlamaCPP or llmman) are available
   static Future<AiProvider?> validateLocalProviders(AppData appData) async {
     try {
       // Try Ollama first (priority)
@@ -29,6 +29,16 @@ class ProviderValidator {
       
       if (llamaSuccess && llamaModels.isNotEmpty) {
         return AiProvider.llamacpp;
+      }
+
+      // Try llmman third
+      List<ModelItem> llmmanModels = [];
+      appData.setProvider(AiProvider.llmman);
+      await appData.api.loadSettings();
+      bool llmmanSuccess = await _canGetModels(appData, llmmanModels);
+
+      if (llmmanSuccess && llmmanModels.isNotEmpty) {
+        return AiProvider.llmman;
       }
     } catch (e) {
       if (kDebugMode) {
