@@ -11,4 +11,4 @@ PRODUCT_NAME = confichat
 PRODUCT_BUNDLE_IDENTIFIER = io.confichat.confichat
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2024 io.confichat. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2025 io.confichat. All rights reserved.

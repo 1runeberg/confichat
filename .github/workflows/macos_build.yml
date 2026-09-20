@@ -1,56 +1,40 @@
-name: macOS
+name: macOS Test Build
 
 on:
-  workflow_call:
-    inputs:
-      release_tag:
-        required: true
-        type: string
-      release_name:
-        required: true
-        type: string
-
   push:
     branches:
       - '**'
     paths-ignore:
       - '**/*.md'
       - '**.md'
-      - '.github/**'
       - 'docs/**'
-
   pull_request:
     branches:
       - main
-  
 
 jobs:
-  macos-build:
+  macos-test-build:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v4.1.7
-    
-    - name: Set up Java
-      uses: actions/setup-java@v4.2.2
-      with:
-        distribution: 'zulu'
-        java-version: '17'
-    
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v2.16.0
-      with:
-        channel: 'stable'
+      - uses: actions/checkout@v4.1.7
 
-    - name: Install dependencies
-      run: cd confichat && flutter pub get
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2.16.0
+        with:
+          channel: stable
 
-    - name: Update third party licenses macOS
-      run: cd confichat && flutter pub run flutter_oss_licenses:generate.dart
+      - name: Install dependencies
+        run: cd confichat && flutter pub get
 
-    - name: Build macOS App
-      run: cd confichat && flutter build macos --release
+      - name: Update third party licenses macOS
+        run: cd confichat && flutter pub run flutter_oss_licenses:generate.dart
 
-#    - name: Sign macOS App
-#      run: |
-#        cd confichat/build/macos/Build/Products/Release
-#        codesign --deep --force --verify --verbose --sign "Developer ID Application: confichat (TEAM_ID)" confichat.app
+      - name: Configure macOS build
+        run: cd confichat && flutter build macos --release --config-only
+
+      - name: Compile unsigned macOS test build
+        run: |
+          cd confichat/macos
+          xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release \
+            -destination 'generic/platform=macOS' CODE_SIGNING_ALLOWED=NO \
+            PROVISIONING_PROFILE_SPECIFIER= CODE_SIGN_IDENTITY= build -quiet
