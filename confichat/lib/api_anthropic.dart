@@ -68,14 +68,44 @@ class ApiAnthropic extends LlmApi{
 
   @override
   Future<void> getModels(List<ModelItem> outModels) async  {
+    if (apiKey.isEmpty) return;
 
-    // As of this writing, there doesn't seem to be an api endpoint to grab model names
-    outModels.add(ModelItem('claude-3-7-sonnet-20250219', 'claude-3-7-sonnet-20250219'));
-    outModels.add(ModelItem('claude-3-5-sonnet-20241022', 'claude-3-5-sonnet-20241022'));
-    outModels.add(ModelItem('claude-3-5-haiku-20241022', 'claude-3-5-haiku-20241022'));
-    outModels.add(ModelItem('claude-3-opus-20240229', 'claude-3-opus-20240229'));
-    outModels.add(ModelItem('claude-3-sonnet-20240229', 'claude-3-sonnet-20240229'));
-    outModels.add(ModelItem('claude-3-haiku-20240307', 'claude-3-haiku-20240307'));
+    final models = <ModelItem>[];
+    final seenCursors = <String>{};
+    String? afterId;
+
+    try {
+      do {
+        final url = getUri('/models').replace(queryParameters: {
+          'limit': '1000',
+          if (afterId != null) 'after_id': afterId,
+        });
+        final response = await http.get(url, headers: {
+          'anthropic-version': version,
+          'x-api-key': apiKey,
+        });
+        if (response.statusCode != 200) {
+          throw HttpException('Models request returned ${response.statusCode}', uri: url);
+        }
+
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        final page = data['data'] as List<dynamic>;
+        for (final item in page) {
+          final id = (item as Map<String, dynamic>)['id'] as String;
+          models.add(ModelItem(id, id));
+        }
+
+        if (data['has_more'] != true) break;
+        afterId = data['last_id'] as String?;
+        if (afterId == null || !seenCursors.add(afterId)) {
+          throw const FormatException('Invalid models pagination cursor');
+        }
+      } while (true);
+
+      outModels.addAll(models);
+    } catch (e) {
+      if (kDebugMode) { print('Unable to retrieve Anthropic models: $e'); }
+    }
   } 
 
   @override
