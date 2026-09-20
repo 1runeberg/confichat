@@ -59,7 +59,7 @@ class LlamaCppOptionsState extends State<LlamaCppOptions> {
       final fileContent = await File(filePath).readAsString();
       final Map<String, dynamic> settings = json.decode(fileContent);
 
-      if (settings.containsKey(AiProvider.llamacpp.name) && AppData.instance.api.aiProvider.name ==  AiProvider.llamacpp.name) {
+      if (settings.containsKey(AiProvider.llamacpp.name)) {
 
         // Set the form text
         _schemeController.text = settings[AiProvider.llamacpp.name]['scheme'] ?? 'http';

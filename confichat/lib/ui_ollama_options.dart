@@ -57,7 +57,7 @@ class OllamaOptionsState extends State<OllamaOptions> {
       final fileContent = await File(filePath).readAsString();
       final Map<String, dynamic> settings = json.decode(fileContent);
 
-      if (settings.containsKey(AiProvider.ollama.name) && AppData.instance.api.aiProvider.name ==  AiProvider.ollama.name) {
+      if (settings.containsKey(AiProvider.ollama.name)) {
 
         // Set the form text
         _schemeController.text = settings[AiProvider.ollama.name]['scheme'] ?? 'http';
