@@ -136,6 +136,12 @@ abstract class LlmApi {
 
   }
 
+  // JSON headers, plus Bearer auth only when an API key is set
+  Map<String, String> get requestHeaders => {
+    ...AppData.headerJson,
+    if (apiKey.trim().isNotEmpty) 'Authorization': 'Bearer ${apiKey.trim()}',
+  };
+
   Future<void> postData({ required Uri url, required Map<String, String> requestHeaders, String? requestPayload }) async {
     try {
       // Send POST

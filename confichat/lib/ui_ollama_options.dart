@@ -18,8 +18,9 @@ class OllamaOptions extends StatefulWidget {
   // Reused by providers that speak the Ollama API on a different port (e.g. llmman)
   final AiProvider provider;
   final int defaultPort;
+  final bool showApiKey; // optional key for authenticated servers
 
-  const OllamaOptions({super.key, required this.appData, this.provider = AiProvider.ollama, this.defaultPort = 11434});
+  const OllamaOptions({super.key, required this.appData, this.provider = AiProvider.ollama, this.defaultPort = 11434, this.showApiKey = false});
 
   @override
   OllamaOptionsState createState() => OllamaOptionsState();
@@ -30,6 +31,7 @@ class OllamaOptionsState extends State<OllamaOptions> {
   final TextEditingController _hostController = TextEditingController();
   final TextEditingController _portController = TextEditingController();
   final TextEditingController _pathController = TextEditingController();
+  final TextEditingController _apiKeyController = TextEditingController();
 
   final FocusNode _focusNode = FocusNode();
 
@@ -48,6 +50,7 @@ class OllamaOptionsState extends State<OllamaOptions> {
     _hostController.dispose();
     _portController.dispose();
     _pathController.dispose();
+    _apiKeyController.dispose();
 
     _focusNode.dispose();
     super.dispose();
@@ -68,6 +71,7 @@ class OllamaOptionsState extends State<OllamaOptions> {
         _hostController.text = settings[widget.provider.name]['host'] ?? 'localhost';
         _portController.text = settings[widget.provider.name]['port']?.toString() ?? widget.defaultPort.toString();
         _pathController.text = settings[widget.provider.name]['path'] ?? '/api';
+        _apiKeyController.text = settings[widget.provider.name]['apikey'] ?? '';
         _applySettings();
 
       } else {
@@ -93,6 +97,7 @@ class OllamaOptionsState extends State<OllamaOptions> {
       AppData.instance.api.host = _hostController.text;
       AppData.instance.api.port = int.tryParse(_portController.text) ?? widget.defaultPort;
       AppData.instance.api.path = _pathController.text;
+      if (widget.showApiKey) { AppData.instance.api.apiKey = _apiKeyController.text; }
     }
   }
 
@@ -105,6 +110,7 @@ class OllamaOptionsState extends State<OllamaOptions> {
       'host': _hostController.text,
       'port': int.tryParse(_portController.text) ?? widget.defaultPort,
       'path': _pathController.text,
+      if (widget.showApiKey) 'apikey': _apiKeyController.text,
     };
 
     Map<String, dynamic> settings;
@@ -212,6 +218,19 @@ class OllamaOptionsState extends State<OllamaOptions> {
                       border: const UnderlineInputBorder(),
                     ),
                   ),
+
+                  // API Key (optional)
+                  if (widget.showApiKey) ...[
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: _apiKeyController,
+                      decoration: InputDecoration(
+                        labelText: loc.translate('providerOptions.fields.apiKey'),
+                        labelStyle: Theme.of(context).textTheme.labelSmall,
+                        border: const UnderlineInputBorder(),
+                      ),
+                    ),
+                  ],
 
               ]))),
 

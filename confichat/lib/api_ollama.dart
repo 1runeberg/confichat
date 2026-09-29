@@ -65,6 +65,7 @@ class ApiOllama extends LlmApi{
         host = settings[aiProvider.name]['host'] ?? 'localhost';
         port = settings[aiProvider.name]['port'] ?? defaultPort;
         path = settings[aiProvider.name]['path'] ?? '/api';
+        apiKey = settings[aiProvider.name]['apikey'] ?? '';
 
       }
     } 
@@ -75,7 +76,7 @@ class ApiOllama extends LlmApi{
 
     try {
       // Retrieve active models for provider
-      await getData(url: getUri('/tags'));
+      await getData(url: getUri('/tags'), requestHeaders: requestHeaders);
 
       // Decode response
       Map<String, dynamic> jsonData = jsonDecode(responseData);
@@ -98,7 +99,7 @@ class ApiOllama extends LlmApi{
       // Retrieve model info
       await postData(
         url: getUri('/show'),
-        requestHeaders: AppData.headerJson,
+        requestHeaders: requestHeaders,
         requestPayload: jsonEncode({'name': modelId, 'format': 'json', 'stream': false}),
       );
 
@@ -121,7 +122,7 @@ class ApiOllama extends LlmApi{
     try {
       await postData(
         url: getUri('/generate'),
-        requestHeaders: AppData.headerJson,
+        requestHeaders: requestHeaders,
         requestPayload: jsonEncode({
           'model': modelId,
           'stream': false
@@ -140,7 +141,7 @@ class ApiOllama extends LlmApi{
       // Send api request
       await postData(
         url: getUri('/show'),
-        requestHeaders: AppData.headerJson,
+        requestHeaders: requestHeaders,
         requestPayload: jsonEncode({'name': modelId, 'format': 'json', 'stream': false}),
       );
 
@@ -191,7 +192,7 @@ class ApiOllama extends LlmApi{
       // Retrieve active models for provider
       await deleteData(
         url: AppData.instance.api.getUri('/delete'),
-        requestHeaders: AppData.headerJson,
+        requestHeaders: requestHeaders,
         requestPayload: jsonEncode({'name': modelId, 'format': 'json', 'stream': false}),
       );
 
@@ -252,7 +253,7 @@ class ApiOllama extends LlmApi{
 
         // Assemble request
         final request = http.Request('POST', getUri('/chat'))
-          ..headers.addAll(AppData.headerJson);
+          ..headers.addAll(requestHeaders);
 
         Map<String, dynamic> summaryRequest = {}; 
         if(getSummary)

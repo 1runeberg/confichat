@@ -8,7 +8,8 @@ import 'package:confichat/api_ollama.dart';
 import 'package:confichat/app_data.dart';
 
 /// llmman (https://github.com/llmmanorg/llmman) is a local model runner that
-/// serves the Ollama API on port 17434, so it reuses the Ollama client as-is.
+/// serves the Ollama API on port 17434, so it reuses the Ollama client
+/// (including its optional API key).
 class ApiLlmman extends ApiOllama {
 
   static final ApiLlmman _instance = ApiLlmman._internal();

@@ -216,7 +216,8 @@ The server listens on `http://localhost:17434` by default (override with the `LL
 
 1. Launch ConfiChat and select **llmman** from the provider dropdown.
 2. ConfiChat connects to `http://localhost:17434/api` by default. If you changed `LLMMAN_HOST`, open **Options > llmman** in the sidebar and update the host/port to match.
-3. Pick your model and start chatting.
+3. If your llmman server requires authentication, enter the key in the **API Key** field there. Leave it empty for the default local setup.
+4. Pick your model and start chatting.
 
 ### Additional Resources
 

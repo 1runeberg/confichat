@@ -271,7 +271,7 @@ class SidebarState extends State<Sidebar> {
                           context: context,
                           barrierDismissible: false,
                           builder: (BuildContext context) {
-                            return OllamaOptions(appData: widget.appData, provider: AiProvider.llmman, defaultPort: 17434);
+                            return OllamaOptions(appData: widget.appData, provider: AiProvider.llmman, defaultPort: 17434, showApiKey: true);
                           },
                         );
                       },
