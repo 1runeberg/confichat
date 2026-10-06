@@ -42,7 +42,7 @@ class ProviderSetupDialog extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 500),
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
