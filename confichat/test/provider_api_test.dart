@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:confichat/api_anthropic.dart';
 import 'package:confichat/api_gemini.dart';
 import 'package:confichat/api_llamacpp.dart';
+import 'package:confichat/api_llmman.dart';
 import 'package:confichat/api_ollama.dart';
 import 'package:confichat/api_openai.dart';
 import 'package:confichat/app_data.dart';
@@ -24,6 +25,7 @@ void main() {
     AiProvider.openai: ApiChatGPT(),
     AiProvider.anthropic: ApiAnthropic(),
     AiProvider.gemini: ApiGemini(),
+    AiProvider.llmman: ApiLlmman(),
   };
 
   setUp(() async {
@@ -42,6 +44,11 @@ void main() {
       ..host = 'localhost'
       ..port = 8080
       ..path = '/v1';
+    ApiLlmman()
+      ..scheme = 'http'
+      ..host = 'localhost'
+      ..port = 17434
+      ..path = '/api';
   });
 
   tearDown(() async {
@@ -54,7 +61,7 @@ void main() {
       expect(LlmApiFactory.create(entry.key.name), same(entry.value));
       expect(entry.value.aiProvider, entry.key);
     }
-    expect(AiProvider.values.map((provider) => provider.id), [0, 1, 2, 3, 4]);
+    expect(AiProvider.values.map((provider) => provider.id), [0, 1, 2, 3, 4, 5]);
   });
 
   test('providers load only their own saved settings', () async {
@@ -148,6 +155,64 @@ void main() {
       expect(models.map((model) => model.name), ['model-one', 'model-two']);
     });
   }
+
+  group('llmman', () {
+    final tags = jsonEncode({
+      'models': [
+        {'name': 'gemma'}
+      ],
+    });
+
+    test('lists models on the default port without a key', () async {
+      final requests = <http.Request>[];
+      final client = MockClient((request) async {
+        requests.add(request);
+        return http.Response(tags, 200);
+      });
+
+      final models = <ModelItem>[];
+      await http.runWithClient(
+          () => ApiLlmman().getModels(models), () => client);
+      expect(models.map((model) => model.id), ['gemma']);
+      expect(requests.single.url.toString(), 'http://localhost:17434/api/tags');
+      expect(requests.single.headers.containsKey('authorization'), isFalse);
+    });
+
+    test('sends the saved API key with every request', () async {
+      final settingsFile = File(
+          '${root.path}/${AppData.appStoragePath}/${AppData.appSettingsFile}');
+      await settingsFile.create(recursive: true);
+      await settingsFile.writeAsString(jsonEncode({
+        'llmman': {'host': 'llmman.test', 'apikey': 'llmman-test-key'},
+      }));
+      final api = ApiLlmman();
+      await api.loadSettings();
+      expect(api.host, 'llmman.test');
+      expect(api.port, 17434);
+      expect(api.apiKey, 'llmman-test-key');
+
+      final requests = <http.Request>[];
+      final client = MockClient((request) async {
+        requests.add(request);
+        return http.Response(request.method == 'GET' ? tags : '{}', 200);
+      });
+
+      await http.runWithClient(() async {
+        await api.getModels(<ModelItem>[]);
+        await api.getModelInfo(ModelInfo('gemma'), 'gemma');
+        await api.loadModelToMemory('gemma');
+      }, () => client);
+      expect(requests.map((request) => request.url.path),
+          ['/api/tags', '/api/show', '/api/generate']);
+      for (final request in requests) {
+        expect(request.headers['authorization'], 'Bearer llmman-test-key');
+      }
+    });
+
+    test('does not change the Ollama request headers', () {
+      expect(ApiOllama().requestHeaders, AppData.headerJson);
+    });
+  });
 
   test('Ollama lists models from its tags endpoint', () async {
     final api = ApiOllama();

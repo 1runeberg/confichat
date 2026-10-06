@@ -194,7 +194,7 @@ class AddModelDialogState extends State<AddModelDialog> {
     // Assemble modelfile
     await AppData.instance.api.postData(
       url: AppData.instance.api.getUri('/create'),
-      requestHeaders: AppData.headerJson,
+      requestHeaders: AppData.instance.api.requestHeaders,
       requestPayload: jsonEncode({
         'model': _nameController.text,
         'from': _selectedModel,

@@ -26,6 +26,11 @@ Get up and running with **ConfiChat** by following this guide. Whether you're us
    - [2. Run LlamaCpp Server](#2-run-llamacpp-server)
    - [3. Set Up ConfiChat](#3-set-up-confichat)
    - [Additional Resources](#additional-resources-3)
+5. [Using ConfiChat with llmman](#using-confichat-with-llmman)
+   - [1. Install llmman](#1-install-llmman)
+   - [2. Pull a Model and Start the Server](#2-pull-a-model-and-start-the-server)
+   - [3. Run ConfiChat](#3-run-confichat-3)
+   - [Additional Resources](#additional-resources-4)
 
 ---
 
@@ -179,3 +184,41 @@ Note: There may be a warning during first run as the binaries are unsigned.
 ### Additional Resources
 
 For more detailed instructions and troubleshooting, please visit the [LlamaCpp documentation](https://github.com/ggerganov/llama.cpp) and the [ConfiChat repository](https://github.com/your-repository/ConfiChat).
+
+---
+
+## Using ConfiChat with llmman
+
+[llmman](https://github.com/llmmanorg/llmman) is a local model runner that serves the Ollama API (alongside OpenAI- and Anthropic-compatible ones) on port 17434. Models are pulled as OCI artifacts or straight from Hugging Face and served by `llama.cpp`, `vllm` or `mlx-lm`.
+
+### 1. Install llmman
+
+- **macOS / Linux**:
+  ```bash
+  curl -fsSL https://llmmanorg.github.io/install.sh | sh
+  ```
+
+- **Windows** (PowerShell):
+  ```powershell
+  irm https://llmmanorg.github.io/install.ps1 | iex
+  ```
+
+### 2. Pull a Model and Start the Server
+
+```bash
+llmman pull gemma4
+llmman serve
+```
+
+The server listens on `http://localhost:17434` by default (override with the `LLMMAN_HOST` environment variable, e.g. `LLMMAN_HOST=0.0.0.0:17434`).
+
+### 3. Run ConfiChat
+
+1. Launch ConfiChat and select **llmman** from the provider dropdown.
+2. ConfiChat connects to `http://localhost:17434/api` by default. If you changed `LLMMAN_HOST`, open **Options > llmman** in the sidebar and update the host/port to match.
+3. If your llmman server requires authentication, enter the key in the **API Key** field there. Leave it empty for the default local setup.
+4. Pick your model and start chatting.
+
+### Additional Resources
+
+For more detailed instructions and troubleshooting, please visit the [llmman repository](https://github.com/llmmanorg/llmman).
