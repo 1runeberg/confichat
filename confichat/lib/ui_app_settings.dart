@@ -236,7 +236,8 @@ class AppSettingsState extends State<AppSettings> {
               DialogTitle(title: loc.translate('appSettings.title')),
               const SizedBox(height: 18),
 
-              SingleChildScrollView(
+              // Scrolls when the dialog is taller than the screen
+              Flexible(child: SingleChildScrollView(
                 scrollDirection: Axis.vertical, 
                 keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, 
                 child: Column ( children: [
@@ -449,7 +450,7 @@ class AppSettingsState extends State<AppSettings> {
                     ),
                   ]
                 )
-              ),
+              )),
 
               // Buttons
               const SizedBox(height: 16),

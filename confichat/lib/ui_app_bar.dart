@@ -13,18 +13,21 @@ import 'package:confichat/ui_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:confichat/app_localizations.dart';
+import 'package:confichat/hinge_util.dart';
 
 class CCAppBar extends StatefulWidget implements PreferredSizeWidget {
   final AppData appData;
   final ChatSessionSelectedNotifier chatSessionSelectedNotifier;
   final TextEditingController providerController;
   final TextEditingController providerModel;
+  final bool showMenuButton;
 
   const CCAppBar({super.key, 
     required this.appData,
     required this.chatSessionSelectedNotifier,
     required this.providerController,
     required this.providerModel,
+    this.showMenuButton = true,
   });
 
   @override
@@ -35,6 +38,12 @@ class CCAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class CCAppBarState extends State<CCAppBar> {
+  bool _compactDuo = false;
+
+  EdgeInsets get _dropdownMargin => _compactDuo
+      ? const EdgeInsets.symmetric(horizontal: 4, vertical: 10)
+      : const EdgeInsets.all(10);
+
   AiProvider? selectedProvider;
   ModelItem? selectedModel;
   Timer? _providerCheckTimer;
@@ -70,6 +79,9 @@ class CCAppBarState extends State<CCAppBar> {
       builder: (context, constraints) {
         bool isPhone = widget.appData.getUserDeviceType(context) == UserDeviceType.phone;
 
+        // Folded Duo loses width to the status bar strip, so tighten the dropdowns
+        _compactDuo = isPhone && HingeUtil.layoutFor(MediaQuery.sizeOf(context)) == DuoLayout.folded;
+
         return AppBar(
           title: widget.appData.getUserDeviceType(context) == UserDeviceType.desktop
               ? Row(
@@ -86,16 +98,18 @@ class CCAppBarState extends State<CCAppBar> {
           toolbarOpacity: 0.8,
           elevation: 5.0,
           shadowColor: const Color.fromARGB(255, 145, 145, 145),
-          leading: Builder(
+          automaticallyImplyLeading: false,
+          leading: widget.showMenuButton ? Builder(
             builder: (context) {
               return IconButton(
                 icon: const Icon(Icons.menu),
+                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
                 onPressed: () {
                   Scaffold.of(context).openDrawer();
                 },
               );
             },
-          ),
+          ) : null,
           actions: [        
                 _buildModelProviderDropdown(context, isPhone, selectedProvider ?? AiProvider.ollama),
                 _buildModelDropdown(context, isPhone),
@@ -109,8 +123,9 @@ class CCAppBarState extends State<CCAppBar> {
 
   Widget _buildModelProviderDropdown(BuildContext context, bool isPhone, AiProvider selectedProvider) {
     return Container(
-      margin: const EdgeInsets.all(10),
+      margin: _dropdownMargin,
       child: DropdownMenu<AiProvider>(
+        width: _compactDuo ? 150 : null,
         initialSelection: selectedProvider,
         controller: widget.providerController,
         requestFocusOnTap: true,
@@ -158,7 +173,7 @@ class CCAppBarState extends State<CCAppBar> {
     return Consumer<ModelProvider>(
       builder: (context, modelProvider, child) {
         return Container(
-          margin: const EdgeInsets.all(10),
+          margin: _dropdownMargin,
           child: GestureDetector(
             onDoubleTap: isPhone && modelProvider.models.isNotEmpty
                 ? () async {
@@ -168,7 +183,7 @@ class CCAppBarState extends State<CCAppBar> {
             child: DropdownMenu<ModelItem>(
               controller: widget.providerModel,
               enabled: modelProvider.models.isNotEmpty,
-              width: 160,
+              width: _compactDuo ? 140 : 160,
               requestFocusOnTap: true,
               textStyle: TextStyle(
                 color: Theme.of(context).colorScheme.surface,

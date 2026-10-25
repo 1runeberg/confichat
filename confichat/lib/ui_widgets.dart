@@ -128,20 +128,19 @@ class OutlinedIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final glyph = String.fromCharCode(icon.codePoint);
+    final style = TextStyle(fontFamily: icon.fontFamily, package: icon.fontPackage, fontSize: size, height: 1);
+
+    // The stroke is centred on the glyph edge, so double it to show the full outline width
     return Stack(
+      alignment: Alignment.center,
       children: [
-        // Outline layer
-        Icon(
-          icon,
-          size: size + outlineWidth,
-          color: outlineColor,
-        ),
-        // Inner icon
-        Icon(
-          icon,
-          size: size,
-          color: iconColor,
-        ),
+        Text(glyph, style: style.copyWith(foreground: Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = outlineWidth * 2
+          ..color = outlineColor)),
+
+        Text(glyph, style: style.copyWith(color: iconColor)),
       ],
     );
   }
@@ -244,9 +243,13 @@ class DialogTitle extends StatelessWidget {
           bottomRight: Radius.circular(16.0),
         ),
       ),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleMedium,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          title,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
       ),
     );
   }

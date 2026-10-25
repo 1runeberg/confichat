@@ -62,7 +62,9 @@
       "update": "تحديث",
       "rename": "إعادة تسمية",
       "delete": "حذف",
-      "applicationSettings": "إعدادات التطبيق"
+      "applicationSettings": "إعدادات التطبيق",
+      "offlineModels": "النماذج دون اتصال",
+      "onlineModels": "النماذج عبر الإنترنت"
     },
     "legal": {
       "termsAndConditions": "الشروط والأحكام",

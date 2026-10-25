@@ -62,7 +62,9 @@
       "update": "更新",
       "rename": "重命名",
       "delete": "删除",
-      "applicationSettings": "应用程序设置"
+      "applicationSettings": "应用程序设置",
+      "offlineModels": "离线模型",
+      "onlineModels": "在线模型"
     },
     "legal": {
       "termsAndConditions": "条款和条件",

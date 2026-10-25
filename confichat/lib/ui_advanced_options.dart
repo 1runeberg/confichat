@@ -95,7 +95,8 @@ class AdvancedOptionsState extends State<AdvancedOptions> {
             DialogTitle(title: loc.translate('advancedPrompt.title')),
             const SizedBox(height: 24),
 
-          ConstrainedBox(
+          // Scrolls within the cap and shrinks further when the screen is shorter
+          Flexible(child: ConstrainedBox(
             constraints: BoxConstraints(
               maxHeight: AppData.instance.getUserDeviceType(context) == UserDeviceType.phone ? 250.0 : 500, ),
             child: SingleChildScrollView(
@@ -159,7 +160,7 @@ class AdvancedOptionsState extends State<AdvancedOptions> {
 
                 ] )
               ),
-            ),
+            )),
 
             const SizedBox(height: 24),
             Row(

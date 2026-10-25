@@ -23,7 +23,8 @@ import 'package:confichat/app_localizations.dart';
 class Sidebar extends StatefulWidget {
   final ChatSessionSelectedNotifier chatSessionSelectedNotifier;
   final AppData appData;
-  const Sidebar({super.key, required this.appData, required this.chatSessionSelectedNotifier});
+  final bool docked;
+  const Sidebar({super.key, required this.appData, required this.chatSessionSelectedNotifier, this.docked = false});
 
   @override
   SidebarState createState() => SidebarState();
@@ -44,6 +45,21 @@ class SidebarState extends State<Sidebar> {
       _expandAiModelOptions = true;
       _expandLegal = false;
     });
+  }
+
+  // Small divider and label grouping providers in the settings section
+  Widget _buildGroupHeader(BuildContext context, String title) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Divider(height: 1),
+          const SizedBox(height: 12),
+          Text(title, style: Theme.of(context).textTheme.labelMedium),
+        ],
+      ),
+    );
   }
 
   // Data notifier to canvass of selected chat session
@@ -91,6 +107,12 @@ class SidebarState extends State<Sidebar> {
         // Open drawer
         return Drawer( 
           backgroundColor: Theme.of(context).colorScheme.secondary,
+          shape: widget.docked ? const RoundedRectangleBorder() : null,
+
+          // A docked sidebar casts the same soft shadow as the app bar onto the chat
+          elevation: widget.docked ? 5.0 : null,
+          shadowColor: widget.docked ? const Color.fromARGB(255, 145, 145, 145) : null,
+          surfaceTintColor: widget.docked ? Colors.transparent : null,
           child: Column( children: [
  
               // (1) Header
@@ -122,7 +144,7 @@ class SidebarState extends State<Sidebar> {
                     icon: Icons.forum,
                     size: 25.0,
                     iconColor: Theme.of(context).colorScheme.surface,
-                    outlineColor: Theme.of(context).colorScheme.surfaceDim,
+                    outlineColor: Theme.of(context).colorScheme.onSurface,
                     outlineWidth: 1.0,
                   ),
 
@@ -194,7 +216,7 @@ class SidebarState extends State<Sidebar> {
                     icon: Icons.settings,
                     size: 25.0,
                     iconColor: Theme.of(context).colorScheme.surface,
-                    outlineColor: Theme.of(context).colorScheme.surfaceDim,
+                    outlineColor: Theme.of(context).colorScheme.onSurface,
                     outlineWidth: 1.0,
                   ),
 
@@ -207,8 +229,27 @@ class SidebarState extends State<Sidebar> {
                   maintainState: true,
                   children: <Widget>[
 
+                    // App settings
+                    ListTile(
+                      title: Text(loc.translate('sidebar.options.applicationSettings')),
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return AppSettings(appData: widget.appData);
+                          },
+                        );
+                      },
+                    ),
+
+
+                    // Offline Models group
+                    _buildGroupHeader(context, loc.translate('sidebar.options.offlineModels')),
+
                     // (2.2.1) Ollama options
                     ListTile(
+                      contentPadding: const EdgeInsets.only(left: 32, right: 16),
                       title: Text(AiProvider.ollama.name),
                       onTap: () {
                         showDialog(
@@ -223,6 +264,7 @@ class SidebarState extends State<Sidebar> {
 
                     // (2.2.2) LlamaCpp options
                     ListTile(
+                      contentPadding: const EdgeInsets.only(left: 32, right: 16),
                       title: Text(AiProvider.llamacpp.name),
                       onTap: () {
                         showDialog(
@@ -235,36 +277,9 @@ class SidebarState extends State<Sidebar> {
                       },
                     ),
 
-                    // (2.2.3) OpenAI options
+                    // (2.2.3) llmman options (Ollama-compatible API on port 17434)
                     ListTile(
-                      title: Text(AiProvider.openai.name),
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (BuildContext context) {
-                            return ChatGPTOptions(appData: widget.appData);
-                          },
-                        );
-                      },
-                    ),
-
-                    // (2.2.4) Anthropic options
-                    ListTile(
-                      title: Text(AiProvider.anthropic.name),
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (BuildContext context) {
-                            return AnthropicOptions(appData: widget.appData);
-                          },
-                        );
-                      },
-                    ),
-
-                    // (2.2.5) llmman options (Ollama-compatible API on port 17434)
-                    ListTile(
+                      contentPadding: const EdgeInsets.only(left: 32, right: 16),
                       title: Text(AiProvider.llmman.name),
                       onTap: () {
                         showDialog(
@@ -277,8 +292,42 @@ class SidebarState extends State<Sidebar> {
                       },
                     ),
 
-                    // (2.2.6) App settings
+                    // Online Models group
+                    _buildGroupHeader(context, loc.translate('sidebar.options.onlineModels')),
+
+                    // (2.2.4) OpenAI options
                     ListTile(
+                      contentPadding: const EdgeInsets.only(left: 32, right: 16),
+                      title: Text(AiProvider.openai.name),
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return ChatGPTOptions(appData: widget.appData);
+                          },
+                        );
+                      },
+                    ),
+
+                    // (2.2.5) Anthropic options
+                    ListTile(
+                      contentPadding: const EdgeInsets.only(left: 32, right: 16),
+                      title: Text(AiProvider.anthropic.name),
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return AnthropicOptions(appData: widget.appData);
+                          },
+                        );
+                      },
+                    ),
+
+                    // (2.2.6) Gemini options
+                    ListTile(
+                      contentPadding: const EdgeInsets.only(left: 32, right: 16),
                       title: Text(AiProvider.gemini.name),
                       onTap: () {
                         showDialog(
@@ -286,20 +335,6 @@ class SidebarState extends State<Sidebar> {
                           barrierDismissible: false,
                           builder: (BuildContext context) {
                             return ChatGPTOptions(appData: widget.appData, provider: AiProvider.gemini);
-                          },
-                        );
-                      },
-                    ),
-
-                    // App settings
-                    ListTile(
-                      title: Text(loc.translate('sidebar.options.applicationSettings')),
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (BuildContext context) {
-                            return AppSettings(appData: widget.appData);
                           },
                         );
                       },
@@ -322,7 +357,7 @@ class SidebarState extends State<Sidebar> {
                     icon: Icons.policy,
                     size: 25.0,
                     iconColor: Theme.of(context).colorScheme.surface,
-                    outlineColor: Theme.of(context).colorScheme.surfaceDim,
+                    outlineColor: Theme.of(context).colorScheme.onSurface,
                     outlineWidth: 1.0,
                   ),
 
@@ -526,8 +561,8 @@ class SidebarState extends State<Sidebar> {
     Directory chatSessionsDir = Directory('${directory.path}/${AppData.appStoragePath}');
     EncryptionPayload encryptionPayload = await PersistentStorage.getEncryptionPayload(chatSessionsDir, model.name, filename);
 
-    // Close sidebar
-    if(mounted){ Navigator.of(context).pop();  }
+    // Close sidebar (a docked sidebar stays open)
+    if(mounted && !widget.docked){ Navigator.of(context).pop();  }
 
     // Get the canvass to update the chat session
     await widget.appData.callbackUpdateSession!(chatSessionsDir, model.name, filename, encryptionPayload);

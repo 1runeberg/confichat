@@ -62,7 +62,9 @@
       "update": "עדכן",
       "rename": "שנה שם",
       "delete": "מחק",
-      "applicationSettings": "הגדרות יישום"
+      "applicationSettings": "הגדרות יישום",
+      "offlineModels": "מודלים לא מקוונים",
+      "onlineModels": "מודלים מקוונים"
     },
     "legal": {
       "termsAndConditions": "תנאים והגבלות",

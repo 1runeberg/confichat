@@ -62,7 +62,9 @@
       "update": "I-update",
       "rename": "Palitan ang pangalan",
       "delete": "Burahin",
-      "applicationSettings": "Mga setting ng aplikasyon"
+      "applicationSettings": "Mga setting ng aplikasyon",
+      "offlineModels": "Mga Offline na Modelo",
+      "onlineModels": "Mga Online na Modelo"
     },
     "legal": {
       "termsAndConditions": "Mga Tuntunin at Kondisyon",

@@ -22,6 +22,7 @@ import 'package:confichat/chat_notifiers.dart';
 import 'package:confichat/persistent_storage.dart';
 import 'package:confichat/app_data.dart';
 import 'package:confichat/app_localizations.dart';
+import 'package:confichat/hinge_util.dart';
 
 
 class Canvass extends StatefulWidget {
@@ -118,6 +119,8 @@ class CanvassState extends State<Canvass> {
   Widget build(BuildContext context) {
 
     UserDeviceType deviceType = widget.appData.getUserDeviceType(context);
+    final duoLayout = HingeUtil.layoutFor(MediaQuery.sizeOf(context));
+    final compactActions = deviceType == UserDeviceType.phone;
 
     // Get selected model
     final selectedModelProvider = Provider.of<SelectedModelProvider>(context, listen: false);
@@ -143,7 +146,7 @@ class CanvassState extends State<Canvass> {
         // Return UI
         return Scaffold(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          body: Center( 
+          body: _buildDuoRailLayout(context, duoLayout, deviceType, selectedModelProvider, selectedModel, Center( 
             child: FractionallySizedBox(
               widthFactor: deviceType == UserDeviceType.desktop ? 0.7 : 0.9,
               alignment: Alignment.centerRight,
@@ -276,12 +279,13 @@ class CanvassState extends State<Canvass> {
                           minLines: 1,
                           maxLines: 5,
                           onFieldSubmitted: _sendPromptMobile,
+                          onTapOutside: (_) => _focusNodePrompt.unfocus(), // dismiss the soft keyboard
                           textInputAction: TextInputAction.newline, // for soft keyboard
                         ),
 
-                      // (2.4) User actions bar
-                      const SizedBox(height:5),
-                      Row(
+                      // (2.4) User actions bar (moves to the side rail on Duo)
+                      if (!duoLayout.hasRail) const SizedBox(height:5),
+                      if (!duoLayout.hasRail) Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           
@@ -290,25 +294,17 @@ class CanvassState extends State<Canvass> {
                         alignment: Alignment.centerLeft, 
                         child:
                         ElevatedButton(
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                barrierDismissible: false,
-                                builder: (BuildContext context) {
-                                  return AdvancedOptions(api: widget.appData.api, enableSystemPrompt: true);
-                                },
-                              );
-                            },
+                            onPressed: _showTuning,
                             child:  Text(loc.translate('canvass.tuningLabel')),
                           ),),
                         
                         // Add spacer if there's enough space (not on phones)
-                        if (deviceType != UserDeviceType.phone) const Spacer(),
+                        if (!compactActions) const Spacer(),
 
-                        if (deviceType != UserDeviceType.phone) 
+                        if (!compactActions) 
                         Row( children: _buildActionButtons(context, deviceType, selectedModelProvider, selectedModel)), 
 
-                        if (deviceType == UserDeviceType.phone) Expanded( child:
+                        if (compactActions) Expanded( child:
                         SingleChildScrollView(
                             controller: _actionsScrollController,
                             scrollDirection: Axis.horizontal,
@@ -328,7 +324,7 @@ class CanvassState extends State<Canvass> {
 
               ),
             ), 
-          )
+          ))
 
         );
 
@@ -1188,13 +1184,73 @@ class CanvassState extends State<Canvass> {
     return true;
   }
 
+  void _showTuning() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AdvancedOptions(api: widget.appData.api, enableSystemPrompt: true);
+      },
+    );
+  }
+
+  // Duo side rail in the status bar and camera strip (folded and unfolded landscape)
+  Widget _buildDuoRailLayout(
+    BuildContext context,
+    DuoLayout duoLayout,
+    UserDeviceType deviceType,
+    SelectedModelProvider selectedModelProvider,
+    ModelItem? selectedModel,
+    Widget content ) {
+
+    if (!duoLayout.hasRail) return content;
+
+    final railWidth = MediaQuery.paddingOf(context).right.clamp(56.0, double.infinity);
+
+    // Keep send closest to the prompt, scrolling the rest when the keyboard is up.
+    // The top inset keeps the rail clear of the status icons below the app bar
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(child: MediaQuery.removePadding(context: context, removeRight: true, child: content)),
+
+        Container(
+          width: railWidth,
+          padding: const EdgeInsets.only(top: 72),
+          child: SingleChildScrollView(
+            reverse: true,
+            padding: const EdgeInsets.only(top: 8, bottom: 23),
+            child: Column(
+              children: [
+                FloatingActionButton.small(
+                  heroTag: null,
+                  shape: const CircleBorder(),
+                  backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+                  elevation: 3.0,
+                  tooltip: AppLocalizations.of(context).translate('canvass.tuningLabel'),
+                  onPressed: _showTuning,
+                  child: const Icon(Icons.tune),
+                ),
+                ..._buildActionButtons(context, deviceType, selectedModelProvider, selectedModel, axis: Axis.vertical),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   List<Widget> _buildActionButtons(
     BuildContext context, 
     UserDeviceType deviceType, 
     SelectedModelProvider selectedModelProvider,
-    ModelItem? selectedModel ) {
+    ModelItem? selectedModel,
+    { Axis axis = Axis.horizontal } ) {
+
+    Widget gap(double size) => axis == Axis.horizontal ? SizedBox(width: size) : SizedBox(height: size);
+
     return [
-      const SizedBox(width: 8),
+      gap(8),
       FloatingActionButton.small(
         shape: const CircleBorder(),
         backgroundColor: chatData.length < 3
@@ -1209,7 +1265,7 @@ class CanvassState extends State<Canvass> {
         onPressed: () => _scrollToTop(scrollDurationInms: widget.appData.appScrollDurationInms),
         child: const Icon(Icons.vertical_align_top),
       ),
-      const SizedBox(width: 8),
+      gap(8),
       FloatingActionButton.small(
         shape: const CircleBorder(),
         backgroundColor: chatData.length < 3
@@ -1224,7 +1280,7 @@ class CanvassState extends State<Canvass> {
         onPressed: () => _scrollToBottom(scrollDurationInms: widget.appData.appScrollDurationInms),
         child: const Icon(Icons.vertical_align_bottom),
       ),
-      const SizedBox(width: 16),
+      gap(16),
       FloatingActionButton.small(
         shape: const CircleBorder(),
         backgroundColor: chatData.isEmpty
@@ -1239,7 +1295,7 @@ class CanvassState extends State<Canvass> {
         onPressed: chatData.isEmpty ? null : _clearMessages,
         child: const Icon(Icons.restart_alt),
       ),
-      const SizedBox(width: 8),
+      gap(8),
       FloatingActionButton.small(
         shape: const CircleBorder(),
         backgroundColor: chatData.isEmpty
@@ -1266,7 +1322,7 @@ class CanvassState extends State<Canvass> {
         },
         child: const Icon(Icons.save_alt),
       ),
-      SizedBox(width: deviceType != UserDeviceType.phone ? 32 : 18),
+      gap(deviceType != UserDeviceType.phone ? 32 : 18),
       FloatingActionButton.small(
         shape: const CircleBorder(),
         backgroundColor: (selectedModel !=null  && selectedModel.supportsImages)
@@ -1281,7 +1337,7 @@ class CanvassState extends State<Canvass> {
         onPressed: (selectedModel !=null  && selectedModel.supportsImages) ? _attachFiles : null,
         child: const Icon(Icons.attach_file),
       ),
-      const SizedBox(width: 8),
+      gap(8),
       FloatingActionButton.small(
         shape: const CircleBorder(),
         backgroundColor: Theme.of(context).colorScheme.secondaryContainer,

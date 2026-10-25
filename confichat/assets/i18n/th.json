@@ -62,7 +62,9 @@
       "update": "อัปเดต",
       "rename": "เปลี่ยนชื่อ",
       "delete": "ลบ",
-      "applicationSettings": "การตั้งค่าแอปพลิเคชัน"
+      "applicationSettings": "การตั้งค่าแอปพลิเคชัน",
+      "offlineModels": "โมเดลออฟไลน์",
+      "onlineModels": "โมเดลออนไลน์"
     },
     "legal": {
       "termsAndConditions": "ข้อกำหนดและเงื่อนไข",

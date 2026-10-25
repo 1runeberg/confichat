@@ -1,7 +1,7 @@
 name: confichat
 description: "Lightweight, multi-platform, and privacy focused LLM chat interface with optional encryption"
 publish_to: 'none'
-version: 1.2.0+6
+version: 1.2.1+10
 
 environment:
   sdk: '>=3.4.4 <4.0.0'
@@ -35,6 +35,10 @@ dev_dependencies:
   flutter_oss_licenses: ^3.0.4
 
 flutter:
+  # CocoaPods keeps file_picker on the photos-only picker (no camera module or location code)
+  config:
+    enable-swift-package-manager: false
+
   uses-material-design: true
   assets:
     - assets/confichat_logo.png

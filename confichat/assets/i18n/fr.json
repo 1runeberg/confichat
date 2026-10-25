@@ -62,7 +62,9 @@
       "update": "Mettre à jour",
       "rename": "Renommer",
       "delete": "Supprimer",
-      "applicationSettings": "Paramètres de l'application"
+      "applicationSettings": "Paramètres de l'application",
+      "offlineModels": "Modèles hors ligne",
+      "onlineModels": "Modèles en ligne"
     },
     "legal": {
       "termsAndConditions": "Conditions générales",

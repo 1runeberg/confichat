@@ -62,7 +62,9 @@
       "update": "Update",
       "rename": "Rename",
       "delete": "Delete",
-      "applicationSettings": "Application settings"
+      "applicationSettings": "Application settings",
+      "offlineModels": "Offline Models",
+      "onlineModels": "Online Models"
     },
     "legal": {
       "termsAndConditions": "Terms and Conditions",

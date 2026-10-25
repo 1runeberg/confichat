@@ -26,10 +26,12 @@ import 'package:confichat/locale_provider.dart';
 import 'package:confichat/provider_validator.dart';
 import 'package:confichat/ui_provider_setup.dart';
 import 'package:confichat/region_util.dart';
+import 'package:confichat/hinge_util.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await RegionUtil.refreshStorefront();
+  HingeUtil.listen();
   runApp(
     MultiProvider(
       providers: [
@@ -152,6 +154,7 @@ class ConfiChat extends StatelessWidget {
             builder: (context, themeProvider, localeProvider, child) {
               return MaterialApp(
                 navigatorKey: AppData.instance.navigatorKey,
+                debugShowCheckedModeBanner: false,
                 title: AppData.appTitle,
                 theme: themeProvider.currentTheme,
                 locale: localeProvider.locale,
@@ -163,6 +166,7 @@ class ConfiChat extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 home: HomePage(appData: AppData.instance, providerValid: snapshot.data ?? false),
+                builder: (context, child) => _buildFoldedDuoTheme(context, child!),
               );
             },
           );
@@ -197,6 +201,26 @@ class ConfiChat extends StatelessWidget {
   }
 }
 
+// Folded Duo loses width to the status bar strip, so dialogs use narrower side insets
+Widget _buildFoldedDuoTheme(BuildContext context, Widget child) {
+  return ValueListenableBuilder<HingeStatus?>(
+    valueListenable: HingeUtil.status,
+    builder: (context, hingeStatus, _) {
+      if (hingeStatus != HingeStatus.closed) return child;
+
+      final theme = Theme.of(context);
+      return Theme(
+        data: theme.copyWith(
+          dialogTheme: theme.dialogTheme.copyWith(
+            insetPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 24),
+          ),
+        ),
+        child: child,
+      );
+    },
+  );
+}
+
 class HomePage extends StatefulWidget {
   final AppData appData;
   final bool providerValid; 
@@ -219,6 +243,10 @@ class _HomePageState extends State<HomePage>  {
 
   bool _validProvider = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  // Keep the chat and app bar state when the Duo layout moves them
+  final GlobalKey _appBarKey = GlobalKey();
+  final GlobalKey _canvassKey = GlobalKey();
 
   @override
   void initState() {
@@ -320,15 +348,42 @@ class _HomePageState extends State<HomePage>  {
 
   @override
   Widget build(BuildContext context) {
+    return ValueListenableBuilder<HingeStatus?>(
+      valueListenable: HingeUtil.status,
+      builder: (context, hingeStatus, child) => _buildHomePage(context),
+    );
+  }
+
+  Widget _buildHomePage(BuildContext context) {
+
+    // Unfolded Duo landscape keeps the sidebar docked open (the drawer remains for provider setup)
+    final dockSidebar = HingeUtil.layoutFor(MediaQuery.sizeOf(context)) == DuoLayout.landscape;
+
+    // Close a floating drawer left open from portrait once the sidebar docks
+    if (dockSidebar && (_scaffoldKey.currentState?.isDrawerOpen ?? false)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scaffoldKey.currentState?.closeDrawer());
+    }
+
+    final appBar = CCAppBar(
+      key: _appBarKey,
+      appData: widget.appData,
+      chatSessionSelectedNotifier: chatSessionSelectedNotifier,
+      providerController: providerController,
+      providerModel: providerModel,
+      showMenuButton: !dockSidebar,
+    );
+
+    final canvass = Canvass(key: _canvassKey, appData: widget.appData, chatSessionSelectedNotifier: chatSessionSelectedNotifier);
 
     return Scaffold( 
       key: _scaffoldKey,
 
-      // (1) App bar
-      appBar: CCAppBar(appData: widget.appData, chatSessionSelectedNotifier: chatSessionSelectedNotifier, providerController: providerController, providerModel: providerModel),
+      // (1) App bar (the docked layout places it above the chat only)
+      appBar: dockSidebar ? null : appBar,
       
       // (2) Drawer
       drawer: Sidebar(appData: widget.appData, chatSessionSelectedNotifier: chatSessionSelectedNotifier),
+      drawerEnableOpenDragGesture: !dockSidebar,
 
       onDrawerChanged: (isOpen) {
           if (!isOpen) {
@@ -338,10 +393,42 @@ class _HomePageState extends State<HomePage>  {
       },
 
       // (3) Chat canvass
-      body: Column( children: [ Expanded(
-              child: Canvass(appData: widget.appData, chatSessionSelectedNotifier: chatSessionSelectedNotifier)
-            )])   
+      body: dockSidebar
+          ? _buildDockedLayout(context, appBar, canvass)
+          : Column( children: [ Expanded( child: canvass )]),
     
+    );
+  }
+
+  // Full-height sidebar beside the app bar and chat, drawn last so its shadow falls on the chat
+  Widget _buildDockedLayout(BuildContext context, PreferredSizeWidget appBar, Widget canvass) {
+    const sidebarWidth = 304.0;
+
+    return Stack(
+      children: [
+        Positioned.fill(
+          left: sidebarWidth,
+          child: Column(
+            children: [
+              SizedBox(height: appBar.preferredSize.height + MediaQuery.paddingOf(context).top, child: appBar),
+              Expanded(child: canvass),
+            ],
+          ),
+        ),
+
+        // The status bar strip is on the far edge, so the sidebar ignores its inset
+        Positioned(
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: sidebarWidth,
+          child: MediaQuery.removePadding(
+            context: context,
+            removeRight: true,
+            child: Sidebar(appData: widget.appData, chatSessionSelectedNotifier: chatSessionSelectedNotifier, docked: true),
+          ),
+        ),
+      ],
     );
   }
 

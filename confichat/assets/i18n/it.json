@@ -62,7 +62,9 @@
       "update": "Aggiorna",
       "rename": "Rinomina",
       "delete": "Elimina",
-      "applicationSettings": "Impostazioni applicazione"
+      "applicationSettings": "Impostazioni applicazione",
+      "offlineModels": "Modelli offline",
+      "onlineModels": "Modelli online"
     },
     "legal": {
       "termsAndConditions": "Termini e Condizioni",
