@@ -23,7 +23,6 @@ import 'package:confichat/ui_app_bar.dart';
 import 'package:confichat/language_config.dart';
 import 'package:confichat/app_localizations.dart';
 import 'package:confichat/locale_provider.dart';
-import 'package:confichat/provider_validator.dart';
 import 'package:confichat/ui_provider_setup.dart';
 import 'package:confichat/region_util.dart';
 import 'package:confichat/hinge_util.dart';
@@ -45,10 +44,23 @@ Future<void> main() async {
   );
 }
 
-class ConfiChat extends StatelessWidget {
+class ConfiChat extends StatefulWidget {
   const ConfiChat({super.key});
 
-  Future<bool> _loadAppSettings(BuildContext context) async {
+  @override
+  State<ConfiChat> createState() => _ConfiChatState();
+}
+
+class _ConfiChatState extends State<ConfiChat> {
+  late final Future<void> _settingsLoaded;
+
+  @override
+  void initState() {
+    super.initState();
+    _settingsLoaded = _loadAppSettings(context);
+  }
+
+  Future<void> _loadAppSettings(BuildContext context) async {
     final directory = AppData.instance.rootPath.isEmpty ? await getApplicationDocumentsDirectory() : Directory(AppData.instance.rootPath);
     final filePath =
         '${directory.path}/${AppData.appStoragePath}/${AppData.appSettingsFile}';
@@ -133,20 +145,12 @@ class ConfiChat extends StatelessWidget {
 
       }
     }
-
-    // Validate AI provider availability - implemented in the requirements
-    if (context.mounted) {
-      return await ProviderValidator.validateLocalProviders(AppData.instance) != null ||
-             await ProviderValidator.checkApiKeyConfigured(AppData.instance) != null;
-    }
-    
-    return false;
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: _loadAppSettings(context),
+      future: _settingsLoaded,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           // Update Theme and Locale providers
@@ -165,7 +169,7 @@ class ConfiChat extends StatelessWidget {
                   GlobalWidgetsLocalizations.delegate,
                   GlobalCupertinoLocalizations.delegate,
                 ],
-                home: HomePage(appData: AppData.instance, providerValid: snapshot.data ?? false),
+                home: HomePage(appData: AppData.instance, providerValid: false),
                 builder: (context, child) => _buildFoldedDuoTheme(context, child!),
               );
             },
@@ -242,6 +246,7 @@ class _HomePageState extends State<HomePage>  {
   late AppLifecycleState? _lifecycleState;
 
   bool _validProvider = false;
+  bool _checkingProvider = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   // Keep the chat and app bar state when the Duo layout moves them
@@ -271,32 +276,21 @@ class _HomePageState extends State<HomePage>  {
   }
 
   Future<void> _checkProviderValidity() async {
-    if (!_validProvider && mounted) {
-      bool isValid = await ProviderSetupManager.validateAndSetupProvider(
-        context, 
-        widget.appData,
-        _scaffoldKey
-      );
-      
-      if (mounted) {
-        setState(() {
-          _validProvider = isValid;
-        });
-        
-        if (!isValid) {
-          _showProviderSetup();
-        }
-      }
-    }
-  }
+    if (_validProvider || _checkingProvider || !mounted) return;
 
-  void _showProviderSetup() {
-    if (mounted) {
-      ProviderSetupManager.showProviderSetupDialog(
-        context, 
+    _checkingProvider = true;
+    try {
+      final isValid = await ProviderSetupManager.validateAndSetupProvider(
+        context,
         widget.appData,
-        _scaffoldKey  // Pass the scaffoldKey
+        _scaffoldKey,
       );
+
+      if (mounted) {
+        setState(() => _validProvider = isValid);
+      }
+    } finally {
+      _checkingProvider = false;
     }
   }
 
@@ -341,6 +335,7 @@ class _HomePageState extends State<HomePage>  {
 
   @override
   void dispose() {
+    _lifecycleListener.dispose();
     providerModel.dispose();
     providerController.dispose();
     super.dispose();

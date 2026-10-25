@@ -164,9 +164,14 @@ abstract class LlmApi {
   }
 
   Future<void> getData({ required Uri url, Map<String, String>? requestHeaders }) async {
+    final client = http.Client();
+
     try {
-      // Send GET
-      final response = await http.get(url, headers: requestHeaders ?? {} );
+
+      // Bound provider lookups so an unavailable server doesn't block recovery
+      final response = await client
+          .get(url, headers: requestHeaders ?? {})
+          .timeout(const Duration(seconds: 10));
       isProcessing = true;
 
       // Check the response status
@@ -179,6 +184,7 @@ abstract class LlmApi {
     } catch (e) {
         responseData = 'Error: $e\n' 'URL: $url\n';
     } finally {
+      client.close();
       isProcessing = false;
     }
 

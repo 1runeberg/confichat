@@ -47,12 +47,13 @@ class CCAppBarState extends State<CCAppBar> {
   AiProvider? selectedProvider;
   ModelItem? selectedModel;
   Timer? _providerCheckTimer;
+  int _providerGeneration = 0;
+  int? _loadingGeneration;
 
   @override
   void initState() {
     super.initState();
     _switchProvider(widget.appData.defaultProvider);
-    _populateModelList(true); 
 
     widget.appData.callbackSwitchProvider = _switchProvider;
     _startProviderAvailabilityCheck();
@@ -84,14 +85,10 @@ class CCAppBarState extends State<CCAppBar> {
 
         return AppBar(
           title: widget.appData.getUserDeviceType(context) == UserDeviceType.desktop
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Image.asset(
-                      'assets/confichat_logo.png',
-                      fit: BoxFit.contain,
-                    ),
-                  ],
+              ? Image.asset(
+                  'assets/confichat_logo.png',
+                  fit: BoxFit.contain,
+                  alignment: Alignment.centerLeft,
                 )
               : null,
           toolbarHeight: 80.0,
@@ -302,28 +299,40 @@ class CCAppBarState extends State<CCAppBar> {
 
 
   Future<void> _populateModelList(bool selectFirst) async {
-    
-    // Check for api app settings
-    await widget.appData.api.loadSettings();
+    final generation = _providerGeneration;
+    if (_loadingGeneration == generation) return;
 
-    // Retrieve active models for provider
-    List<ModelItem> newModels = [];
-    await widget.appData.api.getModels(newModels);
+    _loadingGeneration = generation;
+    final api = widget.appData.api;
+    final newModels = <ModelItem>[];
 
-    if (mounted){
-      // Update the provider with the new models
-      Provider.of<ModelProvider>(context, listen: false).updateModels(newModels);
-    
-      // Update the selected model
-      if (newModels.isNotEmpty) {
-        final selectedModelProvider = Provider.of<SelectedModelProvider>(context, listen: false);  
-        final initialModel = selectFirst ? newModels.first : newModels.last; 
-        selectedModelProvider.updateSelectedModel(initialModel);
-        widget.providerModel.text = initialModel.name; 
-      } else {
-        widget.providerModel.clear();
+    try {
+      await api.loadSettings();
+      await api.getModels(newModels);
+    } catch (e) {
+      debugPrint('Unable to retrieve models: $e');
+    } finally {
+      if (_loadingGeneration == generation) {
+        _loadingGeneration = null;
       }
-    } 
+    }
+
+    // Discard results from a provider that's no longer selected
+    if (!mounted || generation != _providerGeneration) return;
+
+    Provider.of<ModelProvider>(context, listen: false).updateModels(newModels);
+    final selectedModelProvider = Provider.of<SelectedModelProvider>(context, listen: false);
+
+    if (newModels.isNotEmpty) {
+      final initialModel = selectFirst ? newModels.first : newModels.last;
+      selectedModel = initialModel;
+      selectedModelProvider.updateSelectedModel(initialModel);
+      widget.providerModel.text = initialModel.name;
+    } else {
+      selectedModel = null;
+      selectedModelProvider.updateSelectedModel(null);
+      widget.providerModel.clear();
+    }
   }
 
   Future<void> _showModelChangeWarning(BuildContext context, ModelItem newModel) async {
@@ -374,17 +383,32 @@ class CCAppBarState extends State<CCAppBar> {
     }
   }
 
-  void _switchProvider(AiProvider? provider){
+  void _switchProvider(AiProvider? provider) {
+    if (provider == null) return;
 
-    if(provider == null) {return; }
+    final generation = ++_providerGeneration;
     widget.appData.setProvider(provider);
 
-    if(mounted) {
-      setState(() {
-        selectedProvider = provider;
+    if (mounted) {
+      setState(() => selectedProvider = provider);
+
+      // Clear the previous model after the current build completes
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || generation != _providerGeneration) return;
+
+        selectedModel = null;
+        widget.providerModel.clear();
+        Provider.of<ModelProvider>(context, listen: false).updateModels([]);
+        Provider.of<SelectedModelProvider>(context, listen: false).updateSelectedModel(null);
         _populateModelList(true);
       });
     }
   }
 
+  @override
+  void dispose() {
+    _providerCheckTimer?.cancel();
+    widget.appData.callbackSwitchProvider = widget.appData.defaultCallback;
+    super.dispose();
+  }
 }

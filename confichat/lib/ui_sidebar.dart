@@ -80,6 +80,7 @@ class SidebarState extends State<Sidebar> {
 
     List<String> files = [];
     await PersistentStorage.getJsonFilenames(filenames: files, directory: directory, modelName: modelName, withExtension: false);
+    if (!mounted || _modelName != modelName) return;
 
     setState(() {
       _chatSessionFiles = files;

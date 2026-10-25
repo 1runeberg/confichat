@@ -5,6 +5,8 @@
  */
 
 import 'package:confichat/app_data.dart';
+import 'package:confichat/factories.dart';
+import 'package:confichat/interfaces.dart';
 import 'package:flutter/foundation.dart';
 
 class ProviderValidator {
@@ -13,9 +15,9 @@ class ProviderValidator {
     try {
       // Try Ollama first (priority)
       List<ModelItem> ollamaModels = [];
-      appData.setProvider(AiProvider.ollama);
-      await appData.api.loadSettings();
-      bool ollamaSuccess = await _canGetModels(appData, ollamaModels);
+      final ollama = LlmApiFactory.create(AiProvider.ollama.name);
+      await ollama.loadSettings();
+      bool ollamaSuccess = await _canGetModels(ollama, ollamaModels);
       
       if (ollamaSuccess && ollamaModels.isNotEmpty) {
         return AiProvider.ollama;
@@ -23,9 +25,9 @@ class ProviderValidator {
       
       // Try LlamaCPP second
       List<ModelItem> llamaModels = [];
-      appData.setProvider(AiProvider.llamacpp);
-      await appData.api.loadSettings();
-      bool llamaSuccess = await _canGetModels(appData, llamaModels);
+      final llamacpp = LlmApiFactory.create(AiProvider.llamacpp.name);
+      await llamacpp.loadSettings();
+      bool llamaSuccess = await _canGetModels(llamacpp, llamaModels);
       
       if (llamaSuccess && llamaModels.isNotEmpty) {
         return AiProvider.llamacpp;
@@ -33,9 +35,9 @@ class ProviderValidator {
 
       // Try llmman third
       List<ModelItem> llmmanModels = [];
-      appData.setProvider(AiProvider.llmman);
-      await appData.api.loadSettings();
-      bool llmmanSuccess = await _canGetModels(appData, llmmanModels);
+      final llmman = LlmApiFactory.create(AiProvider.llmman.name);
+      await llmman.loadSettings();
+      bool llmmanSuccess = await _canGetModels(llmman, llmmanModels);
 
       if (llmmanSuccess && llmmanModels.isNotEmpty) {
         return AiProvider.llmman;
@@ -52,23 +54,23 @@ class ProviderValidator {
   static Future<AiProvider?> checkApiKeyConfigured(AppData appData) async {
     try {
       // Check OpenAI
-      appData.setProvider(AiProvider.openai);
-      await appData.api.loadSettings();
-      if (appData.api.apiKey.isNotEmpty) {
+      final openai = LlmApiFactory.create(AiProvider.openai.name);
+      await openai.loadSettings();
+      if (openai.apiKey.isNotEmpty) {
         return AiProvider.openai;
       }
       
       // Check Anthropic
-      appData.setProvider(AiProvider.anthropic);
-      await appData.api.loadSettings();
-      if (appData.api.apiKey.isNotEmpty) {
+      final anthropic = LlmApiFactory.create(AiProvider.anthropic.name);
+      await anthropic.loadSettings();
+      if (anthropic.apiKey.isNotEmpty) {
         return AiProvider.anthropic;
       }
 
       // Check Gemini
-      appData.setProvider(AiProvider.gemini);
-      await appData.api.loadSettings();
-      if (appData.api.apiKey.isNotEmpty) {
+      final gemini = LlmApiFactory.create(AiProvider.gemini.name);
+      await gemini.loadSettings();
+      if (gemini.apiKey.isNotEmpty) {
         return AiProvider.gemini;
       }
     } catch (e) {
@@ -79,9 +81,9 @@ class ProviderValidator {
     return null;
   }
   
-  static Future<bool> _canGetModels(AppData appData, List<ModelItem> models) async {
+  static Future<bool> _canGetModels(LlmApi api, List<ModelItem> models) async {
     try {
-      await appData.api.getModels(models);
+      await api.getModels(models);
       return true;
     } catch (e) {
       return false;

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -100,6 +101,38 @@ void main() {
     expect(ApiChatGPT().getUri('/models').host, 'api.openai.com');
     expect(ApiGemini().getUri('/models').toString(),
         'https://generativelanguage.googleapis.com/v1beta/openai/models');
+  });
+
+  test('provider checks preserve the active provider when servers are down', () async {
+    final appData = AppData.instance;
+    appData.setProvider(AiProvider.llmman);
+    final selectedApi = appData.api;
+    final client = MockClient((_) async => throw const SocketException('Server down'));
+
+    await http.runWithClient(() async {
+      expect(await ProviderValidator.validateLocalProviders(appData), isNull);
+      expect(appData.api, same(selectedApi));
+      expect(await ProviderValidator.checkApiKeyConfigured(appData), isNull);
+      expect(appData.api, same(selectedApi));
+    }, () => client);
+  });
+
+  testWidgets('provider lookups time out when a server never responds', (tester) async {
+    final response = Completer<http.Response>();
+    final client = MockClient((_) => response.future);
+    final api = ApiOllama();
+
+    await http.runWithClient(() async {
+      var finished = false;
+      final lookup = api.getData(url: api.getUri('/tags')).then((_) => finished = true);
+      await tester.pump();
+      expect(finished, isFalse);
+      await tester.pump(const Duration(seconds: 10));
+      await lookup;
+      expect(finished, isTrue);
+      expect(api.responseData, contains('TimeoutException'));
+      response.complete(http.Response('{"models": []}', 200));
+    }, () => client);
   });
 
   test('provider setup detects a configured Gemini key', () async {

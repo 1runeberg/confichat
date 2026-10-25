@@ -73,6 +73,7 @@ class ApiAnthropic extends LlmApi{
     final models = <ModelItem>[];
     final seenCursors = <String>{};
     String? afterId;
+    final client = http.Client();
 
     try {
       do {
@@ -80,10 +81,10 @@ class ApiAnthropic extends LlmApi{
           'limit': '1000',
           if (afterId != null) 'after_id': afterId,
         });
-        final response = await http.get(url, headers: {
+        final response = await client.get(url, headers: {
           'anthropic-version': version,
           'x-api-key': apiKey,
-        });
+        }).timeout(const Duration(seconds: 10));
         if (response.statusCode != 200) {
           throw HttpException('Models request returned ${response.statusCode}', uri: url);
         }
@@ -105,6 +106,8 @@ class ApiAnthropic extends LlmApi{
       outModels.addAll(models);
     } catch (e) {
       if (kDebugMode) { print('Unable to retrieve Anthropic models: $e'); }
+    } finally {
+      client.close();
     }
   } 
 
