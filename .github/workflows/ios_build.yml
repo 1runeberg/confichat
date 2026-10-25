@@ -1,6 +1,8 @@
 name: iOS
 
 on:
+  workflow_dispatch:
+
   workflow_call:
     inputs:
       release_tag:
@@ -26,9 +28,13 @@ on:
       
 jobs:
   ios-build:
-    runs-on: macos-latest
+    # The Duo hinge APIs need the iOS 27.1 SDK, which macos-latest doesn't have yet
+    runs-on: xcode-27
     steps:
     - uses: actions/checkout@v4.1.7
+
+    - name: Select Xcode 27.1
+      run: sudo xcode-select -s /Applications/Xcode_27.1.app && xcodebuild -version
     
     - name: Set up Java
       uses: actions/setup-java@v4.2.2
